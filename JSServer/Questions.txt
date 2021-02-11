@@ -1,0 +1,41 @@
+Questions:
+
+    When is sql run? Why is it wrong?
+
+    1: in logout deleting only this.id not what query param is. can only log yourself out.
+    2: go to add in id, not failing previous tests becuase logging out when should't
+
+
+    Running into problem not finding sessions w/ Req. Its the reason that logout Admin
+    is failing at the botom of SSn Modification. I think it is supposed to do with cookies.
+    Should I never delete cookies? This seems like a hack and wrong.
+
+    Q: Why does second Logout all work but not first?
+    A: Forget why but this was fixed.
+
+    Q: Should I be handling 404's individually in ssn DEL
+    
+    Q: Is DEL Ssn/id correct?
+
+    Q: Is going through tests a valid way to do it?
+    A: Yes, might also want to highlight
+
+    Q: WTF is the check general login for! 404 comes before 401! 
+
+    Q: If 500's the server crashes in cnn pool bc no res, is this closure or an error?
+    A: This may be bc 
+
+Notes:
+
+    * Reason seems like logins aren't preserved: every time restart server clears memory. 
+    
+    * NEED TO RELEASE CNN EACH TIME. Couldn't figure out for the longest time why things seemed to 
+        "hang". Each req comes with cnn, MUST BE released even if not doing db connection.
+
+
+CheckBox For Functions:
+    1) end request
+    2) call cb manually in last waterfall
+    3) always release connection
+    5) make sure there are parens after if(chain.chain.check())
+    4) review spec one more time
