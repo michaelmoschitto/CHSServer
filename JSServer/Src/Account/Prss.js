@@ -223,7 +223,6 @@ router.put('/:id', function(req, res) {
          'oldPassword': 50
       };
 
-
    async.waterfall([
    cb => { 
       // zero or more of fn, ln, pswd, role
@@ -250,7 +249,6 @@ router.put('/:id', function(req, res) {
 
    // updatedResult, fields?, final callback
    (updRes, fields, cb) => {
-
       res.end();
       cb();
    }
@@ -324,6 +322,67 @@ router.delete('/:id', function(req, res) {
    }],
    function(err) {
       req.cnn.release();
+   });
+});
+
+router.get('/:prsId/Msgs', function(req, res){
+   var vld = req.validator; // Shorthands
+   var body = req.body;
+   var admin = req.session && req.session.isAdmin();
+   var cnn = req.cnn;
+   
+
+   async.waterfall([
+      function(cb){
+         cnn.chkQry("select * from Person where id = ?", [req.params.prsId], cb);
+      },
+
+      function(foundPrs, fields, cb){
+         if(foundPrs.length){
+            var orderBy = (req.query.order === 'date'  && 'whenMade' ||
+                        req.query.order === 'likes' && 'numLikes');
+
+            if(req.query.num && orderBy)
+               cnn.chkQry(`select Message.id, cnvId, whenMade,\
+               email, content, numLikes\
+               from Person join Message on Person.id = prsId \
+               where prsId = ?\
+               order by ${orderBy} desc\
+               limit ?`, [req.params.prsId, parseInt(req.query.num)], cb);
+
+            else if (req.query.num)
+               cnn.chkQry("select Message.id, cnvId, whenMade,\
+               email, content, numLikes\
+               from Person join Message on Person.id = prsId \
+               where prsId = ?\
+               limit ?", [req.params.prsId, parseInt(req.query.num)], cb);
+
+            else if(orderBy)
+               cnn.chkQry(`select Message.id, cnvId, whenMade,\
+               email, content, numLikes\
+               from Person join Message on Person.id = prsId \
+               where prsId = ?\
+               order by ${orderBy} desc`, [req.params.prsId], cb);
+
+            else
+               cnn.chkQry("select Message.id, cnvId, whenMade,\
+               email, content, numLikes\
+               from Person join Message on Person.id = prsId\
+               where prsId = ?",[req.params.prsId], cb);
+         }
+      },
+
+      function(resMsg, fields, cb){
+         resMsg.forEach((msg) => msg.whenMade = msg.whenMade.getTime());
+         res.json(resMsg);
+         cb();
+      }
+   ],
+
+   (err) => {
+      if(!err)
+         res.end();
+      cnn.release();
    });
 });
 

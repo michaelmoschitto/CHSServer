@@ -68,8 +68,10 @@ router.get('/:id', function(req, res) {
    var prsId = Session.findById(req.params.id) && 
     Session.findById(req.params.id).prsId;
 
-   if (vld.check(ssn, Tags.notFound) && vld.checkPrsOK(prsId)) {
+   if (ssn && vld.checkPrsOK(prsId)) {
       res.json({id: ssn.id, prsId: ssn.prsId, loginTime: ssn.loginTime});
+   }else{
+      res.status(404).end();
    }
    req.cnn.release();
 });

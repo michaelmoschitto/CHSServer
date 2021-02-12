@@ -38,10 +38,14 @@ CnnPool.router = function(req, res, next) {
          cnn.chkQry = function(qry, prms, cb) {
             // Run real qry, checking for error
             // console.log(res);
-            this.query(qry, prms, function(err, res, fields) {
-               if (err)
+
+            // res is the reponse from the DATABASE!!!!!!! NOT THE HTTP REPONSE
+            this.query(qry, prms, function(err, dbRes, fields) {
+               if (err){
                   res.status(500).json('Failed query ' + qry);
-               cb(err, res, fields);
+                  console.log(err);
+               }
+               cb(err, dbRes, fields);
             });
          };
          req.cnn = cnn;

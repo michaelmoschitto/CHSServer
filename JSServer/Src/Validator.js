@@ -22,7 +22,8 @@ Validator.Tags = {
    dupTitle: "dupTitle",            // Title duplicates an existing cnv title
    queryFailed: "queryFailed",
    forbiddenField: "forbiddenField",
-   oldPwdMismatch: "oldPwdMismatch"
+   oldPwdMismatch: "oldPwdMismatch",
+   dupLike: "dupLike"
 };
 
 // Check |test|.  If false, add an error with tag and possibly empty array
@@ -106,8 +107,8 @@ Validator.prototype.hasFields = function(obj, fieldList, cb) {
    var self = this;
 
    fieldList.forEach(function(name) {
-      self.chain(obj.hasOwnProperty(name) && name !== null && 
-      name !== "", Validator.Tags.missingField, [name]);
+      self.chain(obj.hasOwnProperty(name) && obj[name] !== null && 
+      obj[name] !== "", Validator.Tags.missingField, [name]);
    });
 
    return this.check(true, null, null, cb);

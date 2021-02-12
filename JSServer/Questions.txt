@@ -1,5 +1,6 @@
 Questions:
-
+    Is there a better way to skip to last callback than cb(true)
+    
     When is sql run? Why is it wrong?
 
     1: in logout deleting only this.id not what query param is. can only log yourself out.

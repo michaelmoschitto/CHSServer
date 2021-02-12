@@ -75,6 +75,8 @@ app.use(CnnPool.router);
 app.use('/Prss', require('./Account/Prss.js'));
 app.use('/Ssns', require('./Account/Ssns.js'));
 app.use('/Cnvs', require('./Conversation/Cnvs.js'));
+app.use('/Msgs', require('./Message/Msgs.js'));
+
 
 // Special debugging route for /DB DELETE.  Clears all table contents,
 //resets all auto_increment keys to start at 1, and reinserts one admin user.
@@ -84,14 +86,14 @@ app.delete('/DB', function(req, res) {
    Session.logoutAll();
    // Callbacks to clear tables
    console.log(Session.getAllIds());
-   var cbs = ["Message", "Conversation", "Person"].map(
+   var cbs = ["Message", "Conversation", "Person", "Likes"].map(
       table => function(cb) {
          req.cnn.query("delete from " + table, cb);
       }
    );
 
    // Callbacks to reset increment bases
-   cbs = cbs.concat(["Conversation", "Message", "Person"].map(
+   cbs = cbs.concat(["Conversation", "Message", "Person", "Likes"].map(
       table => cb => {
          req.cnn.query("alter table " + table + " auto_increment = 1", cb);
       })
