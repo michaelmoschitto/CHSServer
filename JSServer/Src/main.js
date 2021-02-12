@@ -75,7 +75,7 @@ app.use(CnnPool.router);
 app.use('/Prss', require('./Account/Prss.js'));
 app.use('/Ssns', require('./Account/Ssns.js'));
 app.use('/Cnvs', require('./Conversation/Cnvs.js'));
-app.use('/Msgs', require('./Message/Msgs.js'));
+app.use('/Msgs', require('./Conversation/Msgs.js'));
 
 
 // Special debugging route for /DB DELETE.  Clears all table contents,
