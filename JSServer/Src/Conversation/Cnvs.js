@@ -186,21 +186,7 @@ router.delete('/:cnvId', function(req, res) {
 
 router.get('/:cnvId/Msgs', function(req, res){
    //todo: get msgs by cnv
-   // GET dateTime = {dateTime}
-   // num = {num}
 
-   // Any AU is acceptable, though some login is required.Return all Messages
-   // for the indicated Conversation.Limit this to at most num Messages(
-   // if num is provided) posted on or after dateTime(if dateTime is provided).
-   // Returnfor each Message, in increasing datetime order, and for same datetimes, in increasing ID order:
-      
-   // id Message ID
-   // cnvId ID of Conversation to which Message belongs
-   // prsId ID of poster
-   // whenMade when the Message was made
-   // email Email of the poster
-   // content Content of the Message
-   // numLikes Number of likes
    var vld = req.validator; // Shorthands
    var body = req.body;
    var admin = req.session && req.session.isAdmin();
@@ -214,29 +200,50 @@ router.get('/:cnvId/Msgs', function(req, res){
          cnn.chkQry("select * from Conversation where id = ?", [req.params.cnvId,], cb);
       },
       function(foundCnvs, fields, cb){
-         //todo: right now resMsg will be [] if cnvs DNE or if doesn't fit query params
-         //todo: need to add another db call that handles 404 first just looking for msgs
-      // don't need check for session, handled in main
+        var mySQLDate = req.query.dateTime && 
+         new Date(parseInt(req.query.dateTime))
+         .toString().slice(0, 19).replace('T', ' ');
+         
          if(foundCnvs.length){
             if (req.query.num && req.query.dateTime)
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email" + 
-               "from Message join Person on Message.prsId = Person.id " + 
-               "where cnvId = ? and whenMade >= ? "+
-               "order by whenMade, Message.id " +
-               "limit ? ", [req.params.cnvId, req.query.dateTime,
-                   parseInt(req.query.num)], cb);
-
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                "content, ifnull(t1.numLikes, 0) as numLikes, email " +
+                "from Message join Person on Message.prsId = Person.id " +
+                "left join(select Message.id, count( * ) as numLikes from " +
+                "Message join Likes on Message.id = Likes.msgId group by " +
+                "Message.id) as t1 on t1.id = Message.id " +
+                "where cnvId = ? and whenMade >= ? " + 
+                "order by whenMade, Message.id " +
+                "limit ?",
+                [req.params.cnvId, mySQLDate, parseInt(req.query.num)], cb);
             else if (req.query.num)
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email\
-                  from Message join Person on Message.prsId = Person.id where cnvId = ? order by whenMade, Message.id\
-                  limit ?", [req.params.cnvId, parseInt(req.query.num)], cb);
-
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                "content, ifnull(t1.numLikes, 0) as numLikes, email " +
+                "from Message join Person on Message.prsId = Person.id " +
+                "left join(select Message.id, count( * ) as numLikes from " +
+                "Message join Likes on Message.id = Likes.msgId group by " +
+                "Message.id) as t1 on t1.id = Message.id " +
+                "where cnvId = ? order by whenMade, Message.id " + 
+                "limit ?",
+                [req.params.cnvId, parseInt(req.query.num)], cb);
             else if (req.query.dateTime)
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email\
-               from Message join Person on Message.prsId = Person.id where cnvId = ? and whenMade >= ? order by whenMade,\ Message.id", [req.params.cnvId, req.query.dateTime], cb);
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                "content, ifnull(t1.numLikes, 0) as numLikes, email " +
+                "from Message join Person on Message.prsId = Person.id " +
+                "left join(select Message.id, count( * ) as numLikes from " + 
+                "Message join Likes on Message.id = Likes.msgId group by " + 
+                "Message.id) as t1 on t1.id = Message.id " +
+                "where cnvId = ? and whenMade >= ? order by whenMade, " + 
+                "Message.id", [req.params.cnvId, mySQLDate], cb);
             else
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email\
-               from Message join Person on Message.prsId = Person.id where cnvId = ? order by whenMade, Message.id", [req.params.cnvId], cb);
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " + 
+                "content, ifnull(t1.numLikes, 0) as numLikes, email " + 
+                "from Message join Person on Message.prsId = Person.id " + 
+                "left join(select Message.id, count( * ) as numLikes from " + 
+                "Message join Likes on Message.id = Likes.msgId group by " + 
+                "Message.id) as t1 on t1.id = Message.id " + 
+                "where cnvId = ? order by whenMade, Message.id",
+                [req.params.cnvId], cb);
          }else{
             res.status(404).end();
             cb(true);
@@ -284,7 +291,8 @@ router.post('/:cnvId/Msgs', function (req, res) {
    async.waterfall([
       function(cb) {
          if(req.session && vld.checkFieldLengths(body, lengths, cb)){
-            cnn.chkQry("select * from Conversation where id = ?", [req.params.cnvId], cb);
+            cnn.chkQry("select * from Conversation where id = ?", 
+             [req.params.cnvId], cb);
          }
       },
 

@@ -344,29 +344,29 @@ router.get('/:prsId/Msgs', function(req, res){
 
             if(req.query.num && orderBy)
                cnn.chkQry(`select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
-               from Person join Message on Person.id = prsId \
+               email, content\
+               from Person join Message on Person.id = prsId \e
                where prsId = ?\
                order by ${orderBy} desc\
                limit ?`, [req.params.prsId, parseInt(req.query.num)], cb);
 
             else if (req.query.num)
                cnn.chkQry("select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
+               email, content\
                from Person join Message on Person.id = prsId \
                where prsId = ?\
                limit ?", [req.params.prsId, parseInt(req.query.num)], cb);
 
             else if(orderBy)
                cnn.chkQry(`select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
+               email, content\
                from Person join Message on Person.id = prsId \
                where prsId = ?\
                order by ${orderBy} desc`, [req.params.prsId], cb);
 
             else
                cnn.chkQry("select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
+               email, content\
                from Person join Message on Person.id = prsId\
                where prsId = ?",[req.params.prsId], cb);
          }

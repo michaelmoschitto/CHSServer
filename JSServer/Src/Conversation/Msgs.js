@@ -116,19 +116,19 @@ router.post('/:msgId/Likes', function(req, res){
                 cb(true);
         },
 
-        function(result, fields, cb){
-            if(result.affectedRows > 0){
-                locId = result.insertId;
-                cnn.chkQry("update Message set " +
-                "numLikes = NumLikes + 1 " + 
-                "where id = ?", [req.params.msgId], cb);
-            }else{
-                cb(true);
-            }
-        },
+        // function(result, fields, cb){
+        //     if(result.affectedRows > 0){
+        //         locId = result.insertId;
+        //         cnn.chkQry("update Message set " +
+        //         "numLikes = NumLikes + 1 " + 
+        //         "where id = ?", [req.params.msgId], cb);
+        //     }else{
+        //         cb(true);
+        //     }
+        // },
 
         function(result, fields, cb){
-            res.location(router.baseURL + '/' + req.params.msgId + '/Likes/' + locId).end();
+            res.location(router.baseURL + '/' + req.params.msgId + '/Likes/' + result.insertId).end();
             cb();
         }
     ],
