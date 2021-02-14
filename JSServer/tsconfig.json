@@ -10,7 +10,7 @@
         "resolveJsonModule": true,
         "sourceMap": false,
         "baseUrl": ".",
-        "outDir": "../TSServer/built",
+        "outDir": "./built",
         "paths": {
             "*": [
                 "node_modules/*"
