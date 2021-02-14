@@ -343,32 +343,48 @@ router.get('/:prsId/Msgs', function(req, res){
                         req.query.order === 'likes' && 'numLikes');
 
             if(req.query.num && orderBy)
-               cnn.chkQry(`select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
-               from Person join Message on Person.id = prsId \
-               where prsId = ?\
-               order by ${orderBy} desc\
-               limit ?`, [req.params.prsId, parseInt(req.query.num)], cb);
+               cnn.chkQry("select Message.id, cnvId, whenMade, " +
+                "email, content, ifnull(t1.numLikes, 0) as numLikes " +
+                "from Person join Message on Person.id = prsId  " +
+                "left join(select Message.id, count( * ) as numLikes " +
+                "from Message join Likes on Message.id = Likes.msgId " +
+                "group by Message.id) as t1 " +
+                "on t1.id = Message.id " +
+                "where prsId = ? " +
+                `order by ${orderBy} desc ` + 
+                "limit ?", [req.params.prsId, parseInt(req.query.num)], cb);
 
             else if (req.query.num)
-               cnn.chkQry("select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
-               from Person join Message on Person.id = prsId \
-               where prsId = ?\
-               limit ?", [req.params.prsId, parseInt(req.query.num)], cb);
+               cnn.chkQry("select Message.id, cnvId, whenMade, " + 
+                "email, content, ifnull(t1.numLikes, 0) as numLikes " + 
+                "from Person join Message on Person.id = prsId  " + 
+                "left join(select Message.id, count( * ) as numLikes " +  
+                "from Message join Likes on Message.id = Likes.msgId " +  
+                "group by Message.id) as t1 " + 
+                "on t1.id = Message.id " + 
+                "where prsId = ? " + 
+                "limit ?", [req.params.prsId, parseInt(req.query.num)], cb);
 
             else if(orderBy)
                cnn.chkQry(`select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
-               from Person join Message on Person.id = prsId \
-               where prsId = ?\
-               order by ${orderBy} desc`, [req.params.prsId], cb);
+                email, content, ifnull(t1.numLikes, 0) as numLikes\
+                from Person join Message on Person.id = prsId \
+                left join(select Message.id, count( * ) as numLikes\ 
+                from Message join Likes on Message.id = Likes.msgId\ 
+                group by Message.id) as t1\
+                on t1.id = Message.id\
+                where prsId = ?\
+                order by ${orderBy} desc`, [req.params.prsId], cb);
 
             else
-               cnn.chkQry("select Message.id, cnvId, whenMade,\
-               email, content, numLikes\
+              cnn.chkQry("select Message.id, cnvId, whenMade,\
+               email, content, ifnull(t1.numLikes, 0) as numLikes\
                from Person join Message on Person.id = prsId\
-               where prsId = ?",[req.params.prsId], cb);
+               left join(select Message.id, count( * ) as numLikes \
+               from Message join Likes on Message.id = Likes.msgId \
+               group by Message.id) as t1\
+               on t1.id = Message.id \
+               where prsId = ?", [req.params.prsId], cb);
          }
       },
 

@@ -20,7 +20,7 @@
     "Clinton Staley"
   ],
   "scripts": {
-    "start": "node /Users/MichaelMoschitto/Desktop/Project2/JSServer/Src/main.js",
-    "debug": "nodemon --inspect /Users/MichaelMoschitto/Desktop/Project2/JSServer/Src/main.js"
+    "start": "node /Users/MichaelMoschitto/Desktop/ReTry/CHSServer/JSServer/Src/main.js",
+    "debug": "nodemon --inspect /Users/MichaelMoschitto/Desktop/ReTry/CHSServer/JSServer/Src/main.js"
   }
 }

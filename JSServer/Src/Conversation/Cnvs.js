@@ -15,14 +15,16 @@ router.get('/', function(req, res) {
    function (cb) {
       if(req.session){
          if(req.query.owner)
-            req.cnn.chkQry('select Conversation.id, title, ownerId, lastMessage from Conversation where ownerId = ?',
+            req.cnn.chkQry('select distinct Conversation.id, title, ownerId, lastMessage from Conversation where ownerId = ?',
             [req.query.owner], cb);
          else
-            req.cnn.chkQry('select Conversation.id, title, ownerId, lastMessage from Conversation join\
+            req.cnn.chkQry('select distinct Conversation.id, title, ownerId, lastMessage from Conversation left join\
             Message on Conversation.id = cnvId',[], cb);
       }
    },
    function (cnvsRet, fields, cb) {
+         cnvsRet.forEach((cnvs) => cnvs.lastMessage = cnvs.lastMessage 
+          && cnvs.lastMessage.getTime())
          res.json(cnvsRet);
          cb();
    }], 
@@ -213,35 +215,59 @@ router.get('/:cnvId/Msgs', function(req, res){
       function(cb){
          cnn.chkQry("select * from Conversation where id = ?", [req.params.cnvId,], cb);
       },
-      function(foundCnvs, fields, cb){
-         //todo: right now resMsg will be [] if cnvs DNE or if doesn't fit query params
-         //todo: need to add another db call that handles 404 first just looking for msgs
-      // don't need check for session, handled in main
-         if(foundCnvs.length){
-            if (req.query.num && req.query.dateTime)
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email" + 
-               "from Message join Person on Message.prsId = Person.id " + 
-               "where cnvId = ? and whenMade >= ? "+
-               "order by whenMade, Message.id " +
-               "limit ? ", [req.params.cnvId, req.query.dateTime,
-                   parseInt(req.query.num)], cb);
+      function (foundCnvs, fields, cb) {
+         // ! Convert CORRECTLY
+         var mySQLDate = req.query.dateTime &&
+            new Date(parseInt(req.query.dateTime));
+         console.log("prequery");
 
+         if (foundCnvs.length) {
+            if (req.query.num && req.query.dateTime)
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                  "content, ifnull(t1.numLikes, 0) as numLikes, email " +
+                  "from Message join Person on Message.prsId = Person.id " +
+                  "left join(select Message.id, count( * ) as numLikes from " +
+                  "Message join Likes on Message.id = Likes.msgId group by " +
+                  "Message.id) as t1 on t1.id = Message.id " +
+                  "where cnvId = ? and whenMade >= ? " +
+                  "order by whenMade, Message.id " +
+                  "limit ?",
+                  [req.params.cnvId, mySQLDate, parseInt(req.query.num)], cb);
             else if (req.query.num)
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email\
-                  from Message join Person on Message.prsId = Person.id where cnvId = ? order by whenMade, Message.id\
-                  limit ?", [req.params.cnvId, parseInt(req.query.num)], cb);
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                  "content, ifnull(t1.numLikes, 0) as numLikes, email " +
+                  "from Message join Person on Message.prsId = Person.id " +
+                  "left join(select Message.id, count( * ) as numLikes from " +
+                  "Message join Likes on Message.id = Likes.msgId group by " +
+                  "Message.id) as t1 on t1.id = Message.id " +
+                  "where cnvId = ? order by whenMade, Message.id " +
+                  "limit ?",
+                  [req.params.cnvId, parseInt(req.query.num)], cb);
 
             else if (req.query.dateTime)
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email\
-               from Message join Person on Message.prsId = Person.id where cnvId = ? and whenMade >= ? order by whenMade,\ Message.id", [req.params.cnvId, req.query.dateTime], cb);
+               cnn.chkQry('select Message.id, cnvId, prsId, whenMade, ' +
+                  'content, ifnull(t1.numLikes, 0) as numLikes, email ' +
+                  'from Message join Person on Message.prsId = Person.id ' +
+                  'left join(select Message.id, count( * ) as numLikes from ' +
+                  'Message join Likes on Message.id = Likes.msgId group by ' +
+                  'Message.id) as t1 on t1.id = Message.id ' +
+                  'where cnvId = ? and whenMade >= ? order by whenMade, ' +
+                  'Message.id', [req.params.cnvId, mySQLDate], cb);
+
             else
-               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, content, numLikes, email\
-               from Message join Person on Message.prsId = Person.id where cnvId = ? order by whenMade, Message.id", [req.params.cnvId], cb);
-         }else{
+               cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                  "content, ifnull(t1.numLikes, 0) as numLikes, email " +
+                  "from Message join Person on Message.prsId = Person.id " +
+                  "left join(select Message.id, count( * ) as numLikes from " +
+                  "Message join Likes on Message.id = Likes.msgId group by " +
+                  "Message.id) as t1 on t1.id = Message.id " +
+                  "where cnvId = ? order by whenMade, Message.id",
+                  [req.params.cnvId], cb);
+         } else {
             res.status(404).end();
             cb(true);
-         } 
-      }, 
+         }
+      },
 
       function(resMsg, fields, cb){
             resMsg.forEach((msg) => msg.whenMade = msg.whenMade.getTime());
@@ -280,6 +306,7 @@ router.post('/:cnvId/Msgs', function (req, res) {
    var admin = req.session && req.session.isAdmin();
    var cnn = req.cnn;
    var lengths = {'content' : 5000};
+   var lastMessageTime;
 
    async.waterfall([
       function(cb) {
@@ -295,20 +322,31 @@ router.post('/:cnvId/Msgs', function (req, res) {
             body.prsId = req.session.prsId;
             body.whenMade = new Date();
             body.numLikes = 0;
+            lastMessageTime = body.whenMade;
 
             cnn.chkQry('insert into Message set ?', [body], cb);
+            
          }else{
+            console.log("query not found");
              res.status(404).end();
              // ? is this really hackish
              cb(true);
          }
-           
       },
 
       function(result, fields, cb){
+         cnn.chkQry('update Conversation set lastMessage = ? where id = ?', [body.whenMade, body.cnvId], cb);
          res.location('/Msgs/' + result.insertId).end();
-         cb();
-      }
+      },
+
+      // function(err, fields, cb){
+      //    console.log(lastMessageTime.getTime());
+      //    console.log(body);
+         
+      //    console.log("testing");
+      //    cb();
+      // }
+
    ], 
       function (err) {
          if (!err)

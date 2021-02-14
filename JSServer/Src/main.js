@@ -48,7 +48,7 @@ app.use(cookieParser());
 //    res.end();
 // });
 
-
+console.log("hellow");
 
 // ! Set up Session on req if available
 app.use(router);
