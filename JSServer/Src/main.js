@@ -10,9 +10,6 @@ var async = require('async');
 
 var app = express();
 
-
-
-
 // // Static paths to be served like index.html and all client side js
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -48,9 +45,7 @@ app.use(cookieParser());
 //    res.end();
 // });
 
-console.log("hellow");
 
-// ! Set up Session on req if available
 app.use(router);
 
 // Check general login.  If OK, add Validator to |req| and continue processing,
