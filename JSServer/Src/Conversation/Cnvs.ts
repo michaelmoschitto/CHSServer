@@ -10,6 +10,7 @@ import { waterfall } from 'async';
 import { queryCallback, PoolConnection, MysqlError } from 'mysql';
 import { Session } from '../Session';
 import {Request, Response} from 'express-serve-static-core';
+import {Validator} from '../Validator'
 
 // import { queryCallback } from 'mysql';
 
@@ -18,7 +19,7 @@ import {Request, Response} from 'express-serve-static-core';
 export let router = Router({ caseSensitive: true });
 const baseURL = '/Cnvs';
 // const Tags = Validator.Tags
-const Tags = require('../Validator.js').Tags;
+const Tags = Validator.Tags;
 const maxTitle = 80;
 const maxContent = 5000;
 
@@ -56,31 +57,6 @@ var skipToend = {
        message: "" 
    };
 
-// interface request extends Request {
-//    validator: Validator;
-//    session: Session;
-
-//    query?: {
-//       owner?: string,
-//       dateTime?: number | string,
-//       num?: number | string
-//    };
-
-//    
-
-//    // ! cannot be any
-//    // cnn: {chkQry: (qry: string, prms: any[], cb: queryCallback) => any}
-//       cnn: PoolConnection
-// };
-
-interface response extends Response {
-   // json: (prm: any) => Promise<any>;
-};
-
-// ? how to overload anon funcs ?
-// function callback(req: request, response: Response): void;
-
-
 router.get('/', function(req: Request, res: Response) {
    var vld: Validator = req.validator;
    var cnn: PoolConnection = req.cnn;
@@ -108,7 +84,6 @@ router.get('/', function(req: Request, res: Response) {
    });
      
 });
-
 
 router.post('/', function(req: Request, res: Response) {
    var vld: Validator = req.validator;
@@ -202,7 +177,7 @@ router.put('/:cnvId', function (req: Request, res: Response) {
           [cnvId, (body as Body).title], cb);
    },
       function (sameTtl: Conversation[], fields: any, cb: queryCallback) {
-      if (vld.check(!sameTtl.length, Tags.dupTitle, cb))
+      if (vld.check(!sameTtl.length, Tags.dupTitle, null, cb))
          cnn.chkQry("update Conversation set title = ? where id = ?",
           [(body as Body).title, cnvId], cb);
    },

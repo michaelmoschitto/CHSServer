@@ -3,7 +3,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var {Session, router} = require('./Session.js');
-var Validator = require('./Validator.js');
+// var Validator = require('./Validator.js');
+import {Validator} from './Validator'
 var CnnPool = require('./CnnPool.js');
 var async = require('async');
 

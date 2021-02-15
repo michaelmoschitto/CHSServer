@@ -7,12 +7,13 @@ exports.router = void 0;
 // var async = require('async');
 const express_1 = require("express");
 const async_1 = require("async");
+const Validator_1 = require("../Validator");
 // import { queryCallback } from 'mysql';
 // router.baseURL = '/Cnvs';
 exports.router = express_1.Router({ caseSensitive: true });
 const baseURL = '/Cnvs';
 // const Tags = Validator.Tags
-const Tags = require('../Validator.js').Tags;
+const Tags = Validator_1.Validator.Tags;
 const maxTitle = 80;
 const maxContent = 5000;
 ;
@@ -25,9 +26,6 @@ var skipToend = {
     name: "",
     message: ""
 };
-;
-// ? how to overload anon funcs ?
-// function callback(req: request, response: Response): void;
 exports.router.get('/', function (req, res) {
     var vld = req.validator;
     var cnn = req.cnn;
@@ -129,7 +127,7 @@ exports.router.put('/:cnvId', function (req, res) {
                 cnn.chkQry('select * from Conversation where id <> ? && title = ?', [cnvId, body.title], cb);
         },
         function (sameTtl, fields, cb) {
-            if (vld.check(!sameTtl.length, Tags.dupTitle, cb))
+            if (vld.check(!sameTtl.length, Tags.dupTitle, null, cb))
                 cnn.chkQry("update Conversation set title = ? where id = ?", [body.title, cnvId], cb);
         },
     ], function (err) {

@@ -1,10 +1,12 @@
 var Express = require('express');
-var Tags = require('../Validator.js').Tags;
+// var Tags = require('../Validator.js').Tags;
+import {Validator}  from '../Validator'
 var {Session, router} = require('../Session.js');
 var router = Express.Router({caseSensitive: true});
 var async = require('async');
 
 router.baseURL = '/Ssns';
+const Tags = Validator.Tags;
 
 router.get('/', function(req, res) {
    console.log("Getting all sessions");

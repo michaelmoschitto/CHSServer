@@ -1,11 +1,13 @@
 var Express = require('express');
-var Tags = require('../Validator.js').Tags;
+// var Tags = require('../Validator.js').Tags;
+import { Validator } from '../Validator';
 var async = require('async');
 var mysql = require('mysql');
 var {Session} = require('../Session.js');
 
 var router = Express.Router({caseSensitive: true});
 router.baseURL = '/Prss';
+const Tags = Validator.Tags;
 
 
 // * Old Versions only for notes

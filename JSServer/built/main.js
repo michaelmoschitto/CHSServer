@@ -1,9 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var { Session, router } = require('./Session.js');
-var Validator = require('./Validator.js');
+// var Validator = require('./Validator.js');
+const Validator_1 = require("./Validator");
 var CnnPool = require('./CnnPool.js');
 var async = require('async');
 var app = express();
@@ -44,7 +47,7 @@ app.use(function (req, res, next) {
     console.log(req.method, req.path);
     if (req.session || (req.method === 'POST' &&
         (req.path === '/Prss' || req.path === '/Ssns'))) {
-        req.validator = new Validator(req, res);
+        req.validator = new Validator_1.Validator(req, res);
         // console.log(req.validator)
         next();
     }

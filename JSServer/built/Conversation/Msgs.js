@@ -1,8 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Express = require('express');
-var Tags = require('../Validator.js').Tags;
+// var Tags = require('../Validator.js').Tags;
+const Validator_1 = require("../Validator");
 var router = Express.Router({ caseSensitive: true });
 var async = require('async');
 router.baseURL = '/Msgs';
+const Tags = Validator_1.Validator.Tags;
 router.get('/:msgId', function (req, res) {
     var vld = req.validator; // Shorthands
     var body = req.body;

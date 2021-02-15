@@ -1,9 +1,11 @@
 var Express = require('express');
-var Tags = require('../Validator.js').Tags;
+// var Tags = require('../Validator.js').Tags;
+import {Validator} from '../Validator'
 var router = Express.Router({caseSensitive: true});
 var async = require('async');
 
 router.baseURL = '/Msgs';
+const Tags = Validator.Tags;
 
 
 router.get('/:msgId', function(req, res){
