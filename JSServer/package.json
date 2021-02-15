@@ -7,7 +7,7 @@
     "@types/async": "^3.2.3",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.7",
-    "@types/mysql": "^2.15.15",
+    "@types/mysql": "^2.15.17",
     "async": "^3.2.0",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
@@ -16,15 +16,11 @@
   },
   "devDependencies": {},
   "scripts": {
-    "Ex1": "node ServerEx1.js",
-    "Ex2": "node ServerEx2.js"
+    "start": "node /Users/MichaelMoschitto/Desktop/Project2/JSServer/built/main.js",
+    "debug": "nodemon --inspect /Users/MichaelMoschitto/Desktop/Project2/JSServer/built/main.js"
   },
   "author": [
     "Johnathan Nicholson",
     "Clinton Staley"
-  ],
-  "scripts": {
-    "start": "node /Users/MichaelMoschitto/Desktop/Project2/JSServer/Src/main.js",
-    "debug": "nodemon --inspect /Users/MichaelMoschitto/Desktop/Project2/JSServer/Src/main.js"
-  }
+  ]
 }
