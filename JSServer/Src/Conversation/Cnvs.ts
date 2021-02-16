@@ -43,16 +43,13 @@ interface Message {
    content: string
 };
 
-
-
-
-var skipToend = {
+const skipToend = {
        code: "", 
        errno: 0, 
        fatal: true, 
        name: "", 
        message: "" 
-   };
+};
 
 router.get('/', function(req: Request, res: Response) {
    var vld: Validator = req.validator;

@@ -1,18 +1,28 @@
-"use strict";
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
-var Express = require('express');
-// var Tags = require('../Validator.js').Tags;
+exports.router = void 0;
+const express_1 = require("express");
 const Validator_1 = require("../Validator");
-var router = Express.Router({ caseSensitive: true });
-var async = require('async');
-router.baseURL = '/Msgs';
+const async_1 = require("async");
+// import { Session } from '../Session';
+exports.router = express_1.Router({ caseSensitive: true });
+const baseURL = '/Msgs';
 const Tags = Validator_1.Validator.Tags;
-router.get('/:msgId', function (req, res) {
-    var vld = req.validator; // Shorthands
+;
+;
+const skipToend = {
+    code: "",
+    errno: 0,
+    fatal: true,
+    name: "",
+    message: ""
+};
+exports.router.get('/:msgId', function (req, res) {
+    const vld = req.validator; // Shorthands
     var body = req.body;
-    var admin = req.session && req.session.isAdmin();
-    var cnn = req.cnn;
-    async.waterfall([
+    const admin = req.session && req.session.isAdmin();
+    const cnn = req.cnn;
+    async_1.waterfall([
         function (cb) {
             if (req.session)
                 cnn.chkQry('select cnvId, prsId, whenMade,' +
@@ -30,7 +40,7 @@ router.get('/:msgId', function (req, res) {
             }
             else
                 res.status(404).end();
-            cb();
+            cb(null);
         }
     ], (err) => {
         if (!err)
@@ -38,11 +48,11 @@ router.get('/:msgId', function (req, res) {
         cnn.release();
     });
 });
-router.get('/:msgId/Likes', function (req, res) {
-    var vld = req.validator;
+exports.router.get('/:msgId/Likes', function (req, res) {
+    const vld = req.validator;
     var body = req.body;
-    var cnn = req.cnn;
-    async.waterfall([
+    const cnn = req.cnn;
+    async_1.waterfall([
         function (cb) {
             cnn.chkQry("select * from Message where id = ?", [req.params.msgId], cb);
         },
@@ -59,13 +69,12 @@ router.get('/:msgId/Likes', function (req, res) {
             }
             else {
                 res.status(404).end();
-                cb(true);
+                cb(skipToend);
             }
         },
         function (result, fields, cb) {
-            // resMsg.forEach((msg) => msg.whenMade = msg.whenMade.getTime());
             res.json(result);
-            cb();
+            cb(null);
         }
     ], (err) => {
         if (!err)
@@ -73,13 +82,13 @@ router.get('/:msgId/Likes', function (req, res) {
         cnn.release();
     });
 });
-router.post('/:msgId/Likes', function (req, res) {
-    var vld = req.validator;
+exports.router.post('/:msgId/Likes', function (req, res) {
+    const vld = req.validator;
     var body = req.body;
-    var cnn = req.cnn;
+    const cnn = req.cnn;
     var cnvsId;
     var locId;
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             cnn.chkQry("select * from Message where id = ?", [req.params.msgId], cb);
         },
@@ -90,16 +99,19 @@ router.post('/:msgId/Likes', function (req, res) {
             }
             else {
                 res.status(404).end();
-                cb(true);
+                cb(skipToend);
             }
         },
         function (foundLike, fields, cb) {
-            if (vld.check(!foundLike.length, Tags.dupLike, null)) {
-                var content = { "msgId": req.params.msgId, "prsId": req.session.prsId };
+            if (vld.check(!foundLike.length, Tags.dupLike, null, null)) {
+                var content = {
+                    "msgId": req.params.msgId,
+                    "prsId": req.session.prsId
+                };
                 cnn.chkQry("insert into Likes set ?", [content], cb);
             }
             else
-                cb(true);
+                cb(skipToend);
         },
         function (result, fields, cb) {
             if (result.affectedRows > 0) {
@@ -109,12 +121,13 @@ router.post('/:msgId/Likes', function (req, res) {
                     "where id = ?", [req.params.msgId], cb);
             }
             else {
-                cb(true);
+                cb(skipToend);
             }
         },
         function (result, fields, cb) {
-            res.location(router.baseURL + '/' + req.params.msgId + '/Likes/' + locId).end();
-            cb();
+            res.location(baseURL + '/' + req.params.msgId +
+                '/Likes/' + locId).end();
+            cb(null);
         }
     ], (err) => {
         if (!err)
@@ -122,4 +135,4 @@ router.post('/:msgId/Likes', function (req, res) {
         cnn.release();
     });
 });
-module.exports = router;
+module.exports = exports.router;
