@@ -1,3 +1,5 @@
+'use strict'
+
 var mysql = require('mysql');
 
 // Constructor for DB connection pool

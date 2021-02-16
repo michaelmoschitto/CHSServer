@@ -8,7 +8,7 @@
 import { Router } from 'express';
 import { waterfall } from 'async';
 import { queryCallback, PoolConnection, MysqlError } from 'mysql';
-import { Session } from '../Session';
+// import { Session } from '../Session';
 import {Request, Response, Body} from 'express-serve-static-core';
 import {Validator} from '../Validator'
 
