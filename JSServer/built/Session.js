@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 // This middleware assumes cookieParser has been "used" before this
 var crypto = require('crypto');
 var ssnsByCookie = {}; // All currently logged-in Sessions indexed by token
@@ -15,6 +17,13 @@ var cookieName = 'CHSAuth'; // Cookie key for authentication tokens
 // 1 Cookie is tagged by |cookieName|, times out on the client side after
 // |duration| (though the router, below, will check anyway to prevent hacking),
 // and will not be shown by the browser to the user, again to prevent hacking.
+// type user = {
+//    id: number;
+//    firstName: string;
+//    lastName: string;
+//    email: string;
+//    role: number;
+// };
 var Session = function (user, res) {
     var authToken = crypto.randomBytes(16).toString('hex'); // Make random token
     res.cookie(cookieName, authToken, { maxAge: duration, httpOnly: true }); // 1

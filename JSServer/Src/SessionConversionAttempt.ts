@@ -1,6 +1,6 @@
 // This middleware assumes cookieParser has been "used" before this
-var crypto = require('crypto');
-// import {randomBytes} from 'crypto';
+// var crypto = require('crypto');
+import {randomBytes} from 'crypto';
 import {Response, Request} from 'express';
 
 var ssnsByCookie = {};  // All currently logged-in Sessions indexed by token
@@ -20,58 +20,82 @@ var cookieName = 'CHSAuth'; // Cookie key for authentication tokens
 // |duration| (though the router, below, will check anyway to prevent hacking),
 // and will not be shown by the browser to the user, again to prevent hacking.
 
-// type user = {
-//    id: number;
-//    firstName: string;
-//    lastName: string;
-//    email: string;
-//    role: number;
-// };
-
-var Session = function(user, res) {
-   var authToken = crypto.randomBytes(16).toString('hex');  // Make random token
-
-   res.cookie(cookieName, authToken, {maxAge: duration, httpOnly: true }); // 1
-   ssnsByCookie[authToken] = this;
-   ssnsById.push(this);
-
-   this.id = ssnsById.length - 1;
-   this.authToken = authToken;
-   this.prsId = user.id;
-   this.firstName = user.firstName;
-   this.lastName = user.lastName;
-   this.email = user.email;
-   this.role = user.role;
-   this.loginTime = this.lastUsed = new Date().getTime();
+type user = {
+   id: number;
+   firstName: string;
+   lastName: string;
+   email: string;
+   role: number;
 };
 
-//   WHY DOESNT THIS WORK?
-// Session.logoutAll = function () {
-//    console.log("alive!");
-//    this.ssnsById = [];
-//    this.ssnsByCookie = [];
-//    this.ssnsById.push('100');
-// };
+export class Session {
+   // All currently logged-in Sessions indexed by token
+   private static ssnsByCookie: { [key: string]: Session } = {};
 
-Session.prototype.isAdmin = function() {
-   return this.role === 1;
-};
+   // Sessions by sequential session ID
+   private static ssnsById: Session[] = [];
 
-Session.logoutAll = () => {
-   ssnsById = [];
-   ssnsByCookie = [];
-};
+   static readonly duration = 7200000;     // Two hours in milliseconds
+   static readonly cookieName = 'CHSAuth'; // Cookie key for auth tokens
 
-// Log out a user by removing this Session
-Session.prototype.logOut = function(id) {
-   var ssn = ssnsById[id];
-   var cki = ssn.authToken;
-   // * not going to always log out curent ssn (admin logging out user)
-   delete ssnsById[id];
-   delete ssnsByCookie[cki];
-   console.log("test");
-};
+   static findById = (id: number | string) => Session.ssnsById[id as number];
+   static getAllIds = () => Object.keys(Session.ssnsById);
 
+   static resetAll = () => {
+      Session.ssnsById = [];
+      Session.ssnsByCookie = {};
+   }
+
+   id: number;         // ID of session
+   prsId: number;      // ID of person logged in
+   authToken: string;
+   firstName: string;
+   lastName: string;
+   email: string;
+   role: number;
+   lastUsed: number;
+   loginTime: number;
+
+   constructor(user: user, res: Response) {
+      let authToken = randomBytes(16).toString('hex');  // Make random token
+
+      res.cookie(Session.cookieName, authToken,
+         { maxAge: Session.duration, httpOnly: true }); // 1
+      Session.ssnsByCookie[authToken] = this;
+      Session.ssnsById.push(this);
+
+      this.id = Session.ssnsById.length - 1;
+      this.authToken = authToken;
+      this.prsId = user.id;
+      this.firstName = user.firstName;
+      this.lastName = user.lastName;
+      this.email = user.email;
+      this.role = user.role;
+      this.loginTime = this.lastUsed = new Date().getTime();
+   };
+
+   
+   
+   isAdmin = () => {
+      return this.role === 1;
+   };
+   
+   logoutAll = () => {
+      ssnsById = [];
+      ssnsByCookie = [];
+   };
+
+   // Log out a user by removing this Session
+   logOut = (id: number) => {
+      var ssn: Session = Session.ssnsById[id];
+      var cki: string  = ssn.authToken;
+      // * not going to always log out curent ssn (admin logging out user)
+      delete Session.ssnsById[id];
+      delete Session.ssnsByCookie[cki];
+      console.log("test");
+   };
+   
+}; //End of class Paren
 Session.removeAllSessions = (id) => {
    id = parseInt(id);
 
