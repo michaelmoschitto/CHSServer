@@ -1,17 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
 var Express = require('express');
 // var Tags = require('../Validator.js').Tags;
 const Validator_1 = require("../Validator");
 var async = require('async');
 var mysql = require('mysql');
 var { Session } = require('../Session.js');
-var router = Express.Router({ caseSensitive: true });
-router.baseURL = '/Prss';
+const express_1 = require("express");
+exports.router = express_1.Router({ caseSensitive: true });
+const baseURL = '/Prss';
 const Tags = Validator_1.Validator.Tags;
+;
+;
 // * Old Versions only for notes
 //.../Prss?email=cstaley
-// router.get('/', function(req, res) {
+// router.get('/', function(req: Request, res: Response) {
 //    var email = req.session.isAdmin() && req.query.email ||
 // / !req.session.isAdmin() && req.session.email;
 //    var cnnConfig = {
@@ -45,7 +49,7 @@ const Tags = Validator_1.Validator.Tags;
 //       });
 // });
 // // Non-waterfall, non-validator, non-db automation version
-// router.post('/', function(req, res) {
+// router.post('/', function(req: Request, res: Response) {
 //    var body = req.body;
 //    var admin = req.session && req.session.isAdmin();
 //    var errorList = [];
@@ -110,52 +114,46 @@ const Tags = Validator_1.Validator.Tags;
 // * End old
 /* Much nicer versions
 */
-router.get('/', function (req, res) {
-    console.log("Get all Sessions");
+exports.router.get('/', function (req, res) {
     var email = req.session.isAdmin() && req.query.email ||
         !req.session.isAdmin() && req.session.email;
     var handler = function (err, prsArr, fields) {
-        console.log(email);
-        console.log(prsArr);
-        // TODO: THERE HAS GOT TO BE A BETTER WAY TO DO THIS
-        // * currently solves "Get all people Non Admin Suffix Not Ok"
         if (req.query.email &&
             prsArr[0] &&
             prsArr[0]['email'] &&
-            !prsArr[0]['email'].split('@')[0].includes(req.query.email) &&
+            !prsArr[0]['email'].split('@')[0]
+                .includes((req.query.email)) &&
             prsArr[0]['email'] !== req.query.email)
             res.json([]);
         else
             res.json(prsArr);
         req.cnn.release();
     };
-    // It would be smart to make email keyed,
-    // if already add key to email, say CSC, then it can sort much faster
     if (email)
-        //todo: cant use % sign 
         req.cnn.chkQry("select id, email from Person where email like ?", ['%' + email + '%'], handler);
     else
         req.cnn.chkQry('select id, email from Person', null, handler);
 });
-router.post('/', function (req, res) {
-    var vld = req.validator; // Shorthands
+exports.router.post('/', function (req, res) {
+    const vld = req.validator; // Shorthands
     var body = req.body;
-    var admin = req.session && req.session.isAdmin();
-    var cnn = req.cnn;
+    const admin = req.session && req.session.isAdmin();
+    const cnn = req.cnn;
     if (admin && !body.password)
         body.password = "*"; // Blocking password
     body.whenRegistered = new Date();
-    var lengths = {
+    const lengths = {
         'firstName': 30,
         'lastName': 50,
         'password': 50,
         'oldPassword': 50,
         'email': 150
     };
+    const fields = ["email", "password", "role", "lastName"];
     async.waterfall([
         function (cb) {
             console.log(body);
-            if (vld.hasFields(body, ["email", "password", "role", "lastName"], cb) &&
+            if (vld.hasFields(body, fields, cb) &&
                 vld.chain(body.email.length > 0, Tags.missingField, ['email'])
                     .chain(body.lastName.length > 0, Tags.missingField, ['lastName'])
                     .chain(body.termsAccepted || admin, Tags.noTerms)
@@ -164,8 +162,7 @@ router.post('/', function (req, res) {
                     .chain(body.role === 0 || admin, Tags.forbiddenRole)
                     .check(body.role <= 1 && body.role >= 0, Tags.badValue, ["role"], cb) &&
                 vld.checkFieldLengths(body, lengths, cb)) {
-                console.log(vld.errors);
-                cnn.chkQry('select * from Person where email = ?', body.email, cb);
+                cnn.chkQry('select * from Person where email = ?', [body.email], cb);
             }
         },
         function (existingPrss, fields, cb) {
@@ -175,40 +172,42 @@ router.post('/', function (req, res) {
             }
         },
         function (result, fields, cb) {
-            res.location(router.baseURL + '/' + result.insertId).end();
-            cb();
+            res.location(baseURL + '/' + result.insertId).end();
+            cb(null);
         }
     ], function (err) {
         cnn.release();
     });
 });
-// });
-// * THIS WAS DONE IN CLASS
-router.put('/:id', function (req, res) {
-    var vld = req.validator;
-    var ssn = req.session;
+exports.router.put('/:id', function (req, res) {
+    const vld = req.validator;
+    const ssn = req.session;
     var body = req.body;
-    var cnn = req.cnn;
-    //todo: swamp if do need to check for password
-    // var okFields = ['firstName', 'lastName', 'password', 'role']
-    var okFields = ['firstName', 'lastName', 'password', 'oldPassword', 'role'];
-    var lengths = {
+    const cnn = req.cnn;
+    const fields = [
+        'firstName',
+        'lastName',
+        'password',
+        'oldPassword',
+        'role'
+    ];
+    const lengths = {
         'firstName': 30,
         'lastName': 50,
         'password': 50,
         'oldPassword': 50
     };
     async.waterfall([
-        cb => {
+        function (cb) {
             // zero or more of fn, ln, pswd, role
-            if (vld.checkPrsOK(req.params.id, cb) && vld.hasOnlyFields(body, okFields, cb) &&
+            if (vld.checkPrsOK(req.params.id, cb) && vld.hasOnlyFields(body, fields, cb) &&
                 vld.checkFieldLengths(body, lengths, cb) && // person in question or admin
                 vld.chain((!("role" in req.body) || req.body.role == '0') || ssn.isAdmin(), Tags.badValue, ["role"])
                     .chain(!('password' in body) || req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd) // s
                     .check(!('password' in body) || req.body.password, Tags.badValue, ['password'], cb))
                 cnn.chkQry("select * from Person where id = ?", [req.params.id], cb);
         },
-        (foundPrs, fields, cb) => {
+        function (foundPrs, fields, cb) {
             if (vld.check(foundPrs.length, Tags.notFound, null, cb) &&
                 vld.check(ssn.isAdmin() || !('password' in body)
                     || req.body.oldPassword === foundPrs[0].password, Tags.oldPwdMismatch, null, cb)) {
@@ -217,18 +216,17 @@ router.put('/:id', function (req, res) {
             }
         },
         // updatedResult, fields?, final callback
-        (updRes, fields, cb) => {
+        function (updRes, fields, cb) {
             res.end();
-            cb();
+            cb(null);
         }
-    ], err => {
+    ], (err) => {
         cnn.release();
     });
 });
-router.get('/:id', function (req, res) {
+exports.router.get('/:id', function (req, res) {
+    console.log("getting Prs by id");
     var vld = req.validator;
-    console.log("Getting Person by Id");
-    //    return false;
     async.waterfall([
         function (cb) {
             if (vld.checkPrsOK(req.params.id, cb))
@@ -237,18 +235,18 @@ router.get('/:id', function (req, res) {
         function (prsArr, fields, cb) {
             if (vld.check(prsArr.length, Tags.notFound, null, cb)) {
                 delete prsArr[0].password;
-                //DB time -> ms since epoch
-                prsArr[0].whenRegistered = prsArr[0].whenRegistered.getTime();
+                prsArr[0].whenRegistered =
+                    prsArr[0].whenRegistered.getTime();
                 res.json(prsArr);
-                cb();
+                cb(null);
             }
         }
-    ], err => {
+    ], (err) => {
         req.cnn.release();
     });
 });
 /*
-router.get('/:id', function(req, res) {
+router.get('/:id', function(req: Request, res: Response) {
    var vld = req.validator;
 
    if (vld.checkPrsOK(req.params.id)) {
@@ -264,8 +262,7 @@ router.get('/:id', function(req, res) {
    }
 });
 */
-//TODO: delete all Cnvs and Msgs owned by person 
-router.delete('/:id', function (req, res) {
+exports.router.delete('/:id', function (req, res) {
     var vld = req.validator;
     async.waterfall([
         function (cb) {
@@ -277,15 +274,15 @@ router.delete('/:id', function (req, res) {
         function (result, fields, cb) {
             if (vld.check(result.affectedRows, Tags.notFound, null, cb)) {
                 res.end();
-                cb();
+                cb(null);
             }
         }
     ], function (err) {
         req.cnn.release();
     });
 });
-router.get('/:prsId/Msgs', function (req, res) {
-    var vld = req.validator; // Shorthands
+exports.router.get('/:prsId/Msgs', function (req, res) {
+    var vld = req.validator;
     var body = req.body;
     var admin = req.session && req.session.isAdmin();
     var cnn = req.cnn;
@@ -319,30 +316,30 @@ router.get('/:prsId/Msgs', function (req, res) {
                         "where prsId = ? " +
                         "limit ?", [req.params.prsId, parseInt(req.query.num)], cb);
                 else if (orderBy)
-                    cnn.chkQry(`select Message.id, cnvId, whenMade,\
-                email, content, ifnull(t1.numLikes, 0) as numLikes\
-                from Person join Message on Person.id = prsId \
-                left join(select Message.id, count( * ) as numLikes\ 
-                from Message join Likes on Message.id = Likes.msgId\ 
-                group by Message.id) as t1\
-                on t1.id = Message.id\
-                where prsId = ?\
-                order by ${orderBy} desc`, [req.params.prsId], cb);
+                    cnn.chkQry("select Message.id, cnvId, whenMade, " +
+                        "email, content, ifnull(t1.numLikes, 0) as numLikes " +
+                        "from Person join Message on Person.id = prsId " +
+                        "left join(select Message.id, count( * ) as numLikes " +
+                        "from Message join Likes on Message.id = Likes.msgId " +
+                        "group by Message.id) as t1 " +
+                        "on t1.id = Message.id " +
+                        "where prsId = ? " +
+                        `order by ${orderBy} desc`, [req.params.prsId], cb);
                 else
-                    cnn.chkQry("select Message.id, cnvId, whenMade,\
-               email, content, ifnull(t1.numLikes, 0) as numLikes\
-               from Person join Message on Person.id = prsId\
-               left join(select Message.id, count( * ) as numLikes \
-               from Message join Likes on Message.id = Likes.msgId \
-               group by Message.id) as t1\
-               on t1.id = Message.id \
-               where prsId = ?", [req.params.prsId], cb);
+                    cnn.chkQry("select Message.id, cnvId, whenMade, " +
+                        "email, content, ifnull(t1.numLikes, 0) as numLikes " +
+                        "from Person join Message on Person.id = prsId " +
+                        "left join(select Message.id, count( * ) as numLikes " +
+                        "from Message join Likes on Message.id = Likes.msgId " +
+                        "group by Message.id) as t1 " +
+                        "on t1.id = Message.id " +
+                        "where prsId = ?", [req.params.prsId], cb);
             }
         },
         function (resMsg, fields, cb) {
             resMsg.forEach((msg) => msg.whenMade = msg.whenMade.getTime());
             res.json(resMsg);
-            cb();
+            cb(null);
         }
     ], (err) => {
         if (!err)
@@ -350,4 +347,4 @@ router.get('/:prsId/Msgs', function (req, res) {
         cnn.release();
     });
 });
-module.exports = router;
+module.exports = exports.router;

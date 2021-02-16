@@ -13,6 +13,11 @@ interface Lengths {
    title?: number;
 }
 
+interface Error{
+   tag: string; 
+   params?: string[];
+};
+
 export class Validator{
 
    static Tags = {
@@ -33,7 +38,7 @@ export class Validator{
       dupLike: "dupLike"
    };
 
-   private errors: any;
+   private errors: Error[];
    private session: typeof Session;
    private res: Response;
 
@@ -90,21 +95,21 @@ check = (test: boolean | number, tag: string,
    
    // Somewhat like |check|, but designed to allow several chained checks
    // in a row, finalized by a check call.
-   chain = (test: boolean | number, tag: string, params?: any) => {
+   chain = (test: boolean | number | string | Date, tag: string, params?: any) => {
       if (!test) {
          this.errors.push({tag: tag, params: params});
       }
       return this;
    };
    
-   checkAdmin = (cb: queryCallback) => {
+   checkAdmin = (cb?: queryCallback) => {
       return this.check(this.session && this.session.isAdmin(),
       Validator.Tags.noPermission, null, cb);
    };
    
    // Validate that AU is the specified person or is an admin
    // * CORRECT
-   checkPrsOK = (prsId: number, cb: queryCallback) => {
+   checkPrsOK = (prsId: number | string, cb: queryCallback) => {
       if(typeof(prsId) === 'string')
       prsId = parseInt(prsId);
       
@@ -168,6 +173,8 @@ check = (test: boolean | number, tag: string,
             return this.check(true, null, null, cb);
             
          };
+
+         getErrors = (): Error[] => {return this.errors};
 
 } //class closing brace
          

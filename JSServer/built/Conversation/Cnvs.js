@@ -18,7 +18,6 @@ const maxTitle = 80;
 const maxContent = 5000;
 ;
 ;
-;
 var skipToend = {
     code: "",
     errno: 0,

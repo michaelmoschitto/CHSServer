@@ -24,6 +24,19 @@ declare module 'express-serve-static-core' {
    //    params?: { cnvId: number };
    // }
    }
+
+   interface Body extends ReadableStream<Uint8Array> {
+      ownerId?: number;
+      title?: string;
+      password?: string;
+      whenRegistered?: Date;
+      email?: string;
+      lastName?: string;
+      termsAccepted?: string | Date | number;
+      role?: number;
+      
+
+   }
 }
 
 

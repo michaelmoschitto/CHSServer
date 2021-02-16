@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Validator = void 0;
 var { Session, } = require('./Session.js');
+;
 class Validator {
     // check(test: string | number, tag: string, params: any, cb: queryCallback)
     //  => number;
@@ -104,6 +105,7 @@ class Validator {
             });
             return this.check(true, null, null, cb);
         };
+        this.getErrors = () => { return this.errors; };
         this.errors = []; // Array of error objects having tag and params
         this.session = req.session;
         this.res = res;

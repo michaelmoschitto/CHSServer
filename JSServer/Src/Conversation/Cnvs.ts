@@ -9,7 +9,7 @@ import { Router } from 'express';
 import { waterfall } from 'async';
 import { queryCallback, PoolConnection, MysqlError } from 'mysql';
 import { Session } from '../Session';
-import {Request, Response} from 'express-serve-static-core';
+import {Request, Response, Body} from 'express-serve-static-core';
 import {Validator} from '../Validator'
 
 // import { queryCallback } from 'mysql';
@@ -44,10 +44,7 @@ interface Message {
 };
 
 
-interface Body extends ReadableStream < Uint8Array >{
-   ownerId?: number,
-   title?: string
-};
+
 
 var skipToend = {
        code: "", 
