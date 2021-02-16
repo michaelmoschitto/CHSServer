@@ -25,7 +25,7 @@ interface poolConfig{
    password?: string;
 };
 
-export let router = Router({ caseSensitive: true });
+// export let router = Router({ caseSensitive: true });
 
 export class CnnPool{
    // NOTE: Do *not* change this pool size.  It is required to be 1 in order
@@ -76,4 +76,4 @@ export class CnnPool{
    };
 } //class closing brace
 
-module.exports = CnnPool;
+// module.exports = CnnPool;

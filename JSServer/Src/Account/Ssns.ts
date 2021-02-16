@@ -1,14 +1,16 @@
-var Express = require('express');
+import { Router } from 'express';
 // var Tags = require('../Validator.js').Tags;
 import {Validator}  from '../Validator'
 var {Session, router} = require('../Session.js');
-var router = Express.Router({caseSensitive: true});
 var async = require('async');
 
-router.baseURL = '/Ssns';
+
+export let SsnRouter = Router({ caseSensitive: true });
+
+const baseURL = '/Ssns';
 const Tags = Validator.Tags;
 
-router.get('/', function(req, res) {
+SsnRouter.get('/', function(req, res) {
    console.log("Getting all sessions");
    var body = [], ssn;
 
@@ -26,7 +28,7 @@ router.get('/', function(req, res) {
 
 });
 
-router.post('/', function(req, res) {
+SsnRouter.post('/', function(req, res) {
 
    var ssn;
    var cnn = req.cnn;
@@ -37,13 +39,13 @@ router.post('/', function(req, res) {
        req.body.password, Tags.badLogin)) {
          ssn = new Session(result[0], res);
          req.session = ssn;
-         res.location(router.baseURL + '/' + ssn.id).end();
+         res.location(baseURL + '/' + ssn.id).end();
       }
       cnn.release();
    });
 });
 
-router.delete('/:id', function(req, res) {
+SsnRouter.delete('/:id', function(req, res) {
    var vld = req.validator;
    
    var prsId = Session.findById(req.params.id) && 
@@ -63,7 +65,7 @@ router.delete('/:id', function(req, res) {
 
 });
 
-router.get('/:id', function(req, res) {
+SsnRouter.get('/:id', function(req, res) {
    var vld = req.validator;
    console.log(req.params)
    var ssn = Session.findById(req.params.id);
@@ -78,4 +80,4 @@ router.get('/:id', function(req, res) {
    req.cnn.release();
 });
 
-module.exports = router;
+// module.exports = SsnRouter;

@@ -263,4 +263,3 @@ exports.router.post('/:cnvId/Msgs', function (req, res) {
         cnn.release();
     });
 });
-module.exports = exports.router;

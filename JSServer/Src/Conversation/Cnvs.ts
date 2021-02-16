@@ -342,5 +342,3 @@ router.post('/:cnvId/Msgs', function(req: Request, res) {
       });
 });
 
-
-module.exports = router;

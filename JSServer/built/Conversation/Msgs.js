@@ -135,4 +135,3 @@ exports.router.post('/:msgId/Likes', function (req, res) {
         cnn.release();
     });
 });
-module.exports = exports.router;

@@ -3,12 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CnnPool = exports.router = void 0;
+exports.CnnPool = void 0;
 const mysql_1 = require("mysql");
 const connection_json_1 = __importDefault(require("./connection.json"));
-const express_1 = require("express");
 ;
-exports.router = express_1.Router({ caseSensitive: true });
+// export let router = Router({ caseSensitive: true });
 class CnnPool {
     constructor() {
         this.poolCfg = connection_json_1.default;
@@ -50,4 +49,4 @@ CnnPool.router = (req, res, next) => {
         }
     });
 };
-module.exports = CnnPool;
+// module.exports = CnnPool;

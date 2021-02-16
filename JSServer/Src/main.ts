@@ -1,32 +1,43 @@
 'use strict'
+// var express = require('express');
+import express, { NextFunction } from 'express'
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import {Validator} from './Validator'
+import {CnnPool} from './CnnPool'
+import {series} from 'async'
+import {Request, Response, Application} from 'express-serve-static-core';
+import { queryCallback } from 'mysql';
+import {router as PrsRouter} from './Account/Prss'
+import {router as CnvsRouter} from './Conversation/Cnvs'
+import {SsnRouter as SsnRouter} from './Account/Ssns'
+import {router as MsgsRouter} from './Conversation/Msgs'
 
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+// var path = require('path');
+// var cookieParser = require('cookie-parser');
+// var bodyParser = require('body-parser');
 var {Session, router} = require('./Session.js');
 // var Validator = require('./Validator.js');
-import {Validator} from './Validator'
-var CnnPool = require('./CnnPool.js');
-var async = require('async');
+// var CnnPool = require('./CnnPool.js');
+// var async = require('async');
 
+var app: Application = express();
 
-var app = express();
-
-// // Static paths to be served like index.html and all client side js
+// Static paths to be served like index.html and all client side js
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Partially complete handler for CORS.
-app.use(function(req, res, next) {
+app.use(function(req: Request, res: Response, next: NextFunction) {
    console.log("Handling " + req.path + '/' + req.method);
    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-   res.header("Access-Control-Allow-Credentials", true);
+   res.header("Access-Control-Allow-Credentials", "true");
    res.header("Access-Control-Allow-Headers", "Content-Type");
    next();
 });
 
 // No further processing needed for options calls.
-app.options("/*", function(req, res) {
+app.options("/*", function(req: Request, res: Response) {
    res.status(200).end();
 });
 
@@ -34,16 +45,18 @@ app.options("/*", function(req, res) {
 app.use(bodyParser.json());
 
 // No messing w/db ids
-app.use(function(req, res, next) {delete req.body.id; next();});
+app.use(function(req: Request, res: Response, next: NextFunction) {
+   delete req.body.id; next();
+});
 
 // Parse cookie header, and attach cookies to req as req.cookies.<cookieName>
 app.use(cookieParser());
 
 // TEST VALIDATOR FUNCTIONS
-// app.use((req, res) => {
+// app.use((req: Request, res: Response) => {
 //    console.log(req);
 //    console.log("got to test method");
-//    vld = new Validator(req, res);
+//    vld = new Validator(req: Request, res: Response);
 //    console.log(vld.checkFieldLengths(req.body, {'email' : 60, 'password' : 60}, () => true))
 //    res.end();
 // });
@@ -53,8 +66,7 @@ app.use(router);
 
 // Check general login.  If OK, add Validator to |req| and continue processing,
 // otherwise respond immediately with 401 and noLogin error tag.
-// THIS IS MOST LIKELY IN THE WRONG PLACE, 401 BEFORE 404 CHECKED
-app.use(function(req, res, next) {
+app.use(function(req: Request, res: Response, next: NextFunction) {
    console.log(req.path);
    console.log(req.method, req.path);
    if (req.session || (req.method === 'POST' &&
@@ -70,22 +82,20 @@ app.use(function(req, res, next) {
 app.use(CnnPool.router);
 
 // Load all subroutes
-app.use('/Prss', require('./Account/Prss.js'));
-app.use('/Ssns', require('./Account/Ssns.js'));
-app.use('/Cnvs', require('./Conversation/Cnvs.js'));
-app.use('/Msgs', require('./Conversation/Msgs.js'));
+app.use('/Prss', PrsRouter);
+app.use('/Ssns', SsnRouter);
+app.use('/Cnvs', CnvsRouter);
+app.use('/Msgs', MsgsRouter);
 
 
 // Special debugging route for /DB DELETE.  Clears all table contents,
 //resets all auto_increment keys to start at 1, and reinserts one admin user.
-app.delete('/DB', function(req, res) {
-   console.log(Session.getAllIds());
+app.delete('/DB', function(req: Request, res: Response) {
 
    Session.logoutAll();
    // Callbacks to clear tables
-   console.log(Session.getAllIds());
    var cbs = ["Message", "Conversation", "Person", "Likes"].map(
-      table => function(cb) {
+      table => function(cb: queryCallback) {
          req.cnn.query("delete from " + table, cb);
       }
    );
@@ -105,15 +115,15 @@ app.delete('/DB', function(req, res) {
    });
 
    // Callback to clear sessions, release connection and return result
-   cbs.push(cb => {
-      Session.getAllIds().forEach(id => {
+   cbs.push((cb: queryCallback) => {
+      Session.getAllIds().forEach((id: number) => {
          Session.findById(id).logOut();
          console.log("Clearing " + id);
       });
-      cb();
+      cb(null);
    });
 
-   async.series(cbs, err => {
+   series(cbs, err => {
       req.cnn.release();
       if (err)
          res.status(400).json(err);
@@ -164,13 +174,13 @@ app.delete('/DB', function(req, res) {
 });
 
 // Anchor handler for general 404 cases.
-app.use(function(req, res) {
+app.use(function(req: Request, res: Response) {
    res.status(404).end();
    res.cnn.release();
 });
 
 // Handler of last resort.  Send a 500 response with stacktrace as the body.
-app.use(function(err, req, res, next) {
+app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
    res.status(500).json(err.stack);
    req.cnn && req.cnn.release();
 });

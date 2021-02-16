@@ -1,4 +1,3 @@
-var Express = require('express');
 // var Tags = require('../Validator.js').Tags;
 import { Validator } from '../Validator';
 var async = require('async');
@@ -442,4 +441,4 @@ router.get('/:prsId/Msgs', function(req: Request, res: Response){
    });
 });
 
-module.exports = router;
+// module.exports = router;

@@ -25,6 +25,10 @@ declare module 'express-serve-static-core' {
    // }
    }
 
+   export interface Response {
+      cnn?: PoolConnection;
+   }
+
    interface Body extends ReadableStream<Uint8Array> {
       ownerId?: number;
       title?: string;

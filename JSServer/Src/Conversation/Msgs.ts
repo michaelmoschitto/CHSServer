@@ -180,5 +180,3 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
       });
 });
 
-module.exports = router;
-

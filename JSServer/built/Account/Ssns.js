@@ -1,14 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Express = require('express');
+exports.SsnRouter = void 0;
+const express_1 = require("express");
 // var Tags = require('../Validator.js').Tags;
 const Validator_1 = require("../Validator");
 var { Session, router } = require('../Session.js');
-var router = Express.Router({ caseSensitive: true });
 var async = require('async');
-router.baseURL = '/Ssns';
+exports.SsnRouter = express_1.Router({ caseSensitive: true });
+const baseURL = '/Ssns';
 const Tags = Validator_1.Validator.Tags;
-router.get('/', function (req, res) {
+exports.SsnRouter.get('/', function (req, res) {
     console.log("Getting all sessions");
     var body = [], ssn;
     if (req.validator.checkAdmin()) {
@@ -23,7 +24,7 @@ router.get('/', function (req, res) {
     // * IMPORTANT
     req.cnn.release();
 });
-router.post('/', function (req, res) {
+exports.SsnRouter.post('/', function (req, res) {
     var ssn;
     var cnn = req.cnn;
     // console.log(cnn.chkQry);
@@ -32,12 +33,12 @@ router.post('/', function (req, res) {
             req.body.password, Tags.badLogin)) {
             ssn = new Session(result[0], res);
             req.session = ssn;
-            res.location(router.baseURL + '/' + ssn.id).end();
+            res.location(baseURL + '/' + ssn.id).end();
         }
         cnn.release();
     });
 });
-router.delete('/:id', function (req, res) {
+exports.SsnRouter.delete('/:id', function (req, res) {
     var vld = req.validator;
     var prsId = Session.findById(req.params.id) &&
         Session.findById(req.params.id).prsId;
@@ -52,7 +53,7 @@ router.delete('/:id', function (req, res) {
     req.cnn.release();
     // console.log(req.session.getAllIds())
 });
-router.get('/:id', function (req, res) {
+exports.SsnRouter.get('/:id', function (req, res) {
     var vld = req.validator;
     console.log(req.params);
     var ssn = Session.findById(req.params.id);
@@ -66,4 +67,4 @@ router.get('/:id', function (req, res) {
     }
     req.cnn.release();
 });
-module.exports = router;
+// module.exports = SsnRouter;
