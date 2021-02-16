@@ -1,3 +1,5 @@
+'use strict'
+
 var Express = require('express');
 // var Tags = require('../Validator.js').Tags;
 import {Validator} from '../Validator'
