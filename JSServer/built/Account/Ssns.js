@@ -1,37 +1,35 @@
-"use strict";
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SsnRouter = void 0;
 const express_1 = require("express");
 // var Tags = require('../Validator.js').Tags;
 const Validator_1 = require("../Validator");
-var { Session, router } = require('../Session.js');
-var async = require('async');
+const Session_1 = require("../Session");
+;
 exports.SsnRouter = express_1.Router({ caseSensitive: true });
 const baseURL = '/Ssns';
 const Tags = Validator_1.Validator.Tags;
 exports.SsnRouter.get('/', function (req, res) {
-    console.log("Getting all sessions");
-    var body = [], ssn;
+    var sessionArr = [];
+    var ssn;
     if (req.validator.checkAdmin()) {
-        Session.getAllIds().forEach(id => {
-            ssn = Session.findById(id);
-            body.push({ id: ssn.id, prsId: ssn.prsId, loginTime: ssn.loginTime });
+        Session_1.Session.getAllIds().forEach((id) => {
+            ssn = Session_1.Session.findById(id);
+            sessionArr.push({ id: ssn.id, prsId: ssn.prsId, loginTime: ssn.loginTime });
         });
-        res.json(body).end();
+        res.json(sessionArr).end();
     }
     else
         res.status(403).end();
-    // * IMPORTANT
     req.cnn.release();
 });
 exports.SsnRouter.post('/', function (req, res) {
     var ssn;
-    var cnn = req.cnn;
-    // console.log(cnn.chkQry);
+    const cnn = req.cnn;
     cnn.chkQry('select * from Person where email = ?', [req.body.email], function (err, result) {
         if (req.validator.check(result.length && result[0].password ===
-            req.body.password, Tags.badLogin)) {
-            ssn = new Session(result[0], res);
+            req.body.password, Tags.badLogin, null, null)) {
+            ssn = new Session_1.Session(result[0], res);
             req.session = ssn;
             res.location(baseURL + '/' + ssn.id).end();
         }
@@ -40,26 +38,22 @@ exports.SsnRouter.post('/', function (req, res) {
 });
 exports.SsnRouter.delete('/:id', function (req, res) {
     var vld = req.validator;
-    var prsId = Session.findById(req.params.id) &&
-        Session.findById(req.params.id).prsId;
-    // ! need to get correct session to logout
-    // * need to find prsId that req.params.id belongs to
-    if (Session.findById(req.params.id) && vld.checkPrsOK(prsId)) {
-        req.session.logOut(req.params.id);
+    var prsId = Session_1.Session.findById(req.params.id) &&
+        Session_1.Session.findById(req.params.id).prsId;
+    if (Session_1.Session.findById(req.params.id) && vld.checkPrsOK(prsId, null)) {
+        req.session.logOut(parseInt(req.params.id));
         res.end();
     }
     else
         res.status(404).end();
     req.cnn.release();
-    // console.log(req.session.getAllIds())
 });
 exports.SsnRouter.get('/:id', function (req, res) {
     var vld = req.validator;
-    console.log(req.params);
-    var ssn = Session.findById(req.params.id);
-    var prsId = Session.findById(req.params.id) &&
-        Session.findById(req.params.id).prsId;
-    if (ssn && vld.checkPrsOK(prsId)) {
+    var ssn = Session_1.Session.findById(req.params.id);
+    var prsId = Session_1.Session.findById(req.params.id) &&
+        Session_1.Session.findById(req.params.id).prsId;
+    if (ssn && vld.checkPrsOK(prsId, null)) {
         res.json({ id: ssn.id, prsId: ssn.prsId, loginTime: ssn.loginTime });
     }
     else {
@@ -67,4 +61,3 @@ exports.SsnRouter.get('/:id', function (req, res) {
     }
     req.cnn.release();
 });
-// module.exports = SsnRouter;

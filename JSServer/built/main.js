@@ -15,10 +15,11 @@ const Prss_1 = require("./Account/Prss");
 const Cnvs_1 = require("./Conversation/Cnvs");
 const Ssns_1 = require("./Account/Ssns");
 const Msgs_1 = require("./Conversation/Msgs");
+const Session_1 = require("./Session");
 // var path = require('path');
 // var cookieParser = require('cookie-parser');
 // var bodyParser = require('body-parser');
-var { Session, router } = require('./Session.js');
+// var {Session, router} = require('./Session.js');
 // var Validator = require('./Validator.js');
 // var CnnPool = require('./CnnPool.js');
 // var async = require('async');
@@ -54,7 +55,7 @@ app.use(cookie_parser_1.default());
 //    console.log(vld.checkFieldLengths(req.body, {'email' : 60, 'password' : 60}, () => true))
 //    res.end();
 // });
-app.use(router);
+app.use(Session_1.router);
 // Check general login.  If OK, add Validator to |req| and continue processing,
 // otherwise respond immediately with 401 and noLogin error tag.
 app.use(function (req, res, next) {
@@ -79,7 +80,7 @@ app.use('/Msgs', Msgs_1.router);
 // Special debugging route for /DB DELETE.  Clears all table contents,
 //resets all auto_increment keys to start at 1, and reinserts one admin user.
 app.delete('/DB', function (req, res) {
-    Session.logoutAll();
+    Session_1.Session.logoutAll();
     // Callbacks to clear tables
     var cbs = ["Message", "Conversation", "Person", "Likes"].map(table => function (cb) {
         req.cnn.query("delete from " + table, cb);
@@ -96,8 +97,8 @@ app.delete('/DB', function (req, res) {
     });
     // Callback to clear sessions, release connection and return result
     cbs.push((cb) => {
-        Session.getAllIds().forEach((id) => {
-            Session.findById(id).logOut();
+        Session_1.Session.getAllIds().forEach((id) => {
+            Session_1.Session.findById(id).logOut(id);
             console.log("Clearing " + id);
         });
         cb(null);

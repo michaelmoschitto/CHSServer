@@ -13,11 +13,11 @@ import {router as PrsRouter} from './Account/Prss'
 import {router as CnvsRouter} from './Conversation/Cnvs'
 import {SsnRouter as SsnRouter} from './Account/Ssns'
 import {router as MsgsRouter} from './Conversation/Msgs'
-
+import {Session, router} from './Session'
 // var path = require('path');
 // var cookieParser = require('cookie-parser');
 // var bodyParser = require('body-parser');
-var {Session, router} = require('./Session.js');
+// var {Session, router} = require('./Session.js');
 // var Validator = require('./Validator.js');
 // var CnnPool = require('./CnnPool.js');
 // var async = require('async');
@@ -116,8 +116,8 @@ app.delete('/DB', function(req: Request, res: Response) {
 
    // Callback to clear sessions, release connection and return result
    cbs.push((cb: queryCallback) => {
-      Session.getAllIds().forEach((id: number) => {
-         Session.findById(id).logOut();
+      Session.getAllIds().forEach((id: number | string) => {
+         Session.findById(id).logOut(id as number);
          console.log("Clearing " + id);
       });
       cb(null);
