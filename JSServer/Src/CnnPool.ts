@@ -28,7 +28,6 @@ interface poolConfig{
 export let router = Router({ caseSensitive: true });
 
 export class CnnPool{
-   
    // NOTE: Do *not* change this pool size.  It is required to be 1 in order
    // to demonstrate you are properly freeing connections!
    static PoolSize = 1;
