@@ -1,14 +1,34 @@
-var Express = require('express');
-var Tags = require('../Validator.js').Tags;
-var router = Express.Router({ caseSensitive: true });
-var async = require('async');
-router.baseURL = '/Cnvs';
-router.get('/', function (req, res) {
+'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.router = void 0;
+// var Express = require('express');
+// var Tags = require('../Validator.js').Tags;
+// var router = Express.Router({caseSensitive: true});
+// var async = require('async');
+const express_1 = require("express");
+const async_1 = require("async");
+const Validator_1 = require("../Validator");
+// import { queryCallback } from 'mysql';
+// router.baseURL = '/Cnvs';
+exports.router = express_1.Router({ caseSensitive: true });
+const baseURL = '/Cnvs';
+// const Tags = Validator.Tags
+const Tags = Validator_1.Validator.Tags;
+const maxTitle = 80;
+const maxContent = 5000;
+;
+;
+const skipToend = {
+    code: "",
+    errno: 0,
+    fatal: true,
+    name: "",
+    message: ""
+};
+exports.router.get('/', function (req, res) {
     var vld = req.validator;
-    var body = req.body;
     var cnn = req.cnn;
-    async.waterfall([
-        // todo: need to pull last message from messages
+    async_1.waterfall([
         function (cb) {
             if (req.session) {
                 if (req.query.owner)
@@ -22,59 +42,46 @@ router.get('/', function (req, res) {
             cnvsRet.forEach((cnvs) => cnvs.lastMessage = cnvs.lastMessage
                 && cnvs.lastMessage.getTime());
             res.json(cnvsRet);
-            cb();
+            cb(null);
         }
     ], function () {
         cnn.release();
     });
-    // if(){
-    // };
-    // req.cnn.chkQry('select id, title from Conversation', null,
-    // function(err, cnvs) {
-    //    if (!err)
-    //       res.json(cnvs);
-    //    req.cnn.release();
-    // });
 });
-router.post('/', function (req, res) {
+exports.router.post('/', function (req, res) {
     var vld = req.validator;
     var body = req.body;
     var cnn = req.cnn;
-    var lengths = {
-        'title': 80
-    };
+    var lengths = { 'title': 80 };
     var fieldList = ['title'];
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             if (vld.hasFields(body, fieldList, cb) &&
                 vld.checkFieldLengths(body, lengths, cb) &&
                 vld.hasOnlyFields(body, fieldList, cb))
-                cnn.chkQry('select * from Conversation where title = ?', body.title, cb);
+                cnn.chkQry('select * from Conversation where title = ?', [body.title], cb);
         },
-        // note: using hasFields && hasOnlyFields checks for all fields and gurrantees existence
         function (existingCnv, fields, cb) {
             if (vld.check(!existingCnv.length, Tags.dupTitle, null, cb)) {
-                //owned by the current AU 
-                body['ownerId'] = req.session.prsId;
-                cnn.chkQry("insert into Conversation set ?", body, cb);
+                body.ownerId = req.session.prsId;
+                cnn.chkQry("insert into Conversation set ?", [body], cb);
             }
         },
         function (insRes, fields, cb) {
-            res.location(router.baseURL + '/' + insRes.insertId).end();
-            cb();
+            res.location(baseURL + '/' + insRes.insertId).end();
+            cb(null);
         }
     ], function () {
         cnn.release();
     });
 });
-router.get('/:cnvId', function (req, res) {
+exports.router.get('/:cnvId', function (req, res) {
     var vld = req.validator;
     var body = req.body;
     var cnn = req.cnn;
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             if (req.session)
-                // * lastMessage here is fine becuase we can limit to 1
                 cnn.chkQry("select Conversation.id, title, ownerId " +
                     ", whenMade as lastMessage " +
                     "from Conversation join Message " +
@@ -85,27 +92,28 @@ router.get('/:cnvId', function (req, res) {
         },
         function (foundCnvs, fields, cb) {
             if (foundCnvs.length) {
-                foundCnvs[0].lastMessage = foundCnvs[0].lastMessage &&
-                    foundCnvs[0].lastMessage.getTime();
+                var found = foundCnvs[0];
+                foundCnvs[0].lastMessage = found.lastMessage &&
+                    found.lastMessage.getTime();
                 res.json(foundCnvs[0]);
             }
             else {
                 res.status(404).end();
             }
-            cb();
+            cb(null);
         }
     ], (err) => {
         cnn.release();
     });
 });
-router.put('/:cnvId', function (req, res) {
+exports.router.put('/:cnvId', function (req, res) {
     var vld = req.validator;
     var body = req.body;
     var cnn = req.cnn;
     var cnvId = req.params.cnvId;
     var lengths = { 'title': 80 };
     var fieldList = ['title'];
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             if (vld.hasFields(body, fieldList, cb) &&
                 vld.checkFieldLengths(body, lengths, cb) &&
@@ -118,9 +126,8 @@ router.put('/:cnvId', function (req, res) {
                 cnn.chkQry('select * from Conversation where id <> ? && title = ?', [cnvId, body.title], cb);
         },
         function (sameTtl, fields, cb) {
-            if (vld.check(!sameTtl.length, Tags.dupTitle, cb))
+            if (vld.check(!sameTtl.length, Tags.dupTitle, null, cb))
                 cnn.chkQry("update Conversation set title = ? where id = ?", [body.title, cnvId], cb);
-            // cb();
         },
     ], function (err) {
         if (!err)
@@ -128,11 +135,11 @@ router.put('/:cnvId', function (req, res) {
         cnn.release();
     });
 });
-router.delete('/:cnvId', function (req, res) {
+exports.router.delete('/:cnvId', function (req, res) {
     var vld = req.validator;
     var cnvId = req.params.cnvId;
     var cnn = req.cnn;
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             if (req.params.cnvId)
                 cnn.chkQry('select * from Conversation where id = ?', [cnvId], cb);
@@ -149,21 +156,7 @@ router.delete('/:cnvId', function (req, res) {
         cnn.release();
     });
 });
-router.get('/:cnvId/Msgs', function (req, res) {
-    //todo: get msgs by cnv
-    // GET dateTime = {dateTime}
-    // num = {num}
-    // Any AU is acceptable, though some login is required.Return all Messages
-    // for the indicated Conversation.Limit this to at most num Messages(
-    // if num is provided) posted on or after dateTime(if dateTime is provided).
-    // Returnfor each Message, in increasing datetime order, and for same datetimes, in increasing ID order:
-    // id Message ID
-    // cnvId ID of Conversation to which Message belongs
-    // prsId ID of poster
-    // whenMade when the Message was made
-    // email Email of the poster
-    // content Content of the Message
-    // numLikes Number of likes
+exports.router.get('/:cnvId/Msgs', function (req, res) {
     var vld = req.validator; // Shorthands
     var body = req.body;
     var admin = req.session && req.session.isAdmin();
@@ -171,7 +164,7 @@ router.get('/:cnvId/Msgs', function (req, res) {
     var lengths = {
         'content': 5000
     };
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             cnn.chkQry("select * from Conversation where id = ?", [req.params.cnvId,], cb);
         },
@@ -179,10 +172,9 @@ router.get('/:cnvId/Msgs', function (req, res) {
             // ! Convert CORRECTLY
             var mySQLDate = req.query.dateTime &&
                 new Date(parseInt(req.query.dateTime));
-            console.log("prequery");
             if (foundCnvs.length) {
                 if (req.query.num && req.query.dateTime)
-                    cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                    cnn.chkQry("select Message.id, prsId, whenMade, " +
                         "content, ifnull(t1.numLikes, 0) as numLikes, email " +
                         "from Message join Person on Message.prsId = Person.id " +
                         "left join(select Message.id, count( * ) as numLikes from " +
@@ -192,7 +184,7 @@ router.get('/:cnvId/Msgs', function (req, res) {
                         "order by whenMade, Message.id " +
                         "limit ?", [req.params.cnvId, mySQLDate, parseInt(req.query.num)], cb);
                 else if (req.query.num)
-                    cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                    cnn.chkQry("select Message.id, prsId, whenMade, " +
                         "content, ifnull(t1.numLikes, 0) as numLikes, email " +
                         "from Message join Person on Message.prsId = Person.id " +
                         "left join(select Message.id, count( * ) as numLikes from " +
@@ -201,7 +193,7 @@ router.get('/:cnvId/Msgs', function (req, res) {
                         "where cnvId = ? order by whenMade, Message.id " +
                         "limit ?", [req.params.cnvId, parseInt(req.query.num)], cb);
                 else if (req.query.dateTime)
-                    cnn.chkQry('select Message.id, cnvId, prsId, whenMade, ' +
+                    cnn.chkQry('select Message.id, prsId, whenMade, ' +
                         'content, ifnull(t1.numLikes, 0) as numLikes, email ' +
                         'from Message join Person on Message.prsId = Person.id ' +
                         'left join(select Message.id, count( * ) as numLikes from ' +
@@ -210,7 +202,7 @@ router.get('/:cnvId/Msgs', function (req, res) {
                         'where cnvId = ? and whenMade >= ? order by whenMade, ' +
                         'Message.id', [req.params.cnvId, mySQLDate], cb);
                 else
-                    cnn.chkQry("select Message.id, cnvId, prsId, whenMade, " +
+                    cnn.chkQry("select Message.id, prsId, whenMade, " +
                         "content, ifnull(t1.numLikes, 0) as numLikes, email " +
                         "from Message join Person on Message.prsId = Person.id " +
                         "left join(select Message.id, count( * ) as numLikes from " +
@@ -220,13 +212,13 @@ router.get('/:cnvId/Msgs', function (req, res) {
             }
             else {
                 res.status(404).end();
-                cb(true);
+                cb(skipToend);
             }
         },
         function (resMsg, fields, cb) {
             resMsg.forEach((msg) => msg.whenMade = msg.whenMade.getTime());
             res.json(resMsg);
-            cb();
+            cb(null);
         }
     ], function (err) {
         if (!err)
@@ -234,25 +226,14 @@ router.get('/:cnvId/Msgs', function (req, res) {
         cnn.release();
     });
 });
-router.post('/:cnvId/Msgs', function (req, res) {
-    //todo: 
-    // * Any AU is acceptable, though some login is required.
-    // Add a new Message, stamped with the current AU and date / time.
-    // content Content of the Message(5000 char max)
-    // id Message ID
-    // * cnvId ID of Conversation to which Message belongs
-    // * prsId ID of poster
-    // * whenMade when the Message was made
-    // email Email of the poster
-    // content Content of the Message
-    // numLikes Number of likes   
+exports.router.post('/:cnvId/Msgs', function (req, res) {
     var vld = req.validator; // Shorthands
     var body = req.body;
     var admin = req.session && req.session.isAdmin();
     var cnn = req.cnn;
     var lengths = { 'content': 5000 };
     var lastMessageTime;
-    async.waterfall([
+    async_1.waterfall([
         function (cb) {
             if (req.session && vld.checkFieldLengths(body, lengths, cb)) {
                 cnn.chkQry("select * from Conversation where id = ?", [req.params.cnvId], cb);
@@ -268,10 +249,8 @@ router.post('/:cnvId/Msgs', function (req, res) {
                 cnn.chkQry('insert into Message set ?', [body], cb);
             }
             else {
-                console.log("query not found");
                 res.status(404).end();
-                // ? is this really hackish
-                cb(true);
+                cb({ code: "", errno: 0, fatal: true, name: "", message: "" });
             }
         },
         function (result, fields, cb) {
@@ -284,4 +263,3 @@ router.post('/:cnvId/Msgs', function (req, res) {
         cnn.release();
     });
 });
-module.exports = router;

@@ -1,3 +1,5 @@
 {
-    "debug.node.autoAttach": "on"
+    "debug.node.autoAttach": "on",
+    "editor.formatOnSave": false,
+    "editor.formatOnPaste": false
 }

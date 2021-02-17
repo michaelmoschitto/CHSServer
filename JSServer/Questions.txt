@@ -1,3 +1,9 @@
+To Submit:
+    1) Make a zip with zip -@ CHSV1.zip < fileList
+    2) Unpack it into an empty dir on the server
+    3) Copy Over setup.sh and run 
+    4) Move Setup.sh back 
+
 Questions:
     Is there a better way to skip to last callback than cb(true)
     
@@ -40,3 +46,5 @@ CheckBox For Functions:
     3) always release connection
     5) make sure there are parens after if(chain.chain.check())
     4) review spec one more time
+
+
