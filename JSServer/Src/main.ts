@@ -185,6 +185,16 @@ app.use(function(err: any, req: Request, res: Response, next: NextFunction) {
    req.cnn && req.cnn.release();
 });
 
-app.listen(4015, function() {
-   console.log('App Listening on port 4015');
+const PORT: number = ( (): number => {
+   var p: number;
+   process.argv.forEach((arg, i) => {
+      if(arg === ('-p'))
+         p = parseInt(process.argv[i+1]);
+   })
+
+   return p;
+})();
+
+app.listen(PORT, function() {
+   console.log(`App Listening on port ${PORT}`);
 });
