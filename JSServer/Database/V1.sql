@@ -1,6 +1,3 @@
-drop database if exists project2DB;
-create database project2DB;
-use project2DB;
 
 create table Person (
    id int auto_increment primary key,

@@ -4,7 +4,6 @@ exports.router = void 0;
 const express_1 = require("express");
 const Validator_1 = require("../Validator");
 const async_1 = require("async");
-// import { Session } from '../Session';
 exports.router = express_1.Router({ caseSensitive: true });
 const baseURL = '/Msgs';
 const Tags = Validator_1.Validator.Tags;
