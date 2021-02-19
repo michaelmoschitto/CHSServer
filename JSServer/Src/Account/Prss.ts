@@ -154,7 +154,7 @@ router.put('/:id', function (req: Request, res: Response) {
       password: 50,
       oldPassword: 50,
    };
-
+ 
    console.log(req.body)
 
    console.log(!body.hasOwnProperty('role'), " has role")
