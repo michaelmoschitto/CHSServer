@@ -77,6 +77,13 @@ class Validator {
             });
             return this.check(true, null, null, cb);
         };
+        this.hasOnlyFieldsChained = (body, fieldList, cb) => {
+            var self = this;
+            Object.keys(body).forEach(function (field) {
+                self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, [field]);
+            });
+            return this.chain(true, null, null);
+        };
         this.checkFieldLengths = (body, lengths, cb) => {
             var self = this;
             Object.keys(lengths).forEach(function (field) {
@@ -86,6 +93,16 @@ class Validator {
                         body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
             });
             return this.check(true, null, null, cb);
+        };
+        this.checkFieldLengthsChained = (body, lengths, cb) => {
+            var self = this;
+            Object.keys(lengths).forEach(function (field) {
+                if (Object.keys(body).includes(field))
+                    //
+                    self.chain(body[field] && body[field].length <= lengths[field] &&
+                        body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
+            });
+            return this.chain(true, null, null);
         };
         this.getErrors = () => {
             return this.errors;

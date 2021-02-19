@@ -152,6 +152,17 @@ export class Validator {
       return this.check(true, null, null, cb);
    };
 
+   hasOnlyFieldsChained = (body: any, fieldList: string[], cb: queryCallback) => {
+      var self = this;
+
+      Object.keys(body).forEach(function (field: string) {
+         self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, 
+          [field]);
+      });
+
+      return this.chain(true, null, null);
+   };
+
    checkFieldLengths = (body: any, lengths: Lengths, cb: queryCallback) => {
       var self = this;
 
@@ -164,6 +175,20 @@ export class Validator {
       });
 
       return this.check(true, null, null, cb);
+   };
+
+   checkFieldLengthsChained = (body: any, lengths: Lengths, cb: queryCallback) => {
+      var self = this;
+
+      Object.keys(lengths).forEach(function (field) {
+         if (Object.keys(body).includes(field))
+            //
+            self.chain(body[field] && body[field].length <= lengths[field] &&
+             body[field] !== null && body[field] !== '', 
+             Validator.Tags.badValue, [field]);
+      });
+
+      return this.chain(true, null, null);
    };
 
    getErrors = (): Error[] => {

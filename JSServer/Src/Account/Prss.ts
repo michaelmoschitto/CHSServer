@@ -154,29 +154,23 @@ router.put('/:id', function (req: Request, res: Response) {
       password: 50,
       oldPassword: 50,
    };
- 
-   console.log(req.body)
 
-   console.log(!body.hasOwnProperty('role'), " has role")
-   console.log(req.body.role === 1 && ssn.isAdmin(), "role = 1 and admin")
-   console.log(req.body.role === 0, " role = 0")
 
    async.waterfall(
       [
+         
          function (cb: queryCallback) {
             if (Object.keys(body).length === 0) {
                res.end();
                cb(skipToEnd);
             } else if (
                vld.checkPrsOK(req.params.id, cb) &&
-               vld.hasOnlyFields(body, fields, cb) &&
-               vld.checkFieldLengths(body, lengths, cb) && // person in question or admin
-               vld.chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
+               vld.hasOnlyFieldsChained(body, fields, cb)
+               .checkFieldLengthsChained(body, lengths, cb) // person in question or admin
+               .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
                 ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
                .chain(!body.hasOwnProperty('password') || 
                 req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null)
-               .chain(!body.role || (body.role <= 1 && body.role >= 0),
-                Tags.badValue, ['role'])
                .check(!('password' in body) || req.body.password, Tags.badValue,
                 ['password'], cb)
             ) {

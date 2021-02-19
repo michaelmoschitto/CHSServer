@@ -2953,6 +2953,7 @@
 									"     pm.expect(data[4].params).to.be.eql(null);",
 									"    });",
 									"   ",
+									"   pm.test(\"5 Errors\", pm.expect(data.length).be.eql(5))",
 									"   "
 								],
 								"type": "text/javascript"
@@ -2970,6 +2971,92 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"password\" : \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"role\" : 2\n} "
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: EVERYTHNG WRONG",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+									"",
+									"   var data = pm.response.json();",
+									"",
+									"      pm.test(`The one error is forbiddenField w/params termsAccepted`, () => {",
+									"      ",
+									"      pm.expect(data[0].tag).to.be.eql(\"forbiddenField\");",
+									"       pm.expect(data[0].params[0]).to.be.eql(\"termsAccepted\");",
+									"    });",
+									"",
+									"        pm.test(`The one error is forbiddenField w/params whenRegistered`, () => {",
+									"      ",
+									"      pm.expect(data[1].tag).to.be.eql(\"forbiddenField\");",
+									"       pm.expect(data[1].params[0]).to.be.eql(\"whenRegistered\");",
+									"    });",
+									"",
+									"",
+									"   pm.test(`The one error is badValue w/params fistName`, () => {",
+									"      ",
+									"      pm.expect(data[2].tag).to.be.eql(\"badValue\");",
+									"       pm.expect(data[2].params[0]).to.be.eql(\"firstName\");",
+									"    });",
+									"",
+									"     pm.test(`The one error is badValue w/params lastName`, () => {",
+									"      ",
+									"      pm.expect(data[3].tag).to.be.eql(\"badValue\");",
+									"    pm.expect(data[3].params[0]).to.be.eql(\"lastName\");",
+									"    });",
+									"",
+									"      pm.test(`The one error is badValue w/params password`, () => {",
+									"      ",
+									"      pm.expect(data[4].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[4].params[0]).to.be.eql(\"password\");",
+									"    });",
+									"",
+									"       pm.test(`The one error is badValue w/params role`, () => {",
+									"      ",
+									"    pm.expect(data[5].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[5].params[0]).to.be.eql(\"role\");",
+									"    });",
+									"",
+									"    pm.test(`The one error is noOldPwd w/params null`, () => {",
+									"      ",
+									"    pm.expect(data[6].tag).to.be.eql(\"noOldPwd\");",
+									"     pm.expect(data[6].params).to.be.eql(null);",
+									"    });",
+									"   ",
+									"   pm.test(\"7 Errors\", () => {pm.expect(data.length).be.eql(7)})",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"password\" : \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"role\" : 2,\n    \"termsAccepted\": false,\n    \"whenRegistered\": 234234\n} "
 						},
 						"url": {
 							"raw": "{{url}}/Prss/2",
