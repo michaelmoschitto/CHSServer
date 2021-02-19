@@ -169,10 +169,9 @@ router.put('/:id', function (req: Request, res: Response) {
                .checkFieldLengthsChained(body, lengths, cb) // person in question or admin
                .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
                 ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
-               .chain(!body.hasOwnProperty('password') || 
-                req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null)
-               .check(!('password' in body) || req.body.password, Tags.badValue,
-                ['password'], cb)
+               .check(!body.hasOwnProperty('password') || 
+                req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null, cb)
+               
             ) {
                cnn.chkQry('select * from Person where id = ?',
                 [req.params.id], cb);
