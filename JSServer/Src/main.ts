@@ -99,8 +99,8 @@ app.delete("/DB", function (req: Request, res: Response) {
     cbs.push((cb) => {
       req.cnn.query(
         "INSERT INTO Person (firstName, lastName, email," +
-          " password, whenRegistered, role) VALUES " +
-          '("Joe", "Admin", "adm@11.com","password", NOW(), 1);',
+         " password, whenRegistered, role) VALUES " +
+         '("Joe", "Admin", "adm@11.com","password", NOW(), 1);',
         cb);
     });
 

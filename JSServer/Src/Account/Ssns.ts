@@ -6,10 +6,7 @@ import {Validator} from '../Validator';
 import {Request, Response, Body} from 'express-serve-static-core';
 import {PoolConnection} from 'mysql';
 import {Session, router} from '../Session';
-// import { Session } from 'Src/SessionConversionAttempt';
-// import { Session } from 'Src/SessionConversionAttempt';
-// var {Session, router} = require('../Session.js');
-// import {async} from 'async'
+
 interface Ssn {
    id: number;
    prsId: number;

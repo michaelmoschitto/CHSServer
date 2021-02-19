@@ -175,7 +175,7 @@ router.put('/:id', function (req: Request, res: Response) {
                 ['password'], cb)
             ) {
                cnn.chkQry('select * from Person where id = ?',
-                  [req.params.id], cb);
+                [req.params.id], cb);
             }
          },
 
@@ -187,7 +187,7 @@ router.put('/:id', function (req: Request, res: Response) {
             ) {
                delete body.oldPassword;
                cnn.chkQry('update Person set ? where id = ?',
-                  [body, req.params.id], cb);
+                [body, req.params.id], cb);
             }
          },
 
@@ -234,23 +234,6 @@ router.get('/:id', function (req: Request, res: Response) {
    );
 });
 
-/*
-router.get('/:id', function(req: Request, res: Response) {
-   var vld = req.validator;
-
-   if (vld.checkPrsOK(req.params.id)) {
-      req.cnn.query('select * from Person where id = ?', [req.params.id],
-      function(err, prsArr) {
-         if (vld.check(prsArr.length, Tags.notFound))
-            res.json(prsArr);
-         req.cnn.release();
-      });
-   }
-   else {
-      req.cnn.release();
-   }
-});
-*/
 
 router.delete('/:id', function (req: Request, res: Response) {
    var vld = req.validator;
@@ -290,7 +273,7 @@ router.get('/:prsId/Msgs', function (req: Request, res: Response) {
       [
          function (cb: queryCallback) {
             cnn.chkQry('select * from Person where id = ?',
-               [req.params.prsId], cb);
+             [req.params.prsId], cb);
          },
 
          function (foundPrs: Person[], fields: any, cb: queryCallback) {
@@ -302,58 +285,53 @@ router.get('/:prsId/Msgs', function (req: Request, res: Response) {
                if (req.query.num && orderBy)
                   cnn.chkQry(
                      'select Message.id, cnvId, whenMade, ' +
-                        'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                        'from Person join Message on Person.id = prsId  ' +
-                        'left join(select Message.id, count( * ) as numLikes ' +
-                        'from Message join Likes on Message.id = Likes.msgId ' +
-                        'group by Message.id) as t1 ' +
-                        'on t1.id = Message.id ' +
-                        'where prsId = ? ' +
-                        `order by ${orderBy} desc ` +
-                        'limit ?',
+                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+                      'from Person join Message on Person.id = prsId  ' +
+                      'left join(select Message.id, count( * ) as numLikes ' +
+                      'from Message join Likes on Message.id = Likes.msgId ' +
+                      'group by Message.id) as t1 ' +
+                      'on t1.id = Message.id ' +
+                      'where prsId = ? ' +
+                      `order by ${orderBy} desc ` +
+                      'limit ?',
                      [req.params.prsId, parseInt(req.query.num as string)],
                      cb
                   );
                else if (req.query.num)
                   cnn.chkQry(
                      'select Message.id, cnvId, whenMade, ' +
-                        'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                        'from Person join Message on Person.id = prsId  ' +
-                        'left join(select Message.id, count( * ) as numLikes ' +
-                        'from Message join Likes on Message.id = Likes.msgId ' +
-                        'group by Message.id) as t1 ' +
-                        'on t1.id = Message.id ' +
-                        'where prsId = ? ' +
-                        'limit ?',
-                     [req.params.prsId, parseInt(req.query.num as string)],
-                     cb
+                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+                      'from Person join Message on Person.id = prsId  ' +
+                      'left join(select Message.id, count( * ) as numLikes ' +
+                      'from Message join Likes on Message.id = Likes.msgId ' +
+                      'group by Message.id) as t1 ' +
+                      'on t1.id = Message.id ' +
+                      'where prsId = ? ' +
+                      'limit ?',
+                      [req.params.prsId, parseInt(req.query.num as string)],cb
                   );
                else if (orderBy)
                   cnn.chkQry(
                      'select Message.id, cnvId, whenMade, ' +
-                        'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                        'from Person join Message on Person.id = prsId ' +
-                        'left join(select Message.id, count( * ) as numLikes ' +
-                        'from Message join Likes on Message.id = Likes.msgId ' +
-                        'group by Message.id) as t1 ' +
-                        'on t1.id = Message.id ' +
-                        'where prsId = ? ' +
-                        `order by ${orderBy} desc`,
-                     [req.params.prsId],
-                     cb
+                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+                      'from Person join Message on Person.id = prsId ' +
+                      'left join(select Message.id, count( * ) as numLikes ' +
+                      'from Message join Likes on Message.id = Likes.msgId ' +
+                      'group by Message.id) as t1 ' +
+                      'on t1.id = Message.id ' +
+                      'where prsId = ? ' +
+                      `order by ${orderBy} desc`, [req.params.prsId], cb
                   );
                else
                   cnn.chkQry(
                      'select Message.id, cnvId, whenMade, ' +
-                        'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                        'from Person join Message on Person.id = prsId ' +
-                        'left join(select Message.id, count( * ) as numLikes ' +
-                        'from Message join Likes on Message.id = Likes.msgId ' +
-                        'group by Message.id) as t1 ' +
-                        'on t1.id = Message.id ' +
-                        'where prsId = ?',
-                     [req.params.prsId],
-                     cb
+                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+                      'from Person join Message on Person.id = prsId ' +
+                      'left join(select Message.id, count( * ) as numLikes ' +
+                      'from Message join Likes on Message.id = Likes.msgId ' +
+                      'group by Message.id) as t1 ' +
+                      'on t1.id = Message.id ' +
+                      'where prsId = ?', [req.params.prsId], cb
                   );
             }
          },

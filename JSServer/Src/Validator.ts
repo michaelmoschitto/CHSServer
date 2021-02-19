@@ -114,13 +114,12 @@ export class Validator {
 
    // Pass req.params.id to check whether endpoint is visited by either an
    //admin or that same person
-   // * CORRECT
    checkPrsOK = (prsId: number | string, cb: queryCallback) => {
       if (typeof prsId === 'string') prsId = parseInt(prsId);
          return this.check(
             this.session &&
                // AU must be person {prsId} or admin
-               (this.session.isAdmin() || this.session.prsId === prsId),
+             (this.session.isAdmin() || this.session.prsId === prsId),
             Validator.Tags.noPermission,
             null,
             cb
@@ -134,8 +133,8 @@ export class Validator {
 
       fieldList.forEach(function (name: string) {
          self.chain(
-            obj.hasOwnProperty(name) && obj[name] !== null && obj[name] !== '',
-            Validator.Tags.missingField, [name]);
+          obj.hasOwnProperty(name) && obj[name] !== null && obj[name] !== '',
+          Validator.Tags.missingField, [name]);
       });
 
       return this.check(true, null, null, cb);
