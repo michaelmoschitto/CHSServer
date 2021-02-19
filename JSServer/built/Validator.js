@@ -54,7 +54,6 @@ class Validator {
         };
         // Pass req.params.id to check whether endpoint is visited by either an
         //admin or that same person
-        // * CORRECT
         this.checkPrsOK = (prsId, cb) => {
             if (typeof prsId === 'string')
                 prsId = parseInt(prsId);
@@ -80,8 +79,8 @@ class Validator {
         };
         this.checkFieldLengths = (body, lengths, cb) => {
             var self = this;
-            Object.keys(body).forEach(function (field) {
-                if (Object.keys(lengths).includes(field))
+            Object.keys(lengths).forEach(function (field) {
+                if (Object.keys(body).includes(field))
                     //
                     self.chain(body[field] && body[field].length <= lengths[field] &&
                         body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);

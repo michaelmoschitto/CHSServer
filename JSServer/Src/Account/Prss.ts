@@ -105,11 +105,11 @@ router.post('/', function (req: Request, res: Response) {
             if (vld.hasFields(body, fields, cb) &&
              vld.chain(body.email.length > 0, Tags.missingField, ['email'])
              .chain(body.lastName.length > 0, Tags.missingField, ['lastName'])
-             .chain(body.termsAccepted || admin, Tags.noTerms)
+             .chain(body.termsAccepted || admin, Tags.noTerms, null)
              .chain(body.password.length > 0, Tags.missingField, ['password'])
              .chain(typeof body.role === 'number' || body.role != '',
               Tags.missingField, ['role'])
-             .chain(body.role === 0 || admin, Tags.forbiddenRole)
+             .chain(body.role === 0 || admin, Tags.forbiddenRole, null)
              .check(body.role <= 1 && body.role >= 0, Tags.badValue,
               ['role'], cb) &&
              vld.checkFieldLengths(body, lengths, cb)
@@ -155,6 +155,12 @@ router.put('/:id', function (req: Request, res: Response) {
       oldPassword: 50,
    };
 
+   console.log(req.body)
+
+   console.log(!body.hasOwnProperty('role'), " has role")
+   console.log(req.body.role === 1 && ssn.isAdmin(), "role = 1 and admin")
+   console.log(req.body.role === 0, " role = 0")
+
    async.waterfall(
       [
          function (cb: queryCallback) {
@@ -165,10 +171,10 @@ router.put('/:id', function (req: Request, res: Response) {
                vld.checkPrsOK(req.params.id, cb) &&
                vld.hasOnlyFields(body, fields, cb) &&
                vld.checkFieldLengths(body, lengths, cb) && // person in question or admin
-               vld.chain(!body.hasOwnProperty('role') || req.body.role === 0 ||
-                ssn.isAdmin(), Tags.badValue, ['role'])
+               vld.chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
+                ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
                .chain(!body.hasOwnProperty('password') || 
-                req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd)
+                req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null)
                .chain(!body.role || (body.role <= 1 && body.role >= 0),
                 Tags.badValue, ['role'])
                .check(!('password' in body) || req.body.password, Tags.badValue,

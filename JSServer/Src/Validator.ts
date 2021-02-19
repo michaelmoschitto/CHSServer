@@ -155,8 +155,8 @@ export class Validator {
    checkFieldLengths = (body: any, lengths: Lengths, cb: queryCallback) => {
       var self = this;
 
-      Object.keys(body).forEach(function (field) {
-         if (Object.keys(lengths).includes(field))
+      Object.keys(lengths).forEach(function (field) {
+         if (Object.keys(body).includes(field))
             //
             self.chain(body[field] && body[field].length <= lengths[field] &&
              body[field] !== null && body[field] !== '', 

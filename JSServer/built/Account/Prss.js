@@ -59,10 +59,10 @@ exports.router.post('/', function (req, res) {
             if (vld.hasFields(body, fields, cb) &&
                 vld.chain(body.email.length > 0, Tags.missingField, ['email'])
                     .chain(body.lastName.length > 0, Tags.missingField, ['lastName'])
-                    .chain(body.termsAccepted || admin, Tags.noTerms)
+                    .chain(body.termsAccepted || admin, Tags.noTerms, null)
                     .chain(body.password.length > 0, Tags.missingField, ['password'])
                     .chain(typeof body.role === 'number' || body.role != '', Tags.missingField, ['role'])
-                    .chain(body.role === 0 || admin, Tags.forbiddenRole)
+                    .chain(body.role === 0 || admin, Tags.forbiddenRole, null)
                     .check(body.role <= 1 && body.role >= 0, Tags.badValue, ['role'], cb) &&
                 vld.checkFieldLengths(body, lengths, cb)) {
                 cnn.chkQry('select * from Person where email = ?', [body.email], cb);
@@ -96,6 +96,10 @@ exports.router.put('/:id', function (req, res) {
         password: 50,
         oldPassword: 50,
     };
+    console.log(req.body);
+    console.log(!body.hasOwnProperty('role'), " has role");
+    console.log(req.body.role === 1 && ssn.isAdmin(), "role = 1 and admin");
+    console.log(req.body.role === 0, " role = 0");
     async.waterfall([
         function (cb) {
             if (Object.keys(body).length === 0) {
@@ -105,10 +109,10 @@ exports.router.put('/:id', function (req, res) {
             else if (vld.checkPrsOK(req.params.id, cb) &&
                 vld.hasOnlyFields(body, fields, cb) &&
                 vld.checkFieldLengths(body, lengths, cb) && // person in question or admin
-                vld.chain(!body.hasOwnProperty('role') || req.body.role === 0 ||
-                    ssn.isAdmin(), Tags.badValue, ['role'])
+                vld.chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
+                    ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
                     .chain(!body.hasOwnProperty('password') ||
-                    req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd)
+                    req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null)
                     .chain(!body.role || (body.role <= 1 && body.role >= 0), Tags.badValue, ['role'])
                     .check(!('password' in body) || req.body.password, Tags.badValue, ['password'], cb)) {
                 cnn.chkQry('select * from Person where id = ?', [req.params.id], cb);
@@ -152,23 +156,6 @@ exports.router.get('/:id', function (req, res) {
         req.cnn.release();
     });
 });
-/*
-router.get('/:id', function(req: Request, res: Response) {
-   var vld = req.validator;
-
-   if (vld.checkPrsOK(req.params.id)) {
-      req.cnn.query('select * from Person where id = ?', [req.params.id],
-      function(err, prsArr) {
-         if (vld.check(prsArr.length, Tags.notFound))
-            res.json(prsArr);
-         req.cnn.release();
-      });
-   }
-   else {
-      req.cnn.release();
-   }
-});
-*/
 exports.router.delete('/:id', function (req, res) {
     var vld = req.validator;
     async.waterfall([

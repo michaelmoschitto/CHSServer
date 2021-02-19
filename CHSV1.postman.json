@@ -886,13 +886,53 @@
 					"response": []
 				},
 				{
+					"name": "Register Admin as Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)",
+									"checkSimpleError(pm, \"forbiddenRole\", null)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"AdminB@domainB\",\n    \"firstName\": \"FirstAB\",\n    \"lastName\" : \"LastAB\",\n    \"password\" : \"passwordAB\",\n    \"role\"     : 1,\n    \"termsAccepted\": true\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss"
+							]
+						},
+						"description": "\n"
+					},
+					"response": []
+				},
+				{
 					"name": "Register Student A Duplicate",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"checkSimpleError(pm, \"dupEmail\");",
+									"checkSimpleError(pm, \"dupEmail\", null);",
 									""
 								],
 								"type": "text/javascript"
@@ -1082,7 +1122,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"checkSimpleError(pm, \"noTerms\");"
+									"checkSimpleError(pm, \"noTerms\", null);"
 								],
 								"type": "text/javascript"
 							}
@@ -2327,7 +2367,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm,400);",
-									"checkSimpleError(pm, \"oldPwdMismatch\");",
+									"checkSimpleError(pm, \"oldPwdMismatch\", null);",
 									"",
 									""
 								],
@@ -2368,7 +2408,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm,400);",
-									"checkSimpleError(pm, \"noOldPwd\");",
+									"checkSimpleError(pm, \"noOldPwd\", null);",
 									"",
 									""
 								],
@@ -2598,7 +2638,7 @@
 					"response": []
 				},
 				{
-					"name": "Edit Student Role",
+					"name": "Edit Student to Admin",
 					"event": [
 						{
 							"listen": "test",
@@ -2632,6 +2672,46 @@
 							"path": [
 								"Prss",
 								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Admin to Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,403)",
+									"// checkSimpleError(pm, \"badValue\", \"role\")",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\" : 0\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"1"
 							]
 						}
 					},
@@ -2716,7 +2796,7 @@
 					"response": []
 				},
 				{
-					"name": "Edit Student PW excess length",
+					"name": "To Long: pasword",
 					"event": [
 						{
 							"listen": "test",
@@ -2740,6 +2820,195 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"password\": \"newPasswordnewPasswordnewPasswordnewPasswordnewPasswordnewPasswordnewPasswordnewPassword\",\n    \"oldPassword\": \"passwordA\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: firstName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"badValue\", \"firstName\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: lastName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"badValue\", \"lastName\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: 5 Errors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+									"",
+									"   var data = pm.response.json();",
+									"",
+									"   pm.test(`The one error is badValue w/params fistName`, () => {",
+									"      ",
+									"      pm.expect(data[0].tag).to.be.eql(\"badValue\");",
+									"       pm.expect(data[0].params[0]).to.be.eql(\"firstName\");",
+									"    });",
+									"",
+									"     pm.test(`The one error is badValue w/params lastName`, () => {",
+									"      ",
+									"      pm.expect(data[1].tag).to.be.eql(\"badValue\");",
+									"    pm.expect(data[1].params[0]).to.be.eql(\"lastName\");",
+									"    });",
+									"",
+									"      pm.test(`The one error is badValue w/params password`, () => {",
+									"      ",
+									"      pm.expect(data[2].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[2].params[0]).to.be.eql(\"password\");",
+									"    });",
+									"",
+									"       pm.test(`The one error is badValue w/params role`, () => {",
+									"      ",
+									"    pm.expect(data[3].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[3].params[0]).to.be.eql(\"role\");",
+									"    });",
+									"",
+									"    pm.test(`The one error is noOldPwd w/params null`, () => {",
+									"      ",
+									"    pm.expect(data[4].tag).to.be.eql(\"noOldPwd\");",
+									"     pm.expect(data[4].params).to.be.eql(null);",
+									"    });",
+									"   ",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"password\" : \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"role\" : 2\n} "
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"forbiddenField\", \"email\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"newEmail\"\n} "
 						},
 						"url": {
 							"raw": "{{url}}/Prss/2",
@@ -2857,6 +3126,45 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"whenRegistered\": 0\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student PW null",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"badValue\", \"password\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": null,\n    \"oldPassword\": \"passwordA\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/Prss/2",
@@ -3122,45 +3430,6 @@
 							]
 						},
 						"description": "Get Info Prs 4\n"
-					},
-					"response": []
-				},
-				{
-					"name": "Edit Student PW null",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"checkStatus(pm,400)",
-									"checkSimpleError(pm, \"badValue\", \"password\")"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"password\": null,\n    \"oldPassword\": \"passwordA\"\n}"
-						},
-						"url": {
-							"raw": "{{url}}/Prss/2",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"Prss",
-								"2"
-							]
-						}
 					},
 					"response": []
 				},
@@ -4597,6 +4866,43 @@
 					"response": []
 				},
 				{
+					"name": "Login Student Y Bad Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"UserY@domainY\",\n    \"password\" : \"fakePAssword\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Ssns",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Ssns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Login Student Y",
 					"event": [
 						{
@@ -4755,7 +5061,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm,400)",
-									"checkSimpleError(pm, \"dupTitle\")"
+									"checkSimpleError(pm, \"dupTitle\", null)"
 								],
 								"type": "text/javascript"
 							}
@@ -5492,7 +5798,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm, 400);",
-									"checkSimpleError(pm, \"dupLike\")"
+									"checkSimpleError(pm, \"dupLike\", null)"
 								],
 								"type": "text/javascript"
 							}
@@ -5643,7 +5949,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm, 400);",
-									"checkSimpleError(pm, \"dupLike\")"
+									"checkSimpleError(pm, \"dupLike\", null)"
 								],
 								"type": "text/javascript"
 							}
@@ -7910,13 +8216,15 @@
 					"   pm.test(`Status ${code}`, () => pm.response.to.have.status(code));",
 					"",
 					"// Expect exactly one error, of the tag and params indicated.",
-					"checkSimpleError = (pm, tag, params=null) => {",
+					"checkSimpleError = (pm, tag, params) => {",
 					"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
 					"   pm.test(`The one error is ${tag} w/params ${params}`, () => {",
 					"      var data = pm.response.json();",
 					"      pm.expect(tag).to.be.eql(data[0].tag);",
-					"      if(params === null)",
-					"        pm.expect(params).to.be.null;",
+					"      console.log(data)",
+					"      if(params === null){",
+					"        pm.expect(data[0][\"params\"]).to.be.null;",
+					"      }",
 					"      else",
 					"       pm.expect(params).to.be.eql(data[0].params[0]);",
 					"    });",
