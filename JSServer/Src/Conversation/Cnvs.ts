@@ -172,9 +172,11 @@ router.put('/:cnvId', function (req: Request, res: Response) {
          },
          
          function (cnvs: Conversation[], fields: any, cb: queryCallback) {
-            if (
-             vld.check(cnvs.length, Tags.notFound, null, cb) &&
-             vld.checkPrsOK(cnvs[0].ownerId, cb)
+            if(!cnvs.length){
+               res.status(404).end()
+               cb(skipToend)
+            }
+            else if (vld.checkPrsOK(cnvs[0].ownerId, cb)
             )
                cnn.chkQry(
                 'select * from Conversation where id <> ? && title = ?',
@@ -211,12 +213,14 @@ router.delete('/:cnvId', function (req: Request, res) {
          },
 
          function (cnvs: Conversation[], fields: any, cb: queryCallback) {
-            if (
-             vld.check(cnvs.length, Tags.notFound, null, cb) &&
-             vld.checkPrsOK(cnvs[0].ownerId, cb)
-            ) {
-               cnn.chkQry('delete from Conversation where id = ?', [cnvId], cb);
+            if(cnvs.length){
+               if (vld.checkPrsOK(cnvs[0].ownerId, cb)) 
+                  cnn.chkQry('delete from Conversation where id = ?', [cnvId], cb);
+            }else{
+               res.status(404).end();
+               cb(skipToend);
             }
+            
          },
       ],
 
@@ -324,15 +328,17 @@ router.post('/:cnvId/Msgs', function (req: Request, res) {
    var admin = req.session && req.session.isAdmin();
    var cnn: PoolConnection = req.cnn;
    var lengths = { content: 5000 };
+   var fields = ["content"]
    var lastMessageTime;
 
    waterfall(
       [
          function (cb: queryCallback) {
-            if (req.session && vld.checkFieldLengths(body, lengths, cb)) {
-               cnn.chkQry(
-                'select * from Conversation where id = ?',
-                [req.params.cnvId], cb);
+            if (vld.hasFields(body, fields, cb)  && 
+               vld.checkFieldLengths(body, lengths, cb)) {
+                  cnn.chkQry(
+                  'select * from Conversation where id = ?',
+                  [req.params.cnvId], cb);
             }
          },
 

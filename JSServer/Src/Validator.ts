@@ -22,7 +22,6 @@ export class Validator {
       noPermission: 'noPermission', // Login lacks permission.
       missingField: 'missingField', // Field missing. Params[0] is field name
       badValue: 'badValue', // Bad field value.  Params[0] is field name
-      notFound: 'notFound', // Entity not present in DB
       badLogin: 'badLogin', // Email/password combination invalid
       dupEmail: 'dupEmail', // Email duplicates an existing email
       noTerms: 'noTerms', // Acceptance of terms is required.

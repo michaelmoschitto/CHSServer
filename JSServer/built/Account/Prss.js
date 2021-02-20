@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = void 0;
 const Validator_1 = require("../Validator");
@@ -113,11 +113,16 @@ exports.router.put('/:id', function (req, res) {
             }
         },
         function (foundPrs, fields, cb) {
-            if (vld.check(foundPrs.length, Tags.notFound, null, cb) &&
-                vld.check(!('password' in body) || ssn.isAdmin() ||
+            if (foundPrs.length) {
+                if (vld.check(!('password' in body) || ssn.isAdmin() ||
                     req.body.oldPassword === foundPrs[0].password, Tags.oldPwdMismatch, null, cb)) {
-                delete body.oldPassword;
-                cnn.chkQry('update Person set ? where id = ?', [body, req.params.id], cb);
+                    delete body.oldPassword;
+                    cnn.chkQry('update Person set ? where id = ?', [body, req.params.id], cb);
+                }
+            }
+            else {
+                res.status(404).end();
+                cb(skipToEnd);
             }
         },
         // updatedResult, fields?, final callback
@@ -138,12 +143,16 @@ exports.router.get('/:id', function (req, res) {
                 req.cnn.chkQry('select * from Person where id = ?', [req.params.id], cb);
         },
         function (prsArr, fields, cb) {
-            if (vld.check(prsArr.length, Tags.notFound, null, cb)) {
+            if (prsArr.length) {
                 delete prsArr[0].password;
                 prsArr[0].whenRegistered =
                     prsArr[0].whenRegistered.getTime();
                 res.json(prsArr);
                 cb(null);
+            }
+            else {
+                res.status(404).end();
+                cb(skipToEnd);
             }
         },
     ], (err) => {
@@ -154,16 +163,17 @@ exports.router.delete('/:id', function (req, res) {
     var vld = req.validator;
     async.waterfall([
         function (cb) {
-            if (vld.checkAdmin()) {
+            if (vld.checkAdmin(cb)) {
                 Session_1.Session.removeAllSessions(req.params.id);
                 req.cnn.chkQry('DELETE from Person where id = ?', [req.params.id], cb);
             }
         },
         function (result, fields, cb) {
-            if (vld.check(result.affectedRows, Tags.notFound, null, cb)) {
+            if (result.affectedRows)
                 res.end();
-                cb(null);
-            }
+            else
+                res.status(404).end();
+            cb(null);
         },
     ], function (err) {
         req.cnn.release();

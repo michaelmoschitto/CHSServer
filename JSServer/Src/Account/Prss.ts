@@ -1,3 +1,4 @@
+'use strict'
 import { Validator } from '../Validator';
 var async = require('async');
 var mysql = require('mysql');
@@ -179,14 +180,19 @@ router.put('/:id', function (req: Request, res: Response) {
          },
 
          function (foundPrs: Person[], fields: any, cb: queryCallback) {
-            if (vld.check(foundPrs.length, Tags.notFound, null, cb) &&
-               vld.check(!('password' in body) || ssn.isAdmin() ||
-                req.body.oldPassword === foundPrs[0].password,
-                Tags.oldPwdMismatch, null, cb)
-            ) {
-               delete body.oldPassword;
-               cnn.chkQry('update Person set ? where id = ?',
-                [body, req.params.id], cb);
+            if(foundPrs.length){
+               if (
+                  vld.check(!('password' in body) || ssn.isAdmin() ||
+                  req.body.oldPassword === foundPrs[0].password,
+                  Tags.oldPwdMismatch, null, cb)
+               ) {
+                  delete body.oldPassword;
+                  cnn.chkQry('update Person set ? where id = ?',
+                  [body, req.params.id], cb);
+               }
+            }else{
+               res.status(404).end();
+               cb(skipToEnd);
             }
          },
 
@@ -216,13 +222,17 @@ router.get('/:id', function (req: Request, res: Response) {
          },
 
          function (prsArr: Person[], fields: any, cb: queryCallback) {
-            if (vld.check(prsArr.length, Tags.notFound, null, cb)) {
+            if (prsArr.length) {
                
                delete prsArr[0].password;
                prsArr[0].whenRegistered = 
                 (prsArr[0].whenRegistered as Date).getTime();
                res.json(prsArr);
                cb(null);
+               
+            }else{
+               res.status(404).end();
+               cb(skipToEnd);
             }
          },
       ],
@@ -240,7 +250,7 @@ router.delete('/:id', function (req: Request, res: Response) {
    async.waterfall(
       [
          function (cb: queryCallback) {
-            if (vld.checkAdmin()) {
+            if (vld.checkAdmin(cb)) {
                Session.removeAllSessions(req.params.id);
                req.cnn.chkQry('DELETE from Person where id = ?', 
                 [req.params.id], cb);
@@ -249,10 +259,12 @@ router.delete('/:id', function (req: Request, res: Response) {
 
          function(result: {affectedRows: number}, fields: any, cb: queryCallback
          ) {
-            if (vld.check(result.affectedRows, Tags.notFound, null, cb)) {
+            if (result.affectedRows) 
                res.end();
-               cb(null);
-            }
+            else
+               res.status(404).end();
+            cb(null);
+
          },
       ],
 

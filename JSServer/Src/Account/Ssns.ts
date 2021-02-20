@@ -54,6 +54,7 @@ SsnRouter.post('/', function (req: Request, res: Response) {
             req.session = ssn;
             res.location(baseURL + '/' + ssn.id).end();
          }
+         
          cnn.release();
       }
    );

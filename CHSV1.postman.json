@@ -926,6 +926,46 @@
 					"response": []
 				},
 				{
+					"name": "Register Admin VIA \"1\"",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)",
+									"checkSimpleError(pm, \"forbiddenRole\", null)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"AdminB@domainB\",\n    \"firstName\": \"FirstAB\",\n    \"lastName\" : \"LastAB\",\n    \"password\" : \"passwordAB\",\n    \"role\"     : \"1\",\n    \"termsAccepted\": true\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss"
+							]
+						},
+						"description": "\n"
+					},
+					"response": []
+				},
+				{
 					"name": "Register Student A Duplicate",
 					"event": [
 						{
@@ -5441,6 +5481,34 @@
 					"response": []
 				},
 				{
+					"name": "Post Msg NO CONTENT",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Cnvs/1/Msgs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Cnvs",
+								"1",
+								"Msgs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Post Message to Cnvs 1 Too Long",
 					"event": [
 						{
@@ -6623,6 +6691,40 @@
 					"response": []
 				},
 				{
+					"name": "Delete Prss NOT FOUND",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 404);",
+									"",
+									"",
+									"// body = pm.response.json();",
+									"// pm.test(\"Empty Body\" , () => pm.expect(body).to.be.undefined);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Check Cnvs 1 Was Deleted",
 					"event": [
 						{
@@ -6752,6 +6854,39 @@
 							"path": [
 								"Ssns",
 								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Prs 2 Deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"    pm.test(\"Status code is 404\", function () {pm.response.to.have.status(404);});",
+									"    ",
+									"    ",
+									"    ",
+									"    "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
 							]
 						}
 					},
@@ -7288,7 +7423,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/Msgs/1/Likes?num=2",
+							"raw": "{{url}}/Msgs/1/Likes",
 							"host": [
 								"{{url}}"
 							],
@@ -7296,12 +7431,6 @@
 								"Msgs",
 								"1",
 								"Likes"
-							],
-							"query": [
-								{
-									"key": "num",
-									"value": "2"
-								}
 							]
 						}
 					},
@@ -8304,6 +8433,7 @@
 					"",
 					"// Expect exactly one error, of the tag and params indicated.",
 					"checkSimpleError = (pm, tag, params) => {",
+					"    pm.test(\"only 1 error\", () => {pm.expect(pm.response.json().length).to.be.eql(1)})",
 					"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
 					"   pm.test(`The one error is ${tag} w/params ${params}`, () => {",
 					"      var data = pm.response.json();",

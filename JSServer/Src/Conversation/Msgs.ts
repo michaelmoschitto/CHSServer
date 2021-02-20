@@ -90,7 +90,7 @@ router.get('/:msgId/Likes', function (req: Request, res: Response) {
             if (req.query.num)
                cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
                 "lastName from Likes join Person on prsId = Person.id " +
-                "where msgId = ? order by lastName, firstName limit ?",
+                "where msgId = ? order by id, lastName, firstName limit ?",
                 [req.params.msgId, parseInt(req.query.num as string)], cb);
             else
                cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +

@@ -118,7 +118,6 @@ Validator.Tags = {
     noPermission: 'noPermission',
     missingField: 'missingField',
     badValue: 'badValue',
-    notFound: 'notFound',
     badLogin: 'badLogin',
     dupEmail: 'dupEmail',
     noTerms: 'noTerms',

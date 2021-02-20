@@ -114,8 +114,11 @@ exports.router.put('/:cnvId', function (req, res) {
                 cnn.chkQry('select * from Conversation where id = ?', [cnvId], cb);
         },
         function (cnvs, fields, cb) {
-            if (vld.check(cnvs.length, Tags.notFound, null, cb) &&
-                vld.checkPrsOK(cnvs[0].ownerId, cb))
+            if (!cnvs.length) {
+                res.status(404).end();
+                cb(skipToend);
+            }
+            else if (vld.checkPrsOK(cnvs[0].ownerId, cb))
                 cnn.chkQry('select * from Conversation where id <> ? && title = ?', [cnvId, body.title], cb);
         },
         function (sameTtl, fields, cb) {
@@ -138,9 +141,13 @@ exports.router.delete('/:cnvId', function (req, res) {
                 cnn.chkQry('select * from Conversation where id = ?', [cnvId], cb);
         },
         function (cnvs, fields, cb) {
-            if (vld.check(cnvs.length, Tags.notFound, null, cb) &&
-                vld.checkPrsOK(cnvs[0].ownerId, cb)) {
-                cnn.chkQry('delete from Conversation where id = ?', [cnvId], cb);
+            if (cnvs.length) {
+                if (vld.checkPrsOK(cnvs[0].ownerId, cb))
+                    cnn.chkQry('delete from Conversation where id = ?', [cnvId], cb);
+            }
+            else {
+                res.status(404).end();
+                cb(skipToend);
             }
         },
     ], function (err) {
@@ -225,10 +232,12 @@ exports.router.post('/:cnvId/Msgs', function (req, res) {
     var admin = req.session && req.session.isAdmin();
     var cnn = req.cnn;
     var lengths = { content: 5000 };
+    var fields = ["content"];
     var lastMessageTime;
     async_1.waterfall([
         function (cb) {
-            if (req.session && vld.checkFieldLengths(body, lengths, cb)) {
+            if (vld.hasFields(body, fields, cb) &&
+                vld.checkFieldLengths(body, lengths, cb)) {
                 cnn.chkQry('select * from Conversation where id = ?', [req.params.cnvId], cb);
             }
         },
