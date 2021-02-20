@@ -60,7 +60,8 @@ exports.router.get('/:msgId/Likes', function (req, res) {
                 if (req.query.num)
                     cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
                         "lastName from Likes join Person on prsId = Person.id " +
-                        "where msgId = ? order by id, lastName, firstName limit ?", [req.params.msgId, parseInt(req.query.num)], cb);
+                        "where msgId = ? order by id desc, lastName asc, " +
+                        "firstName asc limit ?", [req.params.msgId, parseInt(req.query.num)], cb);
                 else
                     cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
                         "lastName from Likes join Person on prsId = Person.id " +
