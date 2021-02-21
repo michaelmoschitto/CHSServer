@@ -16,8 +16,8 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "node /Users/MichaelMoschitto/Desktop/Project2/JSServer/built/main.js",
-    "debug": "nodemon --inspect /Users/MichaelMoschitto/Desktop/Project2/JSServer/built/main.js"
+    "start": "node /Users/MichaelMoschitto/Desktop/Project2/JSServer/built/main.js -p 4015",
+    "debug": "nodemon --inspect /Users/MichaelMoschitto/Desktop/Project2/JSServer/built/main.js -p 4015"
   },
   "author": [
     "Johnathan Nicholson",

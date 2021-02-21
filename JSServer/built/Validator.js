@@ -1,19 +1,16 @@
-// Create a validator that draws its session from |req|, and reports
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Validator = void 0;
-var { Session, } = require('./Session.js');
-;
 class Validator {
     // check(test: string | number, tag: string, params: any, cb: queryCallback)
     //  => number;
     constructor(req, res) {
-        //now can pass validator as mysqlError 
-        this.code = "";
+        //now can pass validator as mysqlError
+        this.code = '';
         this.errno = 0;
         this.fatal = true;
-        this.name = "";
-        this.message = "";
+        this.name = '';
+        this.message = '';
         // List of errors, and their corresponding resource string tags
         // Check |test|.  If false, add an error with tag and possibly empty array
         // of qualifying parameters, e.g. name of missing field if tag is
@@ -55,36 +52,20 @@ class Validator {
         this.checkAdmin = (cb) => {
             return this.check(this.session && this.session.isAdmin(), Validator.Tags.noPermission, null, cb);
         };
-        // Validate that AU is the specified person or is an admin
-        // * CORRECT
+        // Pass req.params.id to check whether endpoint is visited by either an
+        //admin or that same person
         this.checkPrsOK = (prsId, cb) => {
-            if (typeof (prsId) === 'string')
+            if (typeof prsId === 'string')
                 prsId = parseInt(prsId);
-            // if(!Session.findById(prsId) &&)
-            //    return false;
             return this.check(this.session &&
                 // AU must be person {prsId} or admin
                 (this.session.isAdmin() || this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
         };
-        // "AU must be owner of session or admin"
-        // Validator.prototype.chkSsnOk = function (ssnId, cb) {
-        //    if (typeof (ssnId) === 'string')
-        //       ssnId = parseInt(ssnId);
-        //    // if(!Session.findById(prsId) &&)
-        //    //    return false;
-        //    return this.check(this.session &&
-        //       // AU must be person {prsId} or admin
-        //       // ! could also be another session that is yours
-        //       // ! and there is no reason to 
-        //       (this.session.isAdmin() || this.session.id === ssnId),
-        //       Validator.Tags.noPermission, null, cb);
-        // };
         // Check presence of truthy property in |obj| for all fields in fieldList
         this.hasFields = (obj, fieldList, cb) => {
             var self = this;
             fieldList.forEach(function (name) {
-                self.chain(obj.hasOwnProperty(name) && obj[name] !== null &&
-                    obj[name] !== "", Validator.Tags.missingField, [name]);
+                self.chain(obj.hasOwnProperty(name) && obj[name] !== null && obj[name] !== '', Validator.Tags.missingField, [name]);
             });
             return this.check(true, null, null, cb);
         };
@@ -96,37 +77,55 @@ class Validator {
             });
             return this.check(true, null, null, cb);
         };
-        this.checkFieldLengths = (body, lengths, cb) => {
+        this.hasOnlyFieldsChained = (body, fieldList, cb) => {
             var self = this;
             Object.keys(body).forEach(function (field) {
-                if (Object.keys(lengths).includes(field))
+                self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, [field]);
+            });
+            return this.chain(true, null, null);
+        };
+        this.checkFieldLengths = (body, lengths, cb) => {
+            var self = this;
+            Object.keys(lengths).forEach(function (field) {
+                if (Object.keys(body).includes(field))
                     //
-                    self.chain(body[field] && body[field].length <= lengths[field] && body[field] !== null && body[field] !== "", Validator.Tags.badValue, [field]);
+                    self.chain(body[field] && body[field].length <= lengths[field] &&
+                        body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
             });
             return this.check(true, null, null, cb);
         };
-        this.getErrors = () => { return this.errors; };
+        this.checkFieldLengthsChained = (body, lengths, cb) => {
+            var self = this;
+            Object.keys(lengths).forEach(function (field) {
+                if (Object.keys(body).includes(field))
+                    //
+                    self.chain(body[field] && body[field].length <= lengths[field] &&
+                        body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
+            });
+            return this.chain(true, null, null);
+        };
+        this.getErrors = () => {
+            return this.errors;
+        };
         this.errors = []; // Array of error objects having tag and params
         this.session = req.session;
         this.res = res;
     }
-    ;
 } //class closing brace
 exports.Validator = Validator;
 Validator.Tags = {
-    noLogin: "noLogin",
-    noPermission: "noPermission",
-    missingField: "missingField",
-    badValue: "badValue",
-    notFound: "notFound",
-    badLogin: "badLogin",
-    dupEmail: "dupEmail",
-    noTerms: "noTerms",
-    forbiddenRole: "forbiddenRole",
-    noOldPwd: "noOldPwd",
-    dupTitle: "dupTitle",
-    queryFailed: "queryFailed",
-    forbiddenField: "forbiddenField",
-    oldPwdMismatch: "oldPwdMismatch",
-    dupLike: "dupLike"
+    noLogin: 'noLogin',
+    noPermission: 'noPermission',
+    missingField: 'missingField',
+    badValue: 'badValue',
+    badLogin: 'badLogin',
+    dupEmail: 'dupEmail',
+    noTerms: 'noTerms',
+    forbiddenRole: 'forbiddenRole',
+    noOldPwd: 'noOldPwd',
+    dupTitle: 'dupTitle',
+    queryFailed: 'queryFailed',
+    forbiddenField: 'forbiddenField',
+    oldPwdMismatch: 'oldPwdMismatch',
+    dupLike: 'dupLike',
 };

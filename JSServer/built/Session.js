@@ -1,12 +1,13 @@
 "use strict";
+// This middleware assumes cookieParser has been "used" before this
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.router = exports.Session = void 0;
-// This middleware assumes cookieParser has been "used" before this
-// var crypto = require('crypto');
 const crypto_1 = require("crypto");
 class Session {
     constructor(user, res) {
-        this.isAdmin = () => { return this.role === 1; };
+        this.isAdmin = () => {
+            return this.role === 1;
+        };
         // Log out a user by removing this Session
         this.logOut = (id) => {
             // not going to always log out curent ssn (admin logging out user)
@@ -16,7 +17,10 @@ class Session {
             delete Session.ssnsByCookie[cki];
         };
         let authToken = crypto_1.randomBytes(16).toString('hex'); // Make random token
-        res.cookie(Session.cookieName, authToken, { maxAge: Session.duration, httpOnly: true }); // 1
+        res.cookie(Session.cookieName, authToken, {
+            maxAge: Session.duration,
+            httpOnly: true,
+        }); // 1
         Session.ssnsByCookie[authToken] = this;
         Session.ssnsById.push(this);
         this.id = Session.ssnsById.length - 1;
@@ -28,8 +32,7 @@ class Session {
         this.role = user.role;
         this.loginTime = this.lastUsed = new Date().getTime();
     }
-    ;
-}
+} //End of class Paren
 exports.Session = Session;
 // All currently logged-in Sessions indexed by token
 Session.ssnsByCookie = {};
@@ -51,17 +54,13 @@ Session.logoutAll = () => {
 };
 Session.removeAllSessions = (id) => {
     id = parseInt(id);
-    Session.ssnsById.forEach((s) => {
+    Session.ssnsById.forEach(s => {
         if (id === s.prsId) {
             delete Session.ssnsById[s.id];
             delete Session.ssnsByCookie[s.authToken];
-            // console.log(s);
-            // console.log(ssnsByCookie[s.authToken]);
-            // console.log("done deleting all sessions");
         }
     });
 };
-; //End of class Paren
 // Function router that will find any Session associated with |req|, based on
 // cookies, delete the Session if it has timed out, or attach the Session to
 // |req| if it's current If |req| has an attached Session after this process,
@@ -80,4 +79,3 @@ let router = (req, res, next) => {
     next();
 };
 exports.router = router;
-// module.exports = {Session, router};

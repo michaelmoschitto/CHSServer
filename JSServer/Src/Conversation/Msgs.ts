@@ -4,8 +4,7 @@ import { Router } from 'express';
 import { Request, Response, Body } from 'express-serve-static-core';
 import { Validator } from '../Validator'
 import { waterfall } from 'async';
-import { queryCallback, PoolConnection, MysqlError } from 'mysql';
-// import { Session } from '../Session';
+import { queryCallback, PoolConnection} from 'mysql';
 
 export let router = Router({ caseSensitive: true });
 const baseURL = '/Msgs';
@@ -47,18 +46,18 @@ router.get('/:msgId', function (req: Request, res: Response) {
       function (cb: queryCallback) {
          if (req.session)
             cnn.chkQry('select cnvId, prsId, whenMade,' +
-               'email, content, numLikes, ' +
-               '(select count(*) from Likes where msgId = Message.id) ' +
-               'as numLikes ' +
-               'from Message join Person ' +
-               'on prsId = Person.id where Message.id = ?',
-               [parseInt(req.params.msgId)], cb)
+             'email, content, numLikes, ' +
+             '(select count(*) from Likes where msgId = Message.id) ' +
+             'as numLikes ' +
+             'from Message join Person ' +
+             'on prsId = Person.id where Message.id = ?',
+             [parseInt(req.params.msgId)], cb)
       },
 
       function (foundMsg: Message[], fields: any, cb: queryCallback) {
          if (foundMsg.length) {
             foundMsg[0].whenMade = foundMsg[0].whenMade &&
-               (foundMsg[0].whenMade as Date).getTime();
+             (foundMsg[0].whenMade as Date).getTime();
 
             res.json(foundMsg[0]);
          } else
@@ -90,14 +89,15 @@ router.get('/:msgId/Likes', function (req: Request, res: Response) {
          if (foundMsg.length) {
             if (req.query.num)
                cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
-                  "lastName from Likes join Person on prsId = Person.id " +
-                  "where msgId = ? order by lastName, firstName limit ?",
-                  [req.params.msgId, parseInt(req.query.num as string)], cb);
+                "lastName from Likes join Person on prsId = Person.id " +
+                "where msgId = ? order by id desc, lastName asc, " + 
+                "firstName asc limit ?",
+                [req.params.msgId, parseInt(req.query.num as string)], cb);
             else
                cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
-                  "lastName from Likes join Person on prsId = Person.id " +
-                  "where msgId = ? order by lastName, firstName",
-                  [req.params.msgId], cb);
+                "lastName from Likes join Person on prsId = Person.id " +
+                "where msgId = ? order by lastName, firstName",
+                [req.params.msgId], cb);
          } else {
             res.status(404).end();
             cb(skipToend);
@@ -126,7 +126,7 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
    waterfall([
       function (cb: queryCallback) {
          cnn.chkQry("select * from Message where id = ?",
-            [req.params.msgId], cb)
+          [req.params.msgId], cb)
       },
 
       function (foundMsg: Message[], fields: any, cb: queryCallback) {
@@ -134,7 +134,7 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
             cnvsId = foundMsg[0].cnvId;
 
             cnn.chkQry("select * from Likes where msgId = ? and prsId = ?",
-               [req.params.msgId, req.session.prsId], cb);
+             [req.params.msgId, req.session.prsId], cb);
          } else {
             res.status(404).end();
             cb(skipToend);
@@ -145,8 +145,8 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
 
          if (vld.check(!foundLike.length, Tags.dupLike, null, null)) {
             var content = {
-               "msgId": req.params.msgId,
-               "prsId": req.session.prsId
+             "msgId": req.params.msgId,
+             "prsId": req.session.prsId
             }
             cnn.chkQry("insert into Likes set ?", [content], cb);
          } else
@@ -159,8 +159,8 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
          if (result.affectedRows > 0) {
             locId = result.insertId;
             cnn.chkQry("update Message set " +
-               "numLikes = NumLikes + 1 " +
-               "where id = ?", [req.params.msgId], cb);
+             "numLikes = NumLikes + 1 " +
+             "where id = ?", [req.params.msgId], cb);
          } else {
             cb(skipToend);
          }
@@ -168,8 +168,9 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
 
       function (result: { insertId: number }, fields: any, cb: queryCallback) {
          res.location(baseURL + '/' + req.params.msgId +
-            '/Likes/' + locId).end();
-         cb(null);
+          '/Likes/' + locId).end();
+         
+          cb(null);
       }
    ],
 

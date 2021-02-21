@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CnnPool = void 0;
 const mysql_1 = require("mysql");
 const connection_json_1 = __importDefault(require("./connection.json"));
-;
 // export let router = Router({ caseSensitive: true });
 class CnnPool {
     constructor() {
@@ -28,12 +27,12 @@ CnnPool.PoolSize = 1;
 CnnPool.singleton = new CnnPool();
 // Router function for use in auto-creating CnnPool for a request
 CnnPool.router = (req, res, next) => {
-    console.log("Getting connection");
+    console.log('Getting connection');
     CnnPool.singleton.getConnection(function (err, cnn) {
         if (err)
             res.status(500).json('Failed to get connection ' + err);
         else {
-            console.log("Connection acquired");
+            console.log('Connection acquired');
             cnn.chkQry = function (qry, prms, cb) {
                 // Run real qry, checking for error
                 this.query(qry, prms, function (err, dbRes, fields) {
@@ -49,4 +48,3 @@ CnnPool.router = (req, res, next) => {
         }
     });
 };
-// module.exports = CnnPool;

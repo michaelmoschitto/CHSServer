@@ -4,7 +4,6 @@ exports.router = void 0;
 const express_1 = require("express");
 const Validator_1 = require("../Validator");
 const async_1 = require("async");
-// import { Session } from '../Session';
 exports.router = express_1.Router({ caseSensitive: true });
 const baseURL = '/Msgs';
 const Tags = Validator_1.Validator.Tags;
@@ -61,7 +60,8 @@ exports.router.get('/:msgId/Likes', function (req, res) {
                 if (req.query.num)
                     cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
                         "lastName from Likes join Person on prsId = Person.id " +
-                        "where msgId = ? order by lastName, firstName limit ?", [req.params.msgId, parseInt(req.query.num)], cb);
+                        "where msgId = ? order by id desc, lastName asc, " +
+                        "firstName asc limit ?", [req.params.msgId, parseInt(req.query.num)], cb);
                 else
                     cnn.chkQry("select Likes.id, Likes.prsId, firstName, " +
                         "lastName from Likes join Person on prsId = Person.id " +

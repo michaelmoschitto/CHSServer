@@ -886,13 +886,93 @@
 					"response": []
 				},
 				{
+					"name": "Register Admin as Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)",
+									"checkSimpleError(pm, \"forbiddenRole\", null)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"AdminB@domainB\",\n    \"firstName\": \"FirstAB\",\n    \"lastName\" : \"LastAB\",\n    \"password\" : \"passwordAB\",\n    \"role\"     : 1,\n    \"termsAccepted\": true\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss"
+							]
+						},
+						"description": "\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Register Admin VIA \"1\"",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)",
+									"checkSimpleError(pm, \"forbiddenRole\", null)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"AdminB@domainB\",\n    \"firstName\": \"FirstAB\",\n    \"lastName\" : \"LastAB\",\n    \"password\" : \"passwordAB\",\n    \"role\"     : \"1\",\n    \"termsAccepted\": true\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss"
+							]
+						},
+						"description": "\n"
+					},
+					"response": []
+				},
+				{
 					"name": "Register Student A Duplicate",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"checkSimpleError(pm, \"dupEmail\");",
+									"checkSimpleError(pm, \"dupEmail\", null);",
 									""
 								],
 								"type": "text/javascript"
@@ -1082,7 +1162,7 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"checkSimpleError(pm, \"noTerms\");"
+									"checkSimpleError(pm, \"noTerms\", null);"
 								],
 								"type": "text/javascript"
 							}
@@ -1673,6 +1753,10 @@
 			"name": "3 Prs Modification",
 			"item": [
 				{
+					"name": "Change Role to 0",
+					"item": []
+				},
+				{
 					"name": "Get Info Without Login",
 					"event": [
 						{
@@ -2048,6 +2132,122 @@
 					"response": []
 				},
 				{
+					"name": "Edit Student Lastname Empty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Password in Body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 200)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\" : 0\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student w/ 0 fields",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 200)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Edit Student firstName",
 					"event": [
 						{
@@ -2207,7 +2407,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm,400);",
-									"checkSimpleError(pm, \"oldPwdMismatch\");",
+									"checkSimpleError(pm, \"oldPwdMismatch\", null);",
 									"",
 									""
 								],
@@ -2248,7 +2448,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm,400);",
-									"checkSimpleError(pm, \"noOldPwd\");",
+									"checkSimpleError(pm, \"noOldPwd\", null);",
 									"",
 									""
 								],
@@ -2438,7 +2638,47 @@
 					"response": []
 				},
 				{
-					"name": "Edit Student Role",
+					"name": "Edit Random Field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)",
+									"checkSimpleError(pm, \"forbiddenField\", 'random')",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"random\" : 0\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student to Admin",
 					"event": [
 						{
 							"listen": "test",
@@ -2463,6 +2703,85 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"role\" : 1\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Admin to Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,403)",
+									"// checkSimpleError(pm, \"badValue\", \"role\")",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\" : 0\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/1",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student Role to 0 (OK)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 200)",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\" : 0\n}"
 						},
 						"url": {
 							"raw": "{{url}}/Prss/2",
@@ -2517,7 +2836,7 @@
 					"response": []
 				},
 				{
-					"name": "Edit Student PW excess length",
+					"name": "To Long: pasword",
 					"event": [
 						{
 							"listen": "test",
@@ -2541,6 +2860,282 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"password\": \"newPasswordnewPasswordnewPasswordnewPasswordnewPasswordnewPasswordnewPasswordnewPassword\",\n    \"oldPassword\": \"passwordA\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: firstName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"badValue\", \"firstName\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: lastName",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"badValue\", \"lastName\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: 5 Errors",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+									"",
+									"   var data = pm.response.json();",
+									"",
+									"   pm.test(`The one error is badValue w/params fistName`, () => {",
+									"      ",
+									"      pm.expect(data[0].tag).to.be.eql(\"badValue\");",
+									"       pm.expect(data[0].params[0]).to.be.eql(\"firstName\");",
+									"    });",
+									"",
+									"     pm.test(`The one error is badValue w/params lastName`, () => {",
+									"      ",
+									"      pm.expect(data[1].tag).to.be.eql(\"badValue\");",
+									"    pm.expect(data[1].params[0]).to.be.eql(\"lastName\");",
+									"    });",
+									"",
+									"      pm.test(`The one error is badValue w/params password`, () => {",
+									"      ",
+									"      pm.expect(data[2].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[2].params[0]).to.be.eql(\"password\");",
+									"    });",
+									"",
+									"       pm.test(`The one error is badValue w/params role`, () => {",
+									"      ",
+									"    pm.expect(data[3].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[3].params[0]).to.be.eql(\"role\");",
+									"    });",
+									"",
+									"    pm.test(`The one error is noOldPwd w/params null`, () => {",
+									"      ",
+									"    pm.expect(data[4].tag).to.be.eql(\"noOldPwd\");",
+									"     pm.expect(data[4].params).to.be.eql(null);",
+									"    });",
+									"   ",
+									"   pm.test(\"5 Errors\", pm.expect(data.length).be.eql(5))",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"password\" : \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"role\" : 2\n} "
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "To Long: EVERYTHNG WRONG",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+									"",
+									"   var data = pm.response.json();",
+									"",
+									"      pm.test(`The one error is forbiddenField w/params termsAccepted`, () => {",
+									"      ",
+									"      pm.expect(data[0].tag).to.be.eql(\"forbiddenField\");",
+									"       pm.expect(data[0].params[0]).to.be.eql(\"termsAccepted\");",
+									"    });",
+									"",
+									"        pm.test(`The one error is forbiddenField w/params whenRegistered`, () => {",
+									"      ",
+									"      pm.expect(data[1].tag).to.be.eql(\"forbiddenField\");",
+									"       pm.expect(data[1].params[0]).to.be.eql(\"whenRegistered\");",
+									"    });",
+									"",
+									"",
+									"   pm.test(`The one error is badValue w/params fistName`, () => {",
+									"      ",
+									"      pm.expect(data[2].tag).to.be.eql(\"badValue\");",
+									"       pm.expect(data[2].params[0]).to.be.eql(\"firstName\");",
+									"    });",
+									"",
+									"     pm.test(`The one error is badValue w/params lastName`, () => {",
+									"      ",
+									"      pm.expect(data[3].tag).to.be.eql(\"badValue\");",
+									"    pm.expect(data[3].params[0]).to.be.eql(\"lastName\");",
+									"    });",
+									"",
+									"      pm.test(`The one error is badValue w/params password`, () => {",
+									"      ",
+									"      pm.expect(data[4].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[4].params[0]).to.be.eql(\"password\");",
+									"    });",
+									"",
+									"       pm.test(`The one error is badValue w/params role`, () => {",
+									"      ",
+									"    pm.expect(data[5].tag).to.be.eql(\"badValue\");",
+									"     pm.expect(data[5].params[0]).to.be.eql(\"role\");",
+									"    });",
+									"",
+									"    pm.test(`The one error is noOldPwd w/params null`, () => {",
+									"      ",
+									"    pm.expect(data[6].tag).to.be.eql(\"noOldPwd\");",
+									"     pm.expect(data[6].params).to.be.eql(null);",
+									"    });",
+									"   ",
+									"   pm.test(\"7 Errors\", () => {pm.expect(data.length).be.eql(7)})",
+									"   "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"lastName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"firstName\": \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"password\" : \"mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm\",\n    \"role\" : 2,\n    \"termsAccepted\": false,\n    \"whenRegistered\": 234234\n} "
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"forbiddenField\", \"email\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : \"newEmail\"\n} "
 						},
 						"url": {
 							"raw": "{{url}}/Prss/2",
@@ -2658,6 +3253,45 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"whenRegistered\": 0\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Student PW null",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400)",
+									"checkSimpleError(pm, \"badValue\", \"password\")"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": null,\n    \"oldPassword\": \"passwordA\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/Prss/2",
@@ -2927,45 +3561,6 @@
 					"response": []
 				},
 				{
-					"name": "Edit Student PW null",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"checkStatus(pm,400)",
-									"checkSimpleError(pm, \"badValue\", \"password\")"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"password\": null,\n    \"oldPassword\": \"passwordA\"\n}"
-						},
-						"url": {
-							"raw": "{{url}}/Prss/2",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"Prss",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Edit Student PW empy",
 					"event": [
 						{
@@ -3120,6 +3715,45 @@
 					"response": []
 				},
 				{
+					"name": "Edit Student PW NULL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400, \"badValue\", \"passwo\")",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"\",\n    \"oldPassword\": \"passwordA\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Edit Student PW No oldPassword",
 					"event": [
 						{
@@ -3199,6 +3833,46 @@
 					"response": []
 				},
 				{
+					"name": "Edit Student Role to 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm,400, \"badValue\", \"role\")",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"role\" : 2\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Logout Admin",
 					"event": [
 						{
@@ -3227,6 +3901,57 @@
 							"path": [
 								"Ssns",
 								"{{curLogin}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Can't NUKE without Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"No body\", () => !pm.response.to.have.body);",
+									"checkStatus(pm, 401)",
+									"",
+									"",
+									"// GETSuccess = (pm) => {",
+									"//     pm.response.",
+									"",
+									"",
+									"// pm.request.body",
+									"// pm.test(\"Your test name\", function () {",
+									"//     var jsonData = pm.response.json();",
+									"//     pm.expect(jsonData.value).to.eql(100);",
+									"// });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/DB",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"DB"
 							]
 						}
 					},
@@ -4268,6 +4993,43 @@
 					"response": []
 				},
 				{
+					"name": "Login Student Y Bad Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 400)"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"UserY@domainY\",\n    \"password\" : \"fakePAssword\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/Ssns",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Ssns"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Login Student Y",
 					"event": [
 						{
@@ -4426,7 +5188,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm,400)",
-									"checkSimpleError(pm, \"dupTitle\")"
+									"checkSimpleError(pm, \"dupTitle\", null)"
 								],
 								"type": "text/javascript"
 							}
@@ -4698,6 +5460,34 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\"content\" : \"Message 2\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/Cnvs/1/Msgs",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Cnvs",
+								"1",
+								"Msgs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Msg NO CONTENT",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -5163,7 +5953,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm, 400);",
-									"checkSimpleError(pm, \"dupLike\")"
+									"checkSimpleError(pm, \"dupLike\", null)"
 								],
 								"type": "text/javascript"
 							}
@@ -5314,7 +6104,7 @@
 							"script": {
 								"exec": [
 									"checkStatus(pm, 400);",
-									"checkSimpleError(pm, \"dupLike\")"
+									"checkSimpleError(pm, \"dupLike\", null)"
 								],
 								"type": "text/javascript"
 							}
@@ -5598,6 +6388,57 @@
 					"response": []
 				},
 				{
+					"name": "Can't NUKE without Admin Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"No body\", () => !pm.response.to.have.body);",
+									"checkStatus(pm, 403)",
+									"",
+									"",
+									"// GETSuccess = (pm) => {",
+									"//     pm.response.",
+									"",
+									"",
+									"// pm.request.body",
+									"// pm.test(\"Your test name\", function () {",
+									"//     var jsonData = pm.response.json();",
+									"//     pm.expect(jsonData.value).to.eql(100);",
+									"// });",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/javascript"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{url}}/DB",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"DB"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Post Like 2 to Msg 1 (check for unique Id)",
 					"event": [
 						{
@@ -5850,6 +6691,40 @@
 					"response": []
 				},
 				{
+					"name": "Delete Prss NOT FOUND",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"checkStatus(pm, 404);",
+									"",
+									"",
+									"// body = pm.response.json();",
+									"// pm.test(\"Empty Body\" , () => pm.expect(body).to.be.undefined);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Check Cnvs 1 Was Deleted",
 					"event": [
 						{
@@ -5979,6 +6854,39 @@
 							"path": [
 								"Ssns",
 								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Prs 2 Deleted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"    pm.test(\"Status code is 404\", function () {pm.response.to.have.status(404);});",
+									"    ",
+									"    ",
+									"    ",
+									"    "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/Prss/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"Prss",
+								"2"
 							]
 						}
 					},
@@ -6515,7 +7423,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/Msgs/1/Likes?num=2",
+							"raw": "{{url}}/Msgs/1/Likes",
 							"host": [
 								"{{url}}"
 							],
@@ -6523,12 +7431,6 @@
 								"Msgs",
 								"1",
 								"Likes"
-							],
-							"query": [
-								{
-									"key": "num",
-									"value": "2"
-								}
 							]
 						}
 					},
@@ -7530,13 +8432,16 @@
 					"   pm.test(`Status ${code}`, () => pm.response.to.have.status(code));",
 					"",
 					"// Expect exactly one error, of the tag and params indicated.",
-					"checkSimpleError = (pm, tag, params=null) => {",
+					"checkSimpleError = (pm, tag, params) => {",
+					"    pm.test(\"only 1 error\", () => {pm.expect(pm.response.json().length).to.be.eql(1)})",
 					"   pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
 					"   pm.test(`The one error is ${tag} w/params ${params}`, () => {",
 					"      var data = pm.response.json();",
 					"      pm.expect(tag).to.be.eql(data[0].tag);",
-					"      if(params === null)",
-					"        pm.expect(params).to.be.null;",
+					"      console.log(data)",
+					"      if(params === null){",
+					"        pm.expect(data[0][\"params\"]).to.be.null;",
+					"      }",
 					"      else",
 					"       pm.expect(params).to.be.eql(data[0].params[0]);",
 					"    });",
@@ -7665,6 +8570,8 @@
 					"    pm.test(\"Correct Type: email\", () => pm.expect(body[0]['email']).to.be.a(\"string\"));    ",
 					"    pm.test(\"Correct Type: content\", () => pm.expect(body[0]['content']).to.be.a(\"string\"));    ",
 					"    pm.test(\"Correct Type: numLikes\", () => pm.expect(body[0]['numLikes']).to.be.a(\"number\"));    ",
+					"    pm.test(\"Cnv Id Removed\", () => pm.expect(body[0]).to.not.have.property(\"cnvId\"));    ",
+					"",
 					"",
 					"}",
 					"",
