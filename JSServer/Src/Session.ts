@@ -49,7 +49,8 @@ export class Session {
       res.cookie(Session.cookieName, authToken, {
          maxAge: Session.duration,
          httpOnly: true,
-      }); // 1
+      });
+       
       Session.ssnsByCookie[authToken] = this;
       Session.ssnsById.push(this);
 
@@ -63,7 +64,7 @@ export class Session {
       this.loginTime = this.lastUsed = new Date().getTime();
    }
 
-   //Session. methods
+   //Session.methods
    static findById = (id: number | string) => Session.ssnsById[id as number];
    static findByCookie = (cookie: string) => Session.ssnsByCookie[cookie];
    static getAllIds = () => Object.keys(Session.ssnsById);
@@ -101,7 +102,7 @@ export class Session {
       delete Session.ssnsById[id];
       delete Session.ssnsByCookie[cki];
    };
-} //End of class Paren
+}
 
 // Function router that will find any Session associated with |req|, based on
 // cookies, delete the Session if it has timed out, or attach the Session to
@@ -115,10 +116,10 @@ export let router = (req: Request, res: Response, next: NextFunction) => {
       // If the session was last used more than |duration| mS ago..
       if (session.lastUsed < new Date().getTime() - Session.duration)
          session.logOut(session.prsId);
-      else {
+      else
          req.session = session;
-      }
    }
+
    next();
 };
 

@@ -45,10 +45,9 @@ app.use(Session_1.router);
 app.use(function (req, res, next) {
     console.log(req.path);
     console.log(req.method, req.path);
-    if (req.session ||
-        (req.method === "POST" && (req.path === "/Prss" || req.path === "/Ssns"))) {
+    if (req.session || (req.method === "POST" && (req.path === "/Prss" ||
+        req.path === "/Ssns"))) {
         req.validator = new Validator_1.Validator(req, res);
-        // console.log(req.validator)
         next();
     }
     else
@@ -89,7 +88,6 @@ app.delete("/DB", function (req, res) {
         cbs.push((cb) => {
             Session_1.Session.getAllIds().forEach((id) => {
                 Session_1.Session.findById(id).logOut(id);
-                console.log("Clearing " + id);
             });
             cb(null);
         });

@@ -20,7 +20,7 @@ class Session {
         res.cookie(Session.cookieName, authToken, {
             maxAge: Session.duration,
             httpOnly: true,
-        }); // 1
+        });
         Session.ssnsByCookie[authToken] = this;
         Session.ssnsById.push(this);
         this.id = Session.ssnsById.length - 1;
@@ -32,7 +32,7 @@ class Session {
         this.role = user.role;
         this.loginTime = this.lastUsed = new Date().getTime();
     }
-} //End of class Paren
+}
 exports.Session = Session;
 // All currently logged-in Sessions indexed by token
 Session.ssnsByCookie = {};
@@ -40,7 +40,7 @@ Session.ssnsByCookie = {};
 Session.ssnsById = [];
 Session.duration = 7200000; // Two hours in milliseconds
 Session.cookieName = 'CHSAuth'; // Cookie key for auth tokens
-//Session. methods
+//Session.methods
 Session.findById = (id) => Session.ssnsById[id];
 Session.findByCookie = (cookie) => Session.ssnsByCookie[cookie];
 Session.getAllIds = () => Object.keys(Session.ssnsById);
@@ -72,9 +72,8 @@ let router = (req, res, next) => {
         // If the session was last used more than |duration| mS ago..
         if (session.lastUsed < new Date().getTime() - Session.duration)
             session.logOut(session.prsId);
-        else {
+        else
             req.session = session;
-        }
     }
     next();
 };

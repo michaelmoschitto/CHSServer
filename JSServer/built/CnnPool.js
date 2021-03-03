@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CnnPool = void 0;
 const mysql_1 = require("mysql");
 const connection_json_1 = __importDefault(require("./connection.json"));
-// export let router = Router({ caseSensitive: true });
 class CnnPool {
     constructor() {
         this.poolCfg = connection_json_1.default;
@@ -18,7 +17,7 @@ class CnnPool {
         this.pool = mysql_1.createPool(this.poolCfg);
         console.log(this.poolCfg);
     }
-} //class closing brace
+}
 exports.CnnPool = CnnPool;
 // NOTE: Do *not* change this pool size.  It is required to be 1 in order
 // to demonstrate you are properly freeing connections!
@@ -34,7 +33,6 @@ CnnPool.router = (req, res, next) => {
         else {
             console.log('Connection acquired');
             cnn.chkQry = function (qry, prms, cb) {
-                // Run real qry, checking for error
                 this.query(qry, prms, function (err, dbRes, fields) {
                     if (err) {
                         res.status(500).json('Failed query ' + qry);

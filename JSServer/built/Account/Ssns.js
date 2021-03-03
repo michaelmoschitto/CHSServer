@@ -13,9 +13,7 @@ exports.SsnRouter.get('/', function (req, res) {
     if (req.validator.checkAdmin()) {
         Session_1.Session.getAllIds().forEach((id) => {
             ssn = Session_1.Session.findById(id);
-            sessionArr.push({
-                id: ssn.id,
-                prsId: ssn.prsId,
+            sessionArr.push({ id: ssn.id, prsId: ssn.prsId,
                 loginTime: ssn.loginTime,
             });
         });
@@ -55,8 +53,7 @@ exports.SsnRouter.get('/:id', function (req, res) {
     if (ssn && vld.checkPrsOK(prsId, null)) {
         res.json({ id: ssn.id, prsId: ssn.prsId, loginTime: ssn.loginTime });
     }
-    else {
+    else
         res.status(404).end();
-    }
     req.cnn.release();
 });
