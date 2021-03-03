@@ -38,7 +38,6 @@ const skipToend = {
 
 router.get('/:msgId', function (req: Request, res: Response) {
    const vld: Validator = req.validator; // Shorthands
-   var body: Body = req.body;
    const admin: undefined | boolean = req.session && req.session.isAdmin();
    const cnn: PoolConnection = req.cnn;
 
@@ -58,8 +57,8 @@ router.get('/:msgId', function (req: Request, res: Response) {
          if (foundMsg.length) {
             foundMsg[0].whenMade = foundMsg[0].whenMade &&
              (foundMsg[0].whenMade as Date).getTime();
-
             res.json(foundMsg[0]);
+
          } else
             res.status(404).end();
          cb(null);
@@ -76,13 +75,12 @@ router.get('/:msgId', function (req: Request, res: Response) {
 
 router.get('/:msgId/Likes', function (req: Request, res: Response) {
    const vld: Validator = req.validator;
-   var body: Body = req.body;
    const cnn: PoolConnection = req.cnn;
 
    waterfall([
       function (cb: queryCallback) {
-         cnn.chkQry("select * from Message where id = ?",
-            [req.params.msgId], cb)
+         cnn.chkQry("select * from Message where id = ?", 
+          [req.params.msgId], cb)
       },
 
       function (foundMsg: Message[], fields: any, cb: queryCallback) {
@@ -145,15 +143,15 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
 
          if (vld.check(!foundLike.length, Tags.dupLike, null, null)) {
             var content = {
-             "msgId": req.params.msgId,
-             "prsId": req.session.prsId
+               "msgId": req.params.msgId,
+               "prsId": req.session.prsId
             }
             cnn.chkQry("insert into Likes set ?", [content], cb);
          } else
             cb(skipToend);
       },
 
-      function (result: { insertId: number, affectedRows: number },
+      function (result: {insertId: number, affectedRows: number},
          fields: any, cb: queryCallback) {
 
          if (result.affectedRows > 0) {
@@ -169,7 +167,6 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
       function (result: { insertId: number }, fields: any, cb: queryCallback) {
          res.location(baseURL + '/' + req.params.msgId +
           '/Likes/' + locId).end();
-         
           cb(null);
       }
    ],

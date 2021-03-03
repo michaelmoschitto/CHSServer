@@ -18,7 +18,6 @@ const skipToend = {
 };
 exports.router.get('/:msgId', function (req, res) {
     const vld = req.validator; // Shorthands
-    var body = req.body;
     const admin = req.session && req.session.isAdmin();
     const cnn = req.cnn;
     async_1.waterfall([
@@ -49,7 +48,6 @@ exports.router.get('/:msgId', function (req, res) {
 });
 exports.router.get('/:msgId/Likes', function (req, res) {
     const vld = req.validator;
-    var body = req.body;
     const cnn = req.cnn;
     async_1.waterfall([
         function (cb) {

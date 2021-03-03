@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SsnRouter = void 0;
 const express_1 = require("express");
-// var Tags = require('../Validator.js').Tags;
 const Validator_1 = require("../Validator");
 const Session_1 = require("../Session");
 exports.SsnRouter = express_1.Router({ caseSensitive: true });
@@ -14,9 +13,7 @@ exports.SsnRouter.get('/', function (req, res) {
     if (req.validator.checkAdmin()) {
         Session_1.Session.getAllIds().forEach((id) => {
             ssn = Session_1.Session.findById(id);
-            sessionArr.push({
-                id: ssn.id,
-                prsId: ssn.prsId,
+            sessionArr.push({ id: ssn.id, prsId: ssn.prsId,
                 loginTime: ssn.loginTime,
             });
         });
@@ -56,8 +53,7 @@ exports.SsnRouter.get('/:id', function (req, res) {
     if (ssn && vld.checkPrsOK(prsId, null)) {
         res.json({ id: ssn.id, prsId: ssn.prsId, loginTime: ssn.loginTime });
     }
-    else {
+    else
         res.status(404).end();
-    }
     req.cnn.release();
 });

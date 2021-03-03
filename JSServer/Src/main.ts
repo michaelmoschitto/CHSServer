@@ -21,16 +21,16 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Partially complete handler for CORS.
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  console.log("Handling " + req.path + "/" + req.method);
-  res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header("Access-Control-Allow-Headers", "Content-Type");
-  next();
+   console.log("Handling " + req.path + "/" + req.method);
+   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
+   res.header("Access-Control-Allow-Credentials", "true");
+   res.header("Access-Control-Allow-Headers", "Content-Type");
+   next();
 });
 
 // No further processing needed for options calls.
 app.options("/*", function (req: Request, res: Response) {
-  res.status(200).end();
+   res.status(200).end();
 });
 
 // Parse all request bodies using JSON, yielding a req.body property
@@ -38,8 +38,8 @@ app.use(bodyParser.json());
 
 // No messing w/db ids
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  delete req.body.id;
-  next();
+   delete req.body.id;
+   next();
 });
 
 // Parse cookie header, and attach cookies to req as req.cookies.<cookieName>
@@ -50,16 +50,16 @@ app.use(router);
 // Check general login.  If OK, add Validator to |req| and continue processing,
 // otherwise respond immediately with 401 and noLogin error tag.
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  console.log(req.path);
-  console.log(req.method, req.path);
-  if (
-    req.session ||
-    (req.method === "POST" && (req.path === "/Prss" || req.path === "/Ssns"))
-  ) {
-    req.validator = new Validator(req, res);
-    // console.log(req.validator)
-    next();
-  } else res.status(401).end();
+   console.log(req.path);
+   console.log(req.method, req.path);
+   
+   if (req.session || (req.method === "POST" && (req.path === "/Prss" || 
+    req.path === "/Ssns"))) {
+
+      req.validator = new Validator(req, res);
+      next();
+   } else 
+      res.status(401).end();
 });
 
 // Add DB connection, as req.cnn, with smart chkQry method, to |req|
@@ -76,51 +76,48 @@ app.use("/Msgs", MsgsRouter);
 app.delete("/DB", function (req: Request, res: Response) {
   const ssn: Session = req.session;
   if (!ssn.isAdmin()) {
-    req.cnn.release();
-    res.status(403).end();
-  } else {
-    Session.logoutAll();
-    // Callbacks to clear tables
-    var cbs = ["Message", "Conversation", "Person", "Likes"].map(
-      (table) =>
-        function (cb: queryCallback) {
-          req.cnn.query("delete from " + table, cb);
-        }
-    );
-
-    // Callbacks to reset increment bases
-    cbs = cbs.concat(
-      ["Conversation", "Message", "Person", "Likes"].map((table) => (cb) => {
-        req.cnn.query("alter table " + table + " auto_increment = 1", cb);
-      })
-    );
-
-    // Callback to reinsert admin user
-    cbs.push((cb) => {
-      req.cnn.query(
-        "INSERT INTO Person (firstName, lastName, email," +
-         " password, whenRegistered, role) VALUES " +
-         '("Joe", "Admin", "adm@11.com","password", NOW(), 1);',
-        cb);
-    });
-
-    // Callback to clear sessions, release connection and return result
-    cbs.push((cb: queryCallback) => {
-      Session.getAllIds().forEach((id: number | string) => {
-        Session.findById(id).logOut(id as number);
-        console.log("Clearing " + id);
-      });
-      cb(null);
-    });
-
-    series(cbs, (err) => {
       req.cnn.release();
-      if (err) res.status(400).json(err);
-      else res.status(200).end();
-    });
-  }
+      res.status(403).end();
+  } else {
+      Session.logoutAll();
+      // Callbacks to clear tables
+      var cbs = ["Message", "Conversation", "Person", "Likes"].map(
+      (table) => function (cb: queryCallback) {
+         req.cnn.query("delete from " + table, cb);
+      });
 
-  
+      // Callbacks to reset increment bases
+      cbs = cbs.concat(
+      ["Conversation", "Message", "Person", "Likes"].map((table) => (cb) => {
+         req.cnn.query("alter table " + table + " auto_increment = 1", cb);
+      }));
+
+      // Callback to reinsert admin user
+      cbs.push((cb) => {
+         req.cnn.query(
+          "INSERT INTO Person (firstName, lastName, email," +
+          " password, whenRegistered, role) VALUES " +
+          '("Joe", "Admin", "adm@11.com","password", NOW(), 1);', cb);
+      });
+
+      // Callback to clear sessions, release connection and return result
+      cbs.push( (cb: queryCallback) => {
+         Session.getAllIds().forEach(
+            (id: number | string) => {
+               Session.findById(id).logOut(id as number);
+            });
+
+         cb(null);
+      });
+
+      series(cbs, (err) => {
+         req.cnn.release();
+         if (err) 
+            res.status(400).json(err);
+         else 
+            res.status(200).end();
+      });
+   }
 });
 
 // Anchor handler for general 404 cases.
@@ -131,19 +128,20 @@ app.use(function (req: Request, res: Response) {
 
 // Handler of last resort.  Send a 500 response with stacktrace as the body.
 app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
-  res.status(500).json(err.stack);
-  req.cnn && req.cnn.release();
+   res.status(500).json(err.stack);
+   req.cnn && req.cnn.release();
 });
 
 const PORT: number = ((): number => {
   var p: number;
   process.argv.forEach((arg, i) => {
-    if (arg === "-p") p = parseInt(process.argv[i + 1]);
+      if (arg === "-p") 
+         p = parseInt(process.argv[i + 1]);
   });
 
   return p;
 })();
 
 app.listen(PORT, function () {
-  console.log(`App Listening on port ${PORT}`);
+   console.log(`App Listening on port ${PORT}`);
 });

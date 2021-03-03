@@ -2,16 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Validator = void 0;
 class Validator {
-    // check(test: string | number, tag: string, params: any, cb: queryCallback)
-    //  => number;
     constructor(req, res) {
-        //now can pass validator as mysqlError
+        //to pass validator as mysqlError
         this.code = '';
         this.errno = 0;
         this.fatal = true;
         this.name = '';
         this.message = '';
-        // List of errors, and their corresponding resource string tags
         // Check |test|.  If false, add an error with tag and possibly empty array
         // of qualifying parameters, e.g. name of missing field if tag is
         // Tags.missingField.
@@ -25,9 +22,8 @@ class Validator {
         // list and call an error handler (e.g. a waterfall default function),
         // leaving the caller to cover the "good" case only.
         this.check = (test, tag, params, cb) => {
-            if (!test) {
+            if (!test)
                 this.errors.push({ tag: tag, params: params });
-            }
             if (this.errors.length) {
                 if (this.res) {
                     if (this.errors[0].tag === Validator.Tags.noPermission)
@@ -44,9 +40,8 @@ class Validator {
         // Somewhat like |check|, but designed to allow several chained checks
         // in a row, finalized by a check call.
         this.chain = (test, tag, params) => {
-            if (!test) {
+            if (!test)
                 this.errors.push({ tag: tag, params: params });
-            }
             return this;
         };
         this.checkAdmin = (cb) => {
@@ -57,9 +52,9 @@ class Validator {
         this.checkPrsOK = (prsId, cb) => {
             if (typeof prsId === 'string')
                 prsId = parseInt(prsId);
-            return this.check(this.session &&
-                // AU must be person {prsId} or admin
-                (this.session.isAdmin() || this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
+            // AU must be person {prsId} or admin
+            return this.check(this.session && (this.session.isAdmin() ||
+                this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
         };
         // Check presence of truthy property in |obj| for all fields in fieldList
         this.hasFields = (obj, fieldList, cb) => {
@@ -88,7 +83,6 @@ class Validator {
             var self = this;
             Object.keys(lengths).forEach(function (field) {
                 if (Object.keys(body).includes(field))
-                    //
                     self.chain(body[field] && body[field].length <= lengths[field] &&
                         body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
             });
@@ -98,7 +92,6 @@ class Validator {
             var self = this;
             Object.keys(lengths).forEach(function (field) {
                 if (Object.keys(body).includes(field))
-                    //
                     self.chain(body[field] && body[field].length <= lengths[field] &&
                         body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
             });
@@ -111,7 +104,7 @@ class Validator {
         this.session = req.session;
         this.res = res;
     }
-} //class closing brace
+}
 exports.Validator = Validator;
 Validator.Tags = {
     noLogin: 'noLogin',

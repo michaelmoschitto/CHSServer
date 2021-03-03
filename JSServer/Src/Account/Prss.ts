@@ -1,15 +1,21 @@
 'use strict'
 import { Validator } from '../Validator';
-var async = require('async');
-var mysql = require('mysql');
+import { waterfall } from 'async';
 import { Session } from '../Session';
 import { Request, Response, Body } from 'express-serve-static-core';
-import { queryCallback, PoolConnection, MysqlError } from 'mysql';
+import { queryCallback, PoolConnection } from 'mysql';
 import { Router } from 'express';
 
 export let router = Router({ caseSensitive: true });
 const baseURL = '/Prss';
 const Tags = Validator.Tags;
+const skipToEnd = {
+   code: '',
+   errno: 0,
+   fatal: true,
+   name: '',
+   message: '',
+};
 
 interface Person {
    whenRegistered: number | Date;
@@ -39,29 +45,16 @@ interface Lengths {
    email?: number;
 }
 
-const skipToEnd = {
-   code: '',
-   errno: 0,
-   fatal: true,
-   name: '',
-   message: '',
-};
 
-router.get('/', function (req: Request, res: Response) {
+router.get('/', function(req: Request, res: Response) {
    var email: any =
     (req.session.isAdmin() && req.query.email) ||
     (!req.session.isAdmin() && req.session.email);
 
-   var handler = function (err: any, prsArr: Person[], fields: any) {
-      if (
-         req.query.email &&
-         prsArr[0] &&
-         prsArr[0]['email'] &&
-         !prsArr[0]['email']
-         .split('@')[0]
-         .includes(req.query.email as string) &&
-         prsArr[0]['email'] !== req.query.email
-      )
+   var handler = function(err: any, prsArr: Person[], fields: any) {
+      if (req.query.email && prsArr[0] && prsArr[0]['email'] && 
+       !prsArr[0]['email'].split('@')[0].includes(req.query.email as string) &&
+        prsArr[0]['email'] !== req.query.email)
          res.json([]);
 
       else 
@@ -72,13 +65,12 @@ router.get('/', function (req: Request, res: Response) {
    if (email)
       req.cnn.chkQry(
          'select id, email from Person where email like ?',
-          ['%' + email + '%'], handler
-      );
+          ['%' + email + '%'], handler);
    else 
       req.cnn.chkQry('select id, email from Person', null, handler);
 });
 
-router.post('/', function (req: Request, res: Response) {
+router.post('/', function(req: Request, res: Response) {
    const vld: Validator = req.validator; // Shorthands
    var body: Body = req.body as Body;
    const admin: undefined | boolean = req.session && req.session.isAdmin();
@@ -99,15 +91,16 @@ router.post('/', function (req: Request, res: Response) {
 
    const fields: string[] = ['email', 'password', 'role', 'lastName'];
 
-   async.waterfall(
+   waterfall(
       [
-         function (cb: queryCallback) {
+         function(cb: queryCallback) {
             // Check properties and search for Email duplicates
             if (vld.hasFields(body, fields, cb) &&
              vld.chain(body.email.length > 0, Tags.missingField, ['email'])
              .chain(body.lastName.length > 0, Tags.missingField, ['lastName'])
              .chain(body.termsAccepted || admin, Tags.noTerms, null)
              .chain(body.password.length > 0, Tags.missingField, ['password'])
+
              .chain(typeof body.role === 'number' || body.role != '',
               Tags.missingField, ['role'])
              .chain(body.role === 0 || admin, Tags.forbiddenRole, null)
@@ -120,7 +113,7 @@ router.post('/', function (req: Request, res: Response) {
             }
          },
 
-         function (existingPrss: Person[], fields: any, cb: queryCallback) {
+         function(existingPrss: Person[], fields: any, cb: queryCallback) {
             // If no dups, insert new Person
             if (vld.check(!existingPrss.length, Tags.dupEmail, null, cb)) {
                body.termsAccepted = body.termsAccepted && new Date();
@@ -135,13 +128,13 @@ router.post('/', function (req: Request, res: Response) {
          },
       ],
 
-      function (err: any) {
+      function(err: any) {
          cnn.release();
       }
    );
 });
 
-router.put('/:id', function (req: Request, res: Response) {
+router.put('/:id', function(req: Request, res: Response) {
    const vld: Validator = req.validator;
    const ssn: Session = req.session;
    var body = req.body;
@@ -157,35 +150,32 @@ router.put('/:id', function (req: Request, res: Response) {
    };
 
 
-   async.waterfall(
+   waterfall(
       [
          
-         function (cb: queryCallback) {
+         function(cb: queryCallback) {
             if (Object.keys(body).length === 0) {
                res.end();
                cb(skipToEnd);
+
             } else if (
-               vld.checkPrsOK(req.params.id, cb) &&
-               vld.hasOnlyFieldsChained(body, fields, cb)
-               .checkFieldLengthsChained(body, lengths, cb) // person in question or admin
-               .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
-                ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
-               .check(!body.hasOwnProperty('password') || 
-                req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null, cb)
-               
-            ) {
+             vld.checkPrsOK(req.params.id, cb) &&
+             vld.hasOnlyFieldsChained(body, fields, cb)
+             .checkFieldLengthsChained(body, lengths, cb) 
+             .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
+             ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
+             .check(!body.hasOwnProperty('password') || 
+             req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null, cb)) {
                cnn.chkQry('select * from Person where id = ?',
                 [req.params.id], cb);
             }
          },
 
-         function (foundPrs: Person[], fields: any, cb: queryCallback) {
+         function(foundPrs: Person[], fields: any, cb: queryCallback) {
             if(foundPrs.length){
-               if (
-                  vld.check(!('password' in body) || ssn.isAdmin() ||
-                  req.body.oldPassword === foundPrs[0].password,
-                  Tags.oldPwdMismatch, null, cb)
-               ) {
+               if (vld.check(!('password' in body) || ssn.isAdmin() ||
+                req.body.oldPassword === foundPrs[0].password,
+                Tags.oldPwdMismatch, null, cb)) {
                   delete body.oldPassword;
                   cnn.chkQry('update Person set ? where id = ?',
                   [body, req.params.id], cb);
@@ -197,7 +187,7 @@ router.put('/:id', function (req: Request, res: Response) {
          },
 
          // updatedResult, fields?, final callback
-         function (updRes: any, fields: any, cb: queryCallback) {
+         function(updRes: any, fields: any, cb: queryCallback) {
             res.end();
             cb(null);
          },
@@ -209,21 +199,20 @@ router.put('/:id', function (req: Request, res: Response) {
    );
 });
 
-router.get('/:id', function (req: Request, res: Response) {
+router.get('/:id', function(req: Request, res: Response) {
    console.log('getting Prs by id');
    var vld: Validator = req.validator;
 
-   async.waterfall(
+   waterfall(
       [
-         function (cb: queryCallback) {
+         function(cb: queryCallback) {
             if (vld.checkPrsOK(req.params.id, cb))
                req.cnn.chkQry('select * from Person where id = ?',
                 [req.params.id], cb);
          },
 
-         function (prsArr: Person[], fields: any, cb: queryCallback) {
+         function(prsArr: Person[], fields: any, cb: queryCallback) {
             if (prsArr.length) {
-               
                delete prsArr[0].password;
                prsArr[0].whenRegistered = 
                 (prsArr[0].whenRegistered as Date).getTime();
@@ -244,12 +233,12 @@ router.get('/:id', function (req: Request, res: Response) {
 });
 
 
-router.delete('/:id', function (req: Request, res: Response) {
+router.delete('/:id', function(req: Request, res: Response) {
    var vld = req.validator;
 
-   async.waterfall(
+   waterfall(
       [
-         function (cb: queryCallback) {
+         function(cb: queryCallback) {
             if (vld.checkAdmin(cb)) {
                Session.removeAllSessions(req.params.id);
                req.cnn.chkQry('DELETE from Person where id = ?', 
@@ -257,100 +246,103 @@ router.delete('/:id', function (req: Request, res: Response) {
             }
          },
 
-         function(result: {affectedRows: number}, fields: any, cb: queryCallback
-         ) {
+         function(result: {affectedRows: number}, 
+          fields: any, cb: queryCallback) {
             if (result.affectedRows) 
                res.end();
             else
                res.status(404).end();
             cb(null);
-
          },
       ],
 
-      function (err: any) {
+      function(err: any) {
          req.cnn.release();
       }
    );
 });
 
-router.get('/:prsId/Msgs', function (req: Request, res: Response) {
-   var vld: Validator = req.validator;
-   var body: Body = req.body;
-   var admin: undefined | boolean = req.session && req.session.isAdmin();
+let queryPrs = (req: Request, orderBy: string, cnn: PoolConnection,
+ cb: queryCallback) => {
+
+   if (req.query.num && orderBy)
+      cnn.chkQry(
+       'select Message.id, cnvId, whenMade, ' +
+       'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+       'from Person join Message on Person.id = prsId  ' +
+       'left join(select Message.id, count( * ) as numLikes ' +
+       'from Message join Likes on Message.id = Likes.msgId ' +
+       'group by Message.id) as t1 ' +
+       'on t1.id = Message.id ' +
+       'where prsId = ? ' +
+       `order by ${orderBy} desc ` +
+       'limit ?',
+       [req.params.prsId, parseInt(req.query.num as string)],
+       cb
+      );
+   else if (req.query.num)
+      cnn.chkQry(
+       'select Message.id, cnvId, whenMade, ' +
+       'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+       'from Person join Message on Person.id = prsId  ' +
+       'left join(select Message.id, count( * ) as numLikes ' +
+       'from Message join Likes on Message.id = Likes.msgId ' +
+       'group by Message.id) as t1 ' +
+       'on t1.id = Message.id ' +
+       'where prsId = ? ' +
+       'limit ?',
+       [req.params.prsId, parseInt(req.query.num as string)],cb
+      );
+   else if (orderBy)
+      cnn.chkQry(
+       'select Message.id, cnvId, whenMade, ' +
+       'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+       'from Person join Message on Person.id = prsId ' +
+       'left join(select Message.id, count( * ) as numLikes ' +
+       'from Message join Likes on Message.id = Likes.msgId ' +
+       'group by Message.id) as t1 ' +
+       'on t1.id = Message.id ' +
+       'where prsId = ? ' +
+       `order by ${orderBy} desc`, [req.params.prsId], cb
+      );
+   else
+      cnn.chkQry(
+       'select Message.id, cnvId, whenMade, ' +
+       'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
+       'from Person join Message on Person.id = prsId ' +
+       'left join(select Message.id, count( * ) as numLikes ' +
+       'from Message join Likes on Message.id = Likes.msgId ' +
+       'group by Message.id) as t1 ' +
+       'on t1.id = Message.id ' +
+       'where prsId = ?', [req.params.prsId], cb
+      );
+};
+
+router.get('/:prsId/Msgs', function(req: Request, res: Response) {
    var cnn: PoolConnection = req.cnn;
 
-   async.waterfall(
+   waterfall(
       [
-         function (cb: queryCallback) {
+         function(cb: queryCallback) {
             cnn.chkQry('select * from Person where id = ?',
              [req.params.prsId], cb);
          },
 
-         function (foundPrs: Person[], fields: any, cb: queryCallback) {
+         function(foundPrs: Person[], fields: any, cb: queryCallback) {
             if (foundPrs.length) {
                var orderBy =
                 (req.query.order === 'date' && 'whenMade') ||
                 (req.query.order === 'likes' && 'numLikes');
 
-               if (req.query.num && orderBy)
-                  cnn.chkQry(
-                     'select Message.id, cnvId, whenMade, ' +
-                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                      'from Person join Message on Person.id = prsId  ' +
-                      'left join(select Message.id, count( * ) as numLikes ' +
-                      'from Message join Likes on Message.id = Likes.msgId ' +
-                      'group by Message.id) as t1 ' +
-                      'on t1.id = Message.id ' +
-                      'where prsId = ? ' +
-                      `order by ${orderBy} desc ` +
-                      'limit ?',
-                     [req.params.prsId, parseInt(req.query.num as string)],
-                     cb
-                  );
-               else if (req.query.num)
-                  cnn.chkQry(
-                     'select Message.id, cnvId, whenMade, ' +
-                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                      'from Person join Message on Person.id = prsId  ' +
-                      'left join(select Message.id, count( * ) as numLikes ' +
-                      'from Message join Likes on Message.id = Likes.msgId ' +
-                      'group by Message.id) as t1 ' +
-                      'on t1.id = Message.id ' +
-                      'where prsId = ? ' +
-                      'limit ?',
-                      [req.params.prsId, parseInt(req.query.num as string)],cb
-                  );
-               else if (orderBy)
-                  cnn.chkQry(
-                     'select Message.id, cnvId, whenMade, ' +
-                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                      'from Person join Message on Person.id = prsId ' +
-                      'left join(select Message.id, count( * ) as numLikes ' +
-                      'from Message join Likes on Message.id = Likes.msgId ' +
-                      'group by Message.id) as t1 ' +
-                      'on t1.id = Message.id ' +
-                      'where prsId = ? ' +
-                      `order by ${orderBy} desc`, [req.params.prsId], cb
-                  );
-               else
-                  cnn.chkQry(
-                     'select Message.id, cnvId, whenMade, ' +
-                      'email, content, ifnull(t1.numLikes, 0) as numLikes ' +
-                      'from Person join Message on Person.id = prsId ' +
-                      'left join(select Message.id, count( * ) as numLikes ' +
-                      'from Message join Likes on Message.id = Likes.msgId ' +
-                      'group by Message.id) as t1 ' +
-                      'on t1.id = Message.id ' +
-                      'where prsId = ?', [req.params.prsId], cb
-                  );
+               //run each of the query scenarios
+               queryPrs(req, orderBy, cnn, cb);
             }
          },
 
-         function (resMsg: Message[], fields: any, cb: queryCallback) {
+         function(resMsg: Message[], fields: any, cb: queryCallback) {
             resMsg.forEach(
-               msg => (msg.whenMade = (msg.whenMade as Date).getTime())
-            );
+             msg => (msg.whenMade = (msg.whenMade as Date).getTime()));
+             
             res.json(resMsg);
             cb(null);
          },
