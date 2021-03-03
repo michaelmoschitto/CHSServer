@@ -47,10 +47,6 @@ const skipToEnd = {
    message: '',
 };
 
-const ADMINROLE: number = 1;
-const STUDENTROLE: number = 0;
-const NOTFOUND = 404;
-
 
 router.get('/', function (req: Request, res: Response) {
    var email: any =
@@ -59,14 +55,15 @@ router.get('/', function (req: Request, res: Response) {
 
    var handler = function (err: any, prsArr: Person[], fields: any) {
       if (
-         req.query.email &&
-         prsArr[0] &&
-         prsArr[0]['email'] &&
-         !prsArr[0]['email']
-         .split('@')[0]
-         .includes(req.query.email as string) &&
-         prsArr[0]['email'] !== req.query.email
+       req.query.email &&
+       prsArr[0] &&
+       prsArr[0]['email'] &&
+       !prsArr[0]['email']
+       .split('@')[0]
+       .includes(req.query.email as string) &&
+       prsArr[0]['email'] !== req.query.email
       )
+
          res.json([]);
 
       else 
@@ -116,8 +113,8 @@ router.post('/', function (req: Request, res: Response) {
 
              .chain(typeof body.role === 'number' || body.role != '',
               Tags.missingField, ['role'])
-             .chain(body.role === STUDENTROLE || admin, Tags.forbiddenRole, null)
-             .check(body.role <= ADMINROLE && body.role >= STUDENTROLE, Tags.badValue,
+             .chain(body.role === 0 || admin, Tags.forbiddenRole, null)
+             .check(body.role <= 1 && body.role >= 0, Tags.badValue,
               ['role'], cb) &&
              vld.checkFieldLengths(body, lengths, cb)
             ) {
@@ -176,7 +173,7 @@ router.put('/:id', function (req: Request, res: Response) {
              vld.hasOnlyFieldsChained(body, fields, cb)
              .checkFieldLengthsChained(body, lengths, cb) 
              .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
-             ssn.isAdmin()) || req.body.role === STUDENTROLE), Tags.badValue, ['role'])
+             ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
              .check(!body.hasOwnProperty('password') || 
              req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null, cb)
                
@@ -198,7 +195,7 @@ router.put('/:id', function (req: Request, res: Response) {
                   [body, req.params.id], cb);
                }
             }else{
-               res.status(NOTFOUND).end();
+               res.status(404).end();
                cb(skipToEnd);
             }
          },
@@ -238,7 +235,7 @@ router.get('/:id', function (req: Request, res: Response) {
                cb(null);
                
             }else{
-               res.status(NOTFOUND).end();
+               res.status(404).end();
                cb(skipToEnd);
             }
          },
@@ -269,7 +266,7 @@ router.delete('/:id', function (req: Request, res: Response) {
             if (result.affectedRows) 
                res.end();
             else
-               res.status(NOTFOUND).end();
+               res.status(404).end();
             cb(null);
          },
       ],

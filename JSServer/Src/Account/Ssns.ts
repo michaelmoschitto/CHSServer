@@ -1,7 +1,6 @@
 'use strict';
 
 import {Router} from 'express';
-// var Tags = require('../Validator.js').Tags;
 import {Validator} from '../Validator';
 import {Request, Response, Body} from 'express-serve-static-core';
 import {PoolConnection} from 'mysql';
@@ -25,9 +24,9 @@ SsnRouter.get('/', function (req: Request, res: Response) {
       Session.getAllIds().forEach((id: string) => {
          ssn = Session.findById(id);
          sessionArr.push({
-            id: ssn.id,
-            prsId: ssn.prsId,
-            loginTime: ssn.loginTime,
+          id: ssn.id,
+          prsId: ssn.prsId,
+          loginTime: ssn.loginTime,
          });
       });
       res.json(sessionArr).end();

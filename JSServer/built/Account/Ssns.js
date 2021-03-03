@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SsnRouter = void 0;
 const express_1 = require("express");
-// var Tags = require('../Validator.js').Tags;
 const Validator_1 = require("../Validator");
 const Session_1 = require("../Session");
 exports.SsnRouter = express_1.Router({ caseSensitive: true });

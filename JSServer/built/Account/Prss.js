@@ -16,9 +16,6 @@ const skipToEnd = {
     name: '',
     message: '',
 };
-const ADMINROLE = 1;
-const STUDENTROLE = 0;
-const NOTFOUND = 404;
 exports.router.get('/', function (req, res) {
     var email = (req.session.isAdmin() && req.query.email) ||
         (!req.session.isAdmin() && req.session.email);
@@ -65,8 +62,8 @@ exports.router.post('/', function (req, res) {
                     .chain(body.termsAccepted || admin, Tags.noTerms, null)
                     .chain(body.password.length > 0, Tags.missingField, ['password'])
                     .chain(typeof body.role === 'number' || body.role != '', Tags.missingField, ['role'])
-                    .chain(body.role === STUDENTROLE || admin, Tags.forbiddenRole, null)
-                    .check(body.role <= ADMINROLE && body.role >= STUDENTROLE, Tags.badValue, ['role'], cb) &&
+                    .chain(body.role === 0 || admin, Tags.forbiddenRole, null)
+                    .check(body.role <= 1 && body.role >= 0, Tags.badValue, ['role'], cb) &&
                 vld.checkFieldLengths(body, lengths, cb)) {
                 cnn.chkQry('select * from Person where email = ?', [body.email], cb);
             }
@@ -109,7 +106,7 @@ exports.router.put('/:id', function (req, res) {
                 vld.hasOnlyFieldsChained(body, fields, cb)
                     .checkFieldLengthsChained(body, lengths, cb)
                     .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
-                    ssn.isAdmin()) || req.body.role === STUDENTROLE), Tags.badValue, ['role'])
+                    ssn.isAdmin()) || req.body.role === 0), Tags.badValue, ['role'])
                     .check(!body.hasOwnProperty('password') ||
                     req.body.oldPassword || ssn.isAdmin(), Tags.noOldPwd, null, cb)) {
                 cnn.chkQry('select * from Person where id = ?', [req.params.id], cb);
@@ -124,7 +121,7 @@ exports.router.put('/:id', function (req, res) {
                 }
             }
             else {
-                res.status(NOTFOUND).end();
+                res.status(404).end();
                 cb(skipToEnd);
             }
         },
@@ -154,7 +151,7 @@ exports.router.get('/:id', function (req, res) {
                 cb(null);
             }
             else {
-                res.status(NOTFOUND).end();
+                res.status(404).end();
                 cb(skipToEnd);
             }
         },
@@ -175,7 +172,7 @@ exports.router.delete('/:id', function (req, res) {
             if (result.affectedRows)
                 res.end();
             else
-                res.status(NOTFOUND).end();
+                res.status(404).end();
             cb(null);
         },
     ], function (err) {
