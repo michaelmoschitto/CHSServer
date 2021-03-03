@@ -1,0 +1,114 @@
+fetch method: client side fetch against a rest service
+    * doesn't do a very good job 
+    * better set of fetch methods in api.js
+    * returns a promise, since possible delay
+    * only rejects when can't get to the server
+        * 400, 401, 500 are all resolves
+        * need to redesign fetch so that resolves on 200, rejects on 400, 401
+
+actionCreators.js  
+    * doing a sign in
+
+Redux Store:
+    * one master object that stores all information
+    * all info currently being maintained on client side
+    * like counts, who is logged in, cnvs
+    * in a sense a partial copy of server related information displayed in GUI
+    * update Redux Store by performing actions
+    * Updating redux store will cause UI to update
+
+    *say action wanted to only change first name, needs to create entirely new Prs 
+        object and must replace entire Prs branch
+        * objects in Redux Store are IMMUTABLE
+        * need to be able to check quickly and don't want to do deep comparison analysis
+        * this way, to check if state has changed, only need to perform shallow comparison,
+            checking to see if references are the same (vs deep comparison)
+    
+    *Need Errors/Msgs Branch in Redux Store
+
+    * STORE {
+        prs: {
+            email:
+            lastName:
+        }
+
+        Cnvs: [
+            {cnvs 1},
+            {cnvs 2}
+        ]
+    }
+
+Reducers: 
+    * function responsible for updating Redux Store according to an action
+    * Job: provide an updated value for the branch it deals with
+    * "here is the current state, here is an action. Do you want to update the state?"
+        "Ok, let me update the state. If not I'll just return the same state"
+    * each reducer gets each action, which is why need default
+
+-------------
+
+DO NOT THINK AWAIT IS MAGIC, REMEMBER UNDERLYING CONCEPT IS PROMISES/THENS
+await/async: ways to write a series of chained thens syntactic sugar
+    * converts promise to resolved value using ghost then 
+    * how to catch errors with await
+        * wrap in try/catch and compiler will throw error
+
+React / jsx:
+    Will be generating components which will be the HTML needed to modify DOM
+    React Library includes component which has important DOM code
+    Why do we use components?
+        Creating the html is really expensive, but making tree of components is not
+        React has loop running looking to redraw things that have changed
+        If react "shadow DOM" changes, only then will real DOM change
+    Capitalized tags: <Col> are actually calls to create other React Components Classes
+
+    props: handed to you from parent. Use this color, use this... can't change props, just need to use it
+    this.state: keep track of current state and can update this state during render calls etc 
+Shadow DOM
+React Elements 
+    Create element calls
+    Create Component with attributes as props to component constructor
+
+Register.jsx:
+    specific flow of showing ConfDialog
+    1) offerSignIn first set during registration, used as a flag in the state
+    2) checked as flag in "show" property of ConfDialog, deciding to show or hide it
+    3) flag reset after button is clicked in ConfDialog
+
+Components.js 
+    * gets default exports from different files and then re-exports them to be used in other files
+
+What is different between class and functional components?
+A: you don't get the state.
+
+Hooks: 
+useState: when you call useState you get a function similar to setState but for hooks. It is watching the state, and if it changes will redraw the page.
+
+Say you closed CnvModal window and you didn't see anything happen
+1) actionCreators.js: go to action creators and look at relevant method, find dispatch call that triggers reducer
+2) reducer/Cnvs.js: dispatch changes the redux store for cnvs
+3) CnvsOverview.jsx: setSelector call made react sensitive to change in redux store, THIS is what triggers redraw
+
+Sources of state:
+    1) internal state
+    2) props: passed from parent and we shouldn't change it. Configuration of things to show 
+    3) redux store
+
+Vocab: 
+SPA: Single Page application, the method of having only 1 page, that looks like multiple
+    because it is really just the DOM being 
+    Faster and more flexible than having lots of html pages
+HPA: Heavy page application, using the server to generate the html which clogs it down with UI function, instead of only REST function
+Thunk: Intermediate function who's job is to adjust the behavior of another function
+Modal: Dialog boxes are modal in that if you click on the rest of the window it doesn't do anything
+
+Render: creates react element tree (the shadow DOM). If that is different from the actual DOM, then it will redraw
+
+Layers
+1) api.js
+2) actionCreators
+3) Reducers
+4) Redux Store
+
+Note:
+    Notes for functional component cnvOverview taken in ReactClient on desktop
