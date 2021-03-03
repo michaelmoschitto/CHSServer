@@ -1,5 +1,37 @@
 {
     "debug.node.autoAttach": "on",
     "editor.formatOnSave": false,
-    "editor.formatOnPaste": false
+    "editor.formatOnPaste": false,
+    "cSpell.words": [
+        "accepteras",
+        "angiven",
+        "cnvs",
+        "duplicerad",
+        "duplicerar",
+        "dåligt",
+        "entitet",
+        "existerande",
+        "felaktigt",
+        "fält",
+        "förbjudet",
+        "förfrågan",
+        "förjuden",
+        "inskrivning",
+        "kombination",
+        "konversationstitel",
+        "krav",
+        "lösenord",
+        "lösenordet",
+        "meddelandekroppen",
+        "misslyckades",
+        "måste",
+        "ogilltig",
+        "saknas",
+        "tidiagre",
+        "tidigare",
+        "titel",
+        "updatera",
+        "villkoren",
+        "värde"
+    ]
 }
