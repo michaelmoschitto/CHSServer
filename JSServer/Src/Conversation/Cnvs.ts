@@ -184,7 +184,8 @@ router.put('/:cnvId', function(req: Request, res: Response) {
       ],
 
       function(err) {
-         if (!err) res.status(200).end();
+         if (!err) 
+            res.status(200).end();
          cnn.release();
       }
    );
@@ -217,7 +218,8 @@ router.delete('/:cnvId', function(req: Request, res) {
       ],
 
       function(err) {
-         if (!err) res.status(200).end();
+         if (!err) 
+            res.status(200).end();
          cnn.release();
       }
    );
@@ -299,8 +301,7 @@ router.get('/:cnvId/Msgs', function(req: Request, res: Response) {
 
          function(resMsg: Message[], fields: any, cb: queryCallback) {
             resMsg.forEach(
-               msg => (msg.whenMade = (msg.whenMade as Date).getTime())
-            );
+               msg => (msg.whenMade = (msg.whenMade as Date).getTime()));
             res.json(resMsg);
             cb(null);
          },

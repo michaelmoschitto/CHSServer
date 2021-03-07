@@ -33,5 +33,6 @@
         "updatera",
         "villkoren",
         "värde"
-    ]
+    ],
+    "git.ignoreLimitWarning": true
 }

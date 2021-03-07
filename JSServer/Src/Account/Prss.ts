@@ -56,7 +56,6 @@ router.get('/', function(req: Request, res: Response) {
        !prsArr[0]['email'].split('@')[0].includes(req.query.email as string) &&
         prsArr[0]['email'] !== req.query.email)
          res.json([]);
-
       else 
          res.json(prsArr);
       req.cnn.release();
@@ -64,8 +63,8 @@ router.get('/', function(req: Request, res: Response) {
 
    if (email)
       req.cnn.chkQry(
-         'select id, email from Person where email like ?',
-          ['%' + email + '%'], handler);
+       'select id, email from Person where email like ?',
+       ['%' + email + '%'], handler);
    else 
       req.cnn.chkQry('select id, email from Person', null, handler);
 });
@@ -106,7 +105,7 @@ router.post('/', function(req: Request, res: Response) {
              .chain(body.role === 0 || admin, Tags.forbiddenRole, null)
              .check(body.role <= 1 && body.role >= 0, Tags.badValue,
               ['role'], cb) &&
-             vld.checkFieldLengths(body, lengths, cb)
+              vld.checkFieldLengths(body, lengths, cb)
             ) {
                cnn.chkQry('select * from Person where email = ?',
                 [body.email], cb);
@@ -158,8 +157,7 @@ router.put('/:id', function(req: Request, res: Response) {
                res.end();
                cb(skipToEnd);
 
-            } else if (
-             vld.checkPrsOK(req.params.id, cb) &&
+            } else if (vld.checkPrsOK(req.params.id, cb) &&
              vld.hasOnlyFieldsChained(body, fields, cb)
              .checkFieldLengthsChained(body, lengths, cb) 
              .chain((!body.hasOwnProperty('role') || (req.body.role === 1 &&
@@ -178,7 +176,7 @@ router.put('/:id', function(req: Request, res: Response) {
                 Tags.oldPwdMismatch, null, cb)) {
                   delete body.oldPassword;
                   cnn.chkQry('update Person set ? where id = ?',
-                  [body, req.params.id], cb);
+                   [body, req.params.id], cb);
                }
             }else{
                res.status(404).end();
@@ -277,8 +275,7 @@ let queryPrs = (req: Request, orderBy: string, cnn: PoolConnection,
        'where prsId = ? ' +
        `order by ${orderBy} desc ` +
        'limit ?',
-       [req.params.prsId, parseInt(req.query.num as string)],
-       cb
+       [req.params.prsId, parseInt(req.query.num as string)],cb
       );
    else if (req.query.num)
       cnn.chkQry(
@@ -349,7 +346,8 @@ router.get('/:prsId/Msgs', function(req: Request, res: Response) {
       ],
 
       (err: any) => {
-         if (!err) res.end();
+         if (!err) 
+            res.end();
          cnn.release();
       }
    );

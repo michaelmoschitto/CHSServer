@@ -15,14 +15,6 @@ declare module 'express-serve-static-core' {
       session?: Session;
       cnn?: PoolConnection;
       validator?: Validator;
-      // query?: {
-      //    owner?: string,
-      //    dateTime?: number | string,
-      //    num?: number | string
-      // };
-
-   //    params?: { cnvId: number };
-   // }
    }
 
    export interface Response {
@@ -42,40 +34,3 @@ declare module 'express-serve-static-core' {
 
    }
 }
-
-
-
-// declare module 'express' {
-//    export interface Request {
-//       bugs: any;
-//       session?: Session;
-//       cnn?: PoolConnection;
-//       validator?: Validator;
-//       //    query?: {
-//       //       owner?: string,
-//       //       dateTime?: number | string,
-//       //       num?: number | string
-//       //    };
-
-//       //    params?: { cnvId: number };
-//       // }
-//    }
-// }
-
-  
-
-
-// validator: Validator;
-// session: Session;
-
-// query ?: {
-//    owner?: string,
-//    dateTime?: number | string,
-//    num?: number | string
-// };
-
-// params ?: { cnvId: number };
-
-// ! cannot be any
-// // cnn: {chkQry: (qry: string, prms: any[], cb: queryCallback) => any}
-// cnn: PoolConnection

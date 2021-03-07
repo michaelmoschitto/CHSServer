@@ -116,7 +116,6 @@ router.get('/:msgId/Likes', function (req: Request, res: Response) {
 
 router.post('/:msgId/Likes', function (req: Request, res: Response) {
    const vld: Validator = req.validator;
-   var body: Body = req.body;
    const cnn: PoolConnection = req.cnn;
    var cnvsId: number;
    var locId: number;
@@ -167,7 +166,7 @@ router.post('/:msgId/Likes', function (req: Request, res: Response) {
       function (result: { insertId: number }, fields: any, cb: queryCallback) {
          res.location(baseURL + '/' + req.params.msgId +
           '/Likes/' + locId).end();
-          cb(null);
+         cb(null);
       }
    ],
 

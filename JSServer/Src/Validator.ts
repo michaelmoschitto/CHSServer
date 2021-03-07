@@ -89,10 +89,10 @@ export class Validator {
    // in a row, finalized by a check call.
    chain = (test: boolean | number | string | Date, tag: string, 
     params?: any) => {
-         if (!test) 
-            this.errors.push({tag: tag, params: params});
-         
-         return this;
+      if (!test) 
+         this.errors.push({tag: tag, params: params});
+      
+      return this;
    };
 
    checkAdmin = (cb?: queryCallback) => {
@@ -106,9 +106,9 @@ export class Validator {
       if (typeof prsId === 'string') 
          prsId = parseInt(prsId);
          // AU must be person {prsId} or admin
-         return this.check(
-          this.session && (this.session.isAdmin() ||
-          this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
+      return this.check(
+       this.session && (this.session.isAdmin() ||
+       this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
    };
 
   
