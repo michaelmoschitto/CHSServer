@@ -39,19 +39,17 @@ SsnRouter.post('/', function(req: Request, res: Response) {
    const cnn: PoolConnection = req.cnn;
 
    cnn.chkQry(
-      'select * from Person where email = ?', [req.body.email],
-      function(err, result) {
-         if (req.validator.check(
-          result.length && result[0].password === req.body.password,
-          Tags.badLogin, null, null)) {
-            ssn = new Session(result[0], res);
-            req.session = ssn;
-            res.location(baseURL + '/' + ssn.id).end();
-         }
-         
-         cnn.release();
+    'select * from Person where email = ?', [req.body.email],
+    function(err, result) {
+      if (req.validator.check(
+         result.length && result[0].password === req.body.password,
+         Tags.badLogin, null, null)) {
+         ssn = new Session(result[0], res);
+         req.session = ssn;
+         res.location(baseURL + '/' + ssn.id).end();
       }
-   );
+      cnn.release();
+   });
 });
 
 SsnRouter.delete('/:id', function(req: Request, res: Response) {
@@ -62,7 +60,8 @@ SsnRouter.delete('/:id', function(req: Request, res: Response) {
    if (Session.findById(req.params.id) && vld.checkPrsOK(prsId, null)) {
       req.session.logOut(parseInt(req.params.id));
       res.end();
-   } else res.status(404).end();
+   } else 
+      res.status(404).end();
 
    req.cnn.release();
 });

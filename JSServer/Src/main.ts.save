@@ -21,7 +21,8 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Partially complete handler for CORS.
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  
+   if(req.method === 'OPTIONS')
+      console.log("-------\n", req.headers, "-------\n");
    console.log("Handling " + req.path + "/" + req.method);
    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
    
@@ -57,7 +58,9 @@ app.use(router);
 // Check general login.  If OK, add Validator to |req| and continue processing,
 // otherwise respond immediately with 401 and noLogin error tag.
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  
+   console.log(req.path);
+   console.log(req.method, req.path);
+   
    if (req.session || (req.method === "POST" && (req.path === "/Prss" || 
     req.path === "/Ssns"))) {
 
@@ -93,7 +96,7 @@ app.delete("/DB", function (req: Request, res: Response) {
 
       // Callbacks to reset increment bases
       cbs = cbs.concat(
-       ["Conversation", "Message", "Person", "Likes"].map((table) => (cb) => {
+      ["Conversation", "Message", "Person", "Likes"].map((table) => (cb) => {
          req.cnn.query("alter table " + table + " auto_increment = 1", cb);
       }));
 

@@ -119,7 +119,6 @@ export let router = (req: Request, res: Response, next: NextFunction) => {
       else
          req.session = session;
    }
-
    next();
 };
 
