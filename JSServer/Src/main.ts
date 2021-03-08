@@ -21,12 +21,18 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Partially complete handler for CORS.
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  
+   if(req.method === 'OPTIONS')
+      console.log("-------\n", req.headers, "-------\n");
    console.log("Handling " + req.path + "/" + req.method);
    res.header("Access-Control-Allow-Origin", "http://localhost:3000");
    
    res.header("Access-Control-Allow-Credentials", "true");
-   res.header("Access-Control-Allow-Headers", "Content-Type"); 
+   // res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length " + 
+   //  "Cookie, Host, Origin, Referer, User-Agent, Access-Control-Request-Method"); 
+   res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length, " +
+    "Cookie, Host, Origin, Referer, User-Agent");
+
+   // res.header("Access-Control-Allow-Headers", "Content-Type"); 
 
    res.header("Access-Control-Allow-Methods", "PUT, DELETE, OPTIONS, " + 
     "POST, GET");
@@ -57,10 +63,11 @@ app.use(router);
 // Check general login.  If OK, add Validator to |req| and continue processing,
 // otherwise respond immediately with 401 and noLogin error tag.
 app.use(function (req: Request, res: Response, next: NextFunction) {
-  
+   console.log(req.path);
+   console.log(req.method, req.path);
+   
    if (req.session || (req.method === "POST" && (req.path === "/Prss" || 
     req.path === "/Ssns"))) {
-
       req.validator = new Validator(req, res);
       next();
    } else 
@@ -87,7 +94,7 @@ app.delete("/DB", function (req: Request, res: Response) {
       Session.logoutAll();
       // Callbacks to clear tables
       var cbs = ["Message", "Conversation", "Person", "Likes"].map(
-      (table) => function (cb: queryCallback) {
+       (table) => function (cb: queryCallback) {
          req.cnn.query("delete from " + table, cb);
       });
 
@@ -108,9 +115,9 @@ app.delete("/DB", function (req: Request, res: Response) {
       // Callback to clear sessions, release connection and return result
       cbs.push( (cb: queryCallback) => {
          Session.getAllIds().forEach(
-            (id: number | string) => {
-               Session.findById(id).logOut(id as number);
-            });
+          (id: number | string) => {
+            Session.findById(id).logOut(id as number);
+         });
 
          cb(null);
       });
@@ -138,8 +145,8 @@ app.use(function (err: any, req: Request, res: Response, next: NextFunction) {
 });
 
 const PORT: number = ((): number => {
-  var p: number;
-  process.argv.forEach((arg, i) => {
+   var p: number;
+   process.argv.forEach((arg, i) => {
       if (arg === "-p") 
          p = parseInt(process.argv[i + 1]);
   });

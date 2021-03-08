@@ -25,8 +25,11 @@ app.use(function (req, res, next) {
     console.log("Handling " + req.path + "/" + req.method);
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length " +
+    // res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length " + 
+    //  "Cookie, Host, Origin, Referer, User-Agent, Access-Control-Request-Method"); 
+    res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length, " +
         "Cookie, Host, Origin, Referer, User-Agent");
+    // res.header("Access-Control-Allow-Headers", "Content-Type"); 
     res.header("Access-Control-Allow-Methods", "PUT, DELETE, OPTIONS, " +
         "POST, GET");
     res.header("Access-Control-Expose-Headers", "Location, Set-Cookie, " +
