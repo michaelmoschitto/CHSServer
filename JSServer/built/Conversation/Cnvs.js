@@ -74,7 +74,7 @@ exports.router.get('/:cnvId', function (req, res) {
             if (req.session)
                 cnn.chkQry('select Conversation.id, title, ownerId ' +
                     ', whenMade as lastMessage ' +
-                    'from Conversation join Message ' +
+                    'from Conversation left join Message ' +
                     'on Conversation.Id = Message.cnvId ' +
                     'where Conversation.id = ? ' +
                     'order by lastMessage desc ' +

@@ -82,7 +82,6 @@ exports.router.get('/:msgId/Likes', function (req, res) {
 });
 exports.router.post('/:msgId/Likes', function (req, res) {
     const vld = req.validator;
-    var body = req.body;
     const cnn = req.cnn;
     var cnvsId;
     var locId;
