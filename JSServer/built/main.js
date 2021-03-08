@@ -20,10 +20,17 @@ var app = express_1.default();
 app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 // Partially complete handler for CORS.
 app.use(function (req, res, next) {
+    if (req.method === 'OPTIONS')
+        console.log("-------\n", req.headers, "-------\n");
     console.log("Handling " + req.path + "/" + req.method);
     res.header("Access-Control-Allow-Origin", "http://localhost:3000");
     res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Headers", "Content-Type");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Content-Length " +
+        "Cookie, Host, Origin, Referer, User-Agent");
+    res.header("Access-Control-Allow-Methods", "PUT, DELETE, OPTIONS, " +
+        "POST, GET");
+    res.header("Access-Control-Expose-Headers", "Location, Set-Cookie, " +
+        "Date, Keep-Alive, Content-Length, Connection");
     next();
 });
 // No further processing needed for options calls.
