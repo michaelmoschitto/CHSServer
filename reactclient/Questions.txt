@@ -1,7 +1,10 @@
-1) What is the difference betweeen passing history as props or export withHistory
-2) On Main.js:11 rest.Prs is undf meaning that Prs was never set on sign in, how 
-    do I do this
-3) What is the correct way to do validation specifically CnvModal
+1) How should I handle the useEffect and updating Cnvs in CnvOverView.
+    Updating it every time it renders really messes things up, specifically 
+    now I can't close sign in modal in registration window, is this right?
+    The problem is that it is fetching a new cnv and the object is changing 
+    so I am getting screwed by shallow comp
+2) 
+3) 
 
 
 

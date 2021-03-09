@@ -16,8 +16,8 @@ const skipToEnd = {
     message: '',
 };
 exports.router.get('/', function (req, res) {
-    var email = (req.session.isAdmin() && req.query.email.toString()) ||
-        (!req.session.isAdmin() && req.session.email.toString());
+    var email = (req.session.isAdmin() && req.query.email) ||
+        (!req.session.isAdmin() && req.session.email);
     var handler = function (err, prsArr, fields) {
         if (req.query.email && prsArr[0] && prsArr[0]['email'] &&
             !prsArr[0]['email'].split('@')[0].includes(req.query.email) &&

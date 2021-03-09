@@ -160,7 +160,7 @@ export async function signIn(cred) {
    try{
       postRsp = await post('Ssns', cred);
       let location = postRsp.headers.get('Location').split('/');
-      let sessionId = location[location.length - 1];
+      sessionId = location[location.length - 1];
       let session = await get('Ssns/' + sessionId);
       let body = await session.json();
       let prs = await get('Prss/' + body.prsId);

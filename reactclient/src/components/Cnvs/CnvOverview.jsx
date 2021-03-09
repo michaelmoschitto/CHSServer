@@ -21,7 +21,11 @@ const CnvOverView = props => {
  
 
    useEffect(() => {
-     cnvs.length || props.updateCnvs();
+      // console.log('props in CnvOverview: ', props)
+      // console.log('props in CnvOverview: ')
+
+      // !cnvs.length || (!showCnvModal && props.updateCnvs());
+      cnvs.length || (!showCnvModal && props.updateCnvs());
    });
    
    // Open title-setting modal with an optional existing |cnv|
@@ -59,12 +63,18 @@ const CnvOverView = props => {
    let cnvItems = [];
    
    cnvs.forEach(cnv => {
-      if (!props.userOnly || prs.id === cnvs.ownerId)
+
+      //also check for admin
+
+      if (!props.userOnly || props.Prs.id === cnv.ownerId)
          cnvItems.push(<CnvItem
             key={cnv.id} {...cnv}
-            showControls={cnv.ownerId === prs.id}
+            showControls={cnv.ownerId === prs.id || props.Prs.role === 1}
             onDelete={() => openDelConfirm(cnv)}
             onEdit={() => openCnvModal(cnv)} />);
+      else{
+         console.log("not my Cnvs")
+      }
    });
 
    return (

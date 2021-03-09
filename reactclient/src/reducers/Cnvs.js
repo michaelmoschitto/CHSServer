@@ -1,9 +1,6 @@
 export default function Cnvs(state = [], action) {
    switch (action.type) {
       case 'UPDATE_CNVS': // Replace previous cnvs
-         console.log("state: ", state)
-         console.log("action data: ", action.data)
-         console.log("action cnvs: ", action.cnvs)
          return action.cnvs;
       case 'UPDATE_CNV':
          /* Example of wrongness

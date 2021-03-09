@@ -6,7 +6,11 @@ import {LinkContainer} from 'react-router-bootstrap';
 import './Main.css';
 
 var ProtectedRoute = ({component: Cmp, path, ...rest }) => {
+   console.log('protected route')
    return (<Route path={path} render={(props) => {
+      console.log('Prs ', rest.Prs)
+      console.log('Rest ', rest)
+
       return Object.keys(rest.Prs).length !== 0 ?
       <Cmp {...rest}/> : <Redirect to='/signin'/>;}}/>);
    };
@@ -76,6 +80,10 @@ class Main extends Component {
                <Route path='/register'
                 render={() => <Register {...this.props}/>} />
                <ProtectedRoute path='/allCnvs' component={CnvOverview}
+                {...this.props}/>
+
+               <ProtectedRoute path='/myCnvs' component={CnvOverview} 
+               userOnly={true}
                 {...this.props}/>
                 
                {/* More routes */}
