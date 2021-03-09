@@ -122,15 +122,14 @@ class Register extends Component {
               title="Registration Success"
               body={`Would you like to log in as ${this.state.email}?`}
               buttons={['YES', 'NO']}
-              onClose={answer => {
+              onClose={answer => () => {
                  this.setState({offerSignIn: false});
-                 if (answer === 'YES') {
+                 if (answer === 'YES')
                     this.props.signIn(
-                     {email: this.state.email, password: this.state.password},
-                     () => this.props.history.push("/"));
-                 }
-              }}
-           />
+                       {email: this.state.email, password: this.state.password},
+                        () => this.props.history.push("/"));
+                  }}   
+            />
         </div>
       )
    }

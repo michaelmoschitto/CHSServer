@@ -14,7 +14,7 @@ var ProtectedRoute = ({component: Cmp, path, ...rest }) => {
 class Main extends Component {
    
    signedIn() {
-      return Object.keys(this.props.Prs).length !== 0; // Nonempty Prs obj
+      return this.props.Prs && Object.keys(this.props.Prs).length !== 0; // Nonempty Prs obj
    }
 
    render() {
@@ -49,11 +49,11 @@ class Main extends Component {
                                     
                   {this.signedIn() ?
                      [
-                        <Navbar.Text>
+                        <Navbar.Text key={0}>
                            {`Logged in as: ${this.props.Prs.firstName}
                             ${this.props.Prs.lastName}`}
                         </Navbar.Text>,
-                        <Nav.Item onClick={() => this.props.signout()}>
+                        <Nav.Item onClick={() => this.props.signOut()} key={1}>
                            Sign out
                         </Nav.Item>
                      ]
@@ -65,12 +65,14 @@ class Main extends Component {
 
             {/*Alternate pages beneath navbar, based on current route*/}
             <Switch>
+              
                <Route exact path='/'
-                  component={() => this.props.Prs ? <Redirect to="/allCnv" />
+                  component={() => this.props.Prs ? <Redirect to="/allCnvs" />
                    : <Redirect to="/signin" />} />
-               <Route path='/signin' render={() => <SignIn signIn={this.props.signIn} />} />
+               <Route path='/signin' 
+                render={() => <SignIn signIn={this.props.signIn} />} />
                <Route path='/register'
-                render={() => <Register {...this.props} />} />
+                render={() => <Register {...this.props}/>} />
                <ProtectedRoute path='/allCnvs' component={CnvOverview}
                 {...this.props}/>
                 

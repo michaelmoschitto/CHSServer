@@ -1,7 +1,10 @@
 export default function Cnvs(state = [], action) {
    switch (action.type) {
       case 'UPDATE_CNVS': // Replace previous cnvs
-         return action.cnvs; //updates cnvs 
+         console.log("state: ", state)
+         console.log("action data: ", action.data)
+         console.log("action cnvs: ", action.cnvs)
+         return action.cnvs;
       case 'UPDATE_CNV':
          /* Example of wrongness
          state.forEach(cnv => {
@@ -9,8 +12,11 @@ export default function Cnvs(state = [], action) {
                cnv.title = action.data.title;
          });
          return state;*/
-         return state.map(val => val.id !== action.data.cnvId ?
-            val : Object.assign({}, val, { title: action.data.title }));
+         return state.map(val => 
+            val && (val.id !== action.data.id ? 
+             val : Object.assign({}, val, {title: action.data.title}))
+         
+         );
       case 'ADD_CNV':
          return state.concat([action.cnv]);
       default:

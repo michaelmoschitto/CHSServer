@@ -12,6 +12,7 @@ export default class CnvModal extends Component {
    }
 
    close = (result) => {
+      console.log("props: ", this.props)
       this.props.onDismiss && this.props.onDismiss({
          status: result,
          title: this.state.cnvTitle
@@ -19,14 +20,17 @@ export default class CnvModal extends Component {
    }
 
    getValidationState = () => {
-      if (this.state.cnvTitle) {
-         return null;
-      }
-      return "warning";
+      if (this.state.cnvTitle && this.state.cnvTitle.length < 80)
+         return "Ok";
+      else if(!this.state.cnvTitle)
+         return "Title is required";
+      else
+         return "Too long"
+   
    }
 
    handleChange = (e) => {
-      this.setState({cnvTitle: e.target.value}); //each time letter is typed, update state and redraw occurs
+      this.setState({cnvTitle: e.target.value});
    }
 
    componentWillReceiveProps = (nextProps) => {
@@ -36,33 +40,49 @@ export default class CnvModal extends Component {
       }
    }
 
+   buttonDisable = () => {
+      return this.getValidationState() !== "Ok" ? 
+       true : false;
+   }
+
    render() {
       return (
-         <Modal show={this.props.showModal} onHide={() => this.close("Cancel")}> {/* built in modal*/}
+         <Modal show={this.props.showModal} onHide={() => this.close("Cancel")}>
             <Modal.Header closeButton>
                <Modal.Title>{this.props.title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                <Form>
                   <FormGroup controlId="formBasicText"
-                   validationState={this.getValidationState()}
+                  //  isvalid={this.getValidationState()}
                   >
                      <Form.Label>Conversation Title</Form.Label>
                      <FormControl
                         type="text"
                         value={this.state.cnvTitle}
                         placeholder="Enter text"
-                        onChange={this.handleChange} //every time a letter is entered, handleChange is called
+                        onChange={this.handleChange}
+                        isValid={(this.getValidationState() === 
+                         "Ok")}
+                        isInvalid={(this.getValidationState() === 
+                         "Too long" || ( this.getValidationState() === 
+                         "Title is required"))}
                      />
-                     <FormControl.Feedback />
-                     <Form.Text className="text-muted"> {/* light gray text*/}
+                     <FormControl.Feedback type="valid"> 
+                           Great!
+                     </FormControl.Feedback>
+                     <FormControl.Feedback type="invalid"> 
+                           {this.getValidationState()}
+                     </FormControl.Feedback>
+                     {/* <Form.Text className="text-muted">
                         Title is required
-                     </Form.Text>
+                     </Form.Text> */}
                   </FormGroup>
                </Form>
             </Modal.Body>
             <Modal.Footer>
-               <Button onClick={() => this.close("Ok")}>Ok</Button>
+               <Button onClick={() => this.close("Ok")} 
+                disabled={this.buttonDisable()}>Ok</Button>
                <Button onClick={() => this.close("Cancel")}>Cancel</Button>
             </Modal.Footer>
          </Modal>)

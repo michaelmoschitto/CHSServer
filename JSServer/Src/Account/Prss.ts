@@ -3,13 +3,13 @@ import { Validator } from '../Validator';
 import { waterfall } from 'async';
 import { Session } from '../Session';
 import { Request, Response, Body } from 'express-serve-static-core';
-import { queryCallback, PoolConnection } from 'mysql';
+import { queryCallback, PoolConnection, MysqlError } from 'mysql';
 import { Router } from 'express';
 
-export let router = Router({ caseSensitive: true });
-const baseURL = '/Prss';
+export let router: Router = Router({ caseSensitive: true });
+const baseURL: string = '/Prss';
 const Tags = Validator.Tags;
-const skipToEnd = {
+const skipToEnd: MysqlError = {
    code: '',
    errno: 0,
    fatal: true,

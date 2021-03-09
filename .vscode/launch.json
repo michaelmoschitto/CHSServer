@@ -1,6 +1,16 @@
 {
     "version": "0.2.0",
-    "configurations": [{
+    "configurations": [
+        
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}"
+        },
+
+    {
         "type": "node",
         "request": "attach",
         "name": "Node: Nodemon",

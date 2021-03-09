@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Form, FormGroup, Row, Col, FormControl, Button} from 'react-bootstrap';
 import './SignIn.css';
+import {withRouter} from 'react-router-dom';
 
 class SignIn extends Component {
    constructor(props) {
@@ -13,14 +14,14 @@ class SignIn extends Component {
       }
 
        // bind 'this' to the correct context
-       this.handleChange = this.handleChange.bind(this);
-       this.signIn = this.signIn.bind(this);
+         this.handleChange = this.handleChange.bind(this);
+         this.signIn = this.signIn.bind(this);
    }
 
    // Call redux actionCreator signin via props.
    signIn(event) {
       console.log("Component signin with " + this.state);
-      this.props.signIn(this.state, () => this.props.history.push("/allCnv"));
+      this.props.signIn(this.state, () => this.props.history.push("/allCnvs"));
       event.preventDefault()
    }
 
@@ -32,7 +33,7 @@ class SignIn extends Component {
    }
 
    render() {
-      console.log("Rendering Signin");
+      ("Rendering Signin");
       return (
          <section className="container">
             <Col sm={{offset: 2}}>
@@ -65,7 +66,7 @@ class SignIn extends Component {
                       value={this.state.password}
                       onChange={this.handleChange}
                      />
-                  </Col>
+                  </Col> 
                </FormGroup>
                <FormGroup>
                   <Col>
@@ -80,4 +81,6 @@ class SignIn extends Component {
    }
 }
 
-export default SignIn;
+export default withRouter(SignIn);
+// export default SignIn;
+

@@ -1,0 +1,14 @@
+1) What is the difference betweeen passing history as props or export withHistory
+2) On Main.js:11 rest.Prs is undf meaning that Prs was never set on sign in, how 
+    do I do this
+3) What is the correct way to do validation specifically CnvModal
+
+
+
+Notes:
+    if index.js:1 Warning: Cannot update a component (`CnvOverView`) 
+    while rendering a different component (`ConfDialog`). 
+    To locate the bad setState() call inside `ConfDialog`, 
+    follow the stack trace as described in
+
+    NEED A CLOSURE

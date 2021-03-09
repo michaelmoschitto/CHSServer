@@ -11,78 +11,112 @@
 //    due to login requirements.  Prss POST does the best
 //    it can by returning the object it just added, augmented
 //    with the proper ID.
-// 5. Sign in and sign out operations that retain relevant
-//    sessionId data.  Successful sign in returns promise 
+// 5. Signin and signout operations that retain relevant
+//    sessionId data.  Successful signin returns promise
 //    resolving to newly signed in user.
 
-const baseURL = "http://localhost:3001/";
+// Server Errors show up as rejected promise, or exception in asynch await
+//The problem is that the 400's are not thrown as exceptions, safe fetch makes 
+// 400's act this way
+
+const baseURL = 'http://localhost:3001/';
 const headers = new Headers();
 var sessionId;
 
 headers.set('Content-Type', 'application/JSON');
 
 const reqConf = {
-    headers: headers,
-    credentials: 'include',
+   headers: headers,
+   credentials: 'include',
 };
 
 // Helper functions for the common request types, automatically
 // adding verb, headers, and error management.
+export async function safeFetch(endpoint, body){
+   try{
+
+      const response = await fetch(baseURL + endpoint, {
+         method: 'POST',
+         body: JSON.stringify(body),
+         ...reqConf,
+      });
+
+      const rspBody  = await response.json()
+      return response.ok ? response : rspBody[0] //return rejected promise instead
+      
+   }catch (err){ 
+   //network err, the abscence of 200 will not automatically fail
+   // per https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+      
+      //if absent or fails to response (timeout?) 
+      console.log('Error!', err.toString()); 
+      const error = ["Server Connect Error"]
+      return error                  
+   }
+};
+
+export async function safePost(endpoint, body){
+   const rsp = await safeFetch(endpoint, body);
+   console.log('safePost rsp: ', rsp)
+   return rsp;
+};
+
 export function post(endpoint, body) {
-    return fetch(baseURL + endpoint, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        ...reqConf
-    });
+   return fetch(baseURL + endpoint, {
+      method: 'POST',
+      body: JSON.stringify(body),
+      ...reqConf,
+   });
 }
 
 export function put(endpoint, body) {
-    return fetch(baseURL + endpoint, {
-        method: 'PUT',
-        body: JSON.stringify(body),
-        ...reqConf
-    });
+   return fetch(baseURL + endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      ...reqConf,
+   });
 }
 
 export function get(endpoint) {
-    return fetch(baseURL + endpoint, {
-        method: 'GET',
-        ...reqConf
-    });
+   return fetch(baseURL + endpoint, {
+      method: 'GET',
+      ...reqConf,
+   });
 }
 
 export function del(endpoint) {
-    return fetch(baseURL + endpoint, {
-        method: 'DELETE',
-        ...reqConf
-    });
+   return fetch(baseURL + endpoint, {
+      method: 'DELETE',
+      ...reqConf,
+   });
 }
 
 // Functions for performing the api requests
 
 /**
- * Sign a user into the service, returning a promise of the 
+ * Sign a user into the service, returning a promise of the
  * user data
  * @param {{email: string, password: string}} cred
  */
 export function signIn(cred) {
-   return post("Ssns", cred)
-    .then(response => {
-        let location = response.headers.get("Location").split('/');
-        sessionId = location[location.length - 1];
-        return get("Ssns/" + sessionId);
-    })
-    .then(response => response.json())   // ..json() returns a Promise!
-    .then(body => get('Prss/' + body.prsId))
-    .then(userResponse => userResponse.json())
-    .then(rsp => rsp[0]);
+   return safePost('Ssns', cred)
+      .then(response => {
+         let location = response.headers.get('Location').split('/');
+         sessionId = location[location.length - 1];
+         return get('Ssns/' + sessionId);
+         // return get("Ssns/0");
+      })
+      .then(response => response.json()) // ..json() returns a Promise!
+      .then(body => get('Prss/' + body.prsId))
+      .then(userResponse => userResponse.json())
+      .then(rsp => rsp[0]);
 }
 
 /**
  * @returns {Promise} result of the sign out request
  */
 export function signOut() {
-    return del("Ssns" + sessionId);
+   return del('Ssns/' + sessionId);
 }
 
 /**
@@ -91,107 +125,125 @@ export function signOut() {
  * @returns {Promise resolving to new user as specified in post}
  */
 export async function postPrs(user) {
-    let rsp = await post("Prss", user);
-    user.id = parseInt(rsp.headers.get("Location").split('/').pop());
-    return user;
-/*
-   return post("Prss", user)
-   .then(rsp => {
-      user.id = parseInt(rsp.headers.get("Location").split('/').pop());
-      return user;
-   })
-*/
+   let rsp = await post('Prss', user);
+   user.id = parseInt(rsp.headers.get('Location').split('/').pop());
+   return user;
+   /*
+      return post("Prss", user)
+      .then(rsp => {
+         user.id = parseInt(rsp.headers.get("Location").split('/').pop());
+         return user;
+      })
+   */
 }
 
 /**
  * @returns {Promise} json parsed data
  */
 export async function getCnvs(userId) {
-    let res = await get("Cnvs" + (userId ? "?owner="+userId : ""))
- 
-    return res.json();
- /*
-    return get("Cnvs" + (userId ? "?owner="+userId : ""))
-    .then((res) => res.json())
- */
- }
+   let res = await get('Cnvs' + (userId ? '?owner=' + userId : ''));
+
+   return res.json();
+   /*
+      return get("Cnvs" + (userId ? "?owner="+userId : ""))
+      .then((res) => res.json())
+   */
+}
+
+export async function getCnvById(cnvId){
+   let res = await get('Cnvs/' + (cnvId.toString()))
+
+   return res.json()
+}
 
 export function putCnv(id, body) {
-    return put(`Cnvs/${id}`, body)
+   return put(`Cnvs/${id}`, body)
+   .then(() => getCnvById(id))
+   .then(rsp => {
+      return rsp})
+   
 }
 
 export function postCnv(body) {
-    return post('Cnvs', body).then(rsp => {
-      let location = rsp.headers.get("Location").split('/');
-      return get(`Cnvs/${location[location.length-1]}`);
+   return post('Cnvs', body)
+   .then(rsp => {
+      let location = rsp.headers.get('Location').split('/');
+      console.log("location: ", location)
+      return getCnvById(location[location.length - 1]);
    })
-   .then(rsp => rsp.json());
+}
+
+export function deleteCnv(id){
+   return del(`Cnvs/${id}`)
+   .then(rsp => get('Cnvs/'))
+   .then(cnvs => cnvs.json())
+
 }
 
 const errMap = {
-    en: {
-        noAuth: 'Not Logged in',
-        noPerm: 'Not permitted',
-        notFound: 'Entity not present in DB',
-        unknown: 'Unknown error',
-        serverError: 'Server not reachable',
-        missingField: 'Field missing from request: ',
-        badValue: 'Field has bad value: ',
-        badLogin: 'Email/password combination invalid',
-        dupEmail: 'Email duplicates an existing email',
-        noTerms: 'Acceptance of terms is required',
-        forbiddenRole: 'Role specified is not permitted.',
-        noOldPwd: 'Change of password requires an old password',
-        oldPwdMismatch: 'Old password that was provided is incorrect.',
-        dupTitle: 'Conversation title duplicates an existing one',
-        dupEnrollment: 'Duplicate enrollment',
-        forbiddenField: 'Field in body not allowed.',
-        queryFailed: 'Query failed (server problem).'
-    },
-    es: {
-        noAuth: '[ES] Not Logged in',
-        noPerm: '[ES] Not permitted',
-        notFound: '[ES] Entity not present in DB',
-        unknown: '[ES] Unknown error',
-        serverError: '[ES] Server not reachable',
-        missingField: '[ES] Field missing from request: ',
-        badValue: '[ES] Field has bad value: ',
-        badLogin: '[ES] Email/password combination invalid',
-        dupEmail: '[ES] Email duplicates an existing email',
-        noTerms: '[ES] Acceptance of terms is required',
-        forbiddenRole: '[ES] Role specified is not permitted.',
-        noOldPwd: '[ES] Change of password requires an old password',
-        oldPwdMismatch: '[ES] Old password that was provided is incorrect.',
-        dupTitle: '[ES] Conversation title duplicates an existing one',
-        dupEnrollment: '[ES] Duplicate enrollment',
-        forbiddenField: '[ES] Field in body not allowed.',
-        queryFailed: '[ES] Query failed (server problem).'
-    },
-    sv: {
-        noAuth: '[SV] Not Logged in',
-        noPerm: '[SV] Not permitted',
-        notFound: 'Entitet saknas i DB',
-        unknown: '[SV] Unknown error',
-        serverError: '[SV] Server not reachable',
-        missingField: 'Ett fält saknas: ',
-        badValue: 'Fält har dåligt värde: ',
-        badLogin: 'Email/lösenord kombination ogilltig',
-        dupEmail: 'Email duplicerar en existerande email',
-        noTerms: 'Villkoren måste accepteras',
-        forbiddenRole: 'Angiven roll förjuden',
-        noOldPwd: 'Tidiagre lösenord krav för att updatera lösenordet',
-        oldPwdMismatch: 'Tidigare lösenord felaktigt',
-        dupTitle: 'Konversationstitel duplicerar tidigare existerande titel',
-        dupEnrollment: 'Duplicerad inskrivning',
-        forbiddenField: 'Förbjudet fält i meddelandekroppen',
-        queryFailed: 'Förfrågan misslyckades (server problem).'
-    }
-}
+   en: {
+      noAuth: 'Not Logged in',
+      noPerm: 'Not permitted',
+      notFound: 'Entity not present in DB',
+      unknown: 'Unknown error',
+      serverError: 'Server not reachable',
+      missingField: 'Field missing from request: ',
+      badValue: 'Field has bad value: ',
+      badLogin: 'Email/password combination invalid',
+      dupEmail: 'Email duplicates an existing email',
+      noTerms: 'Acceptance of terms is required',
+      forbiddenRole: 'Role specified is not permitted.',
+      noOldPwd: 'Change of password requires an old password',
+      oldPwdMismatch: 'Old password that was provided is incorrect.',
+      dupTitle: 'Conversation title duplicates an existing one',
+      dupEnrollment: 'Duplicate enrollment',
+      forbiddenField: 'Field in body not allowed.',
+      queryFailed: 'Query failed (server problem).',
+   },
+   es: {
+      noAuth: '[ES] Not Logged in',
+      noPerm: '[ES] Not permitted',
+      notFound: '[ES] Entity not present in DB',
+      unknown: '[ES] Unknown error',
+      serverError: '[ES] Server not reachable',
+      missingField: '[ES] Field missing from request: ',
+      badValue: '[ES] Field has bad value: ',
+      badLogin: '[ES] Email/password combination invalid',
+      dupEmail: '[ES] Email duplicates an existing email',
+      noTerms: '[ES] Acceptance of terms is required',
+      forbiddenRole: '[ES] Role specified is not permitted.',
+      noOldPwd: '[ES] Change of password requires an old password',
+      oldPwdMismatch: '[ES] Old password that was provided is incorrect.',
+      dupTitle: '[ES] Conversation title duplicates an existing one',
+      dupEnrollment: '[ES] Duplicate enrollment',
+      forbiddenField: '[ES] Field in body not allowed.',
+      queryFailed: '[ES] Query failed (server problem).',
+   },
+   sv: {
+      noAuth: '[SV] Not Logged in',
+      noPerm: '[SV] Not permitted',
+      notFound: 'Entitet saknas i DB',
+      unknown: '[SV] Unknown error',
+      serverError: '[SV] Server not reachable',
+      missingField: 'Ett fält saknas: ',
+      badValue: 'Fält har dåligt värde: ',
+      badLogin: 'Email/lösenord kombination ogilltig',
+      dupEmail: 'Email duplicerar en existerande email',
+      noTerms: 'Villkoren måste accepteras',
+      forbiddenRole: 'Angiven roll förjuden',
+      noOldPwd: 'Tidiagre lösenord krav för att updatera lösenordet',
+      oldPwdMismatch: 'Tidigare lösenord felaktigt',
+      dupTitle: 'Konversationstitel duplicerar tidigare existerande titel',
+      dupEnrollment: 'Duplicerad inskrivning',
+      forbiddenField: 'Förbjudet fält i meddelandekroppen',
+      queryFailed: 'Förfrågan misslyckades (server problem).',
+   },
+};
 
 /**
  * @param {string} errTag
  * @param {string} lang
  */
 export function errorTranslate(errTag, lang = 'en') {
-    return errMap[errTag] || 'Unknown Error!';
+   return errMap[errTag] || 'Unknown Error!';
 }

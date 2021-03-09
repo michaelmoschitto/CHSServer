@@ -8,8 +8,8 @@ import { Modal, Button } from 'react-bootstrap';
  * buttons: Array<string>
  * onClose: function to call upon close
  */
-export default props => 
-   <Modal show={props.show} onHide={() => props.onClose("Dismissed")}> 
+const ConfDialog  = props => 
+<Modal show={props.show} onHide={() => props.onClose("Dismissed")}> 
       <Modal.Header closeButton>
          <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>
@@ -17,7 +17,11 @@ export default props =>
          {props.body}
       </Modal.Body>
       <Modal.Footer>
-         {props.buttons.map((btn, i) => <Button key={btn}
-         onClick={props.onClose(btn)}>{btn}</Button>)}
+         {props.buttons.map((btn, i) => 
+         <Button key={btn} onClick={props.onClose(btn)}>
+            {btn}
+         </Button>)}
       </Modal.Footer>
    </Modal>
+   
+export default ConfDialog
