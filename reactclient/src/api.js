@@ -49,8 +49,6 @@ export async function safeFetch(endpoint, method, body){
          throw errorBody;
       }      
    }catch (err){ 
-   //network err, the abscence of 200 will not automatically fail
-   // per https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
       
       if(isUserError){ //400's (badValue, dupTitle etc)
          throw err;
@@ -137,25 +135,47 @@ export function del(endpoint) {
  * user data
  * @param {{email: string, password: string}} cred
  */
-export function signIn(cred) {
-   return post('Ssns', cred)
-      .catch(err => {
-         console.log('ERROR DIALOG: ', err)
-         return Promise.reject(err);
-      })
-      .then(response => {
-         console.log('Response in chain ', response)
-         let location = 
-          response.headers.get('Location').split('/');
-         sessionId = location[location.length - 1];
-         return get('Ssns/' + sessionId);
-         // return get("Ssns/0");
-      })
-      .then(response => response.json()) // ..json() returns a Promise!
-      .then(body => get('Prss/' + body.prsId))
-      .then(userResponse => userResponse.json())
-      .then(rsp => rsp[0])
+// export function signIn(cred) {
+//    return post('Ssns', cred)
+//       .catch(err => {
+//          console.log('ERROR DIALOG: ', err)
+//          return Promise.reject(err);
+//       })
+//       .then(response => {
+//          console.log('Response in chain ', response)
+//          let location = 
+//           response.headers.get('Location').split('/');
+//          sessionId = location[location.length - 1];
+//          return get('Ssns/' + sessionId);
+//          // return get("Ssns/0");
+//       })
+//       .then(response => response.json()) // ..json() returns a Promise!
+//       .then(body => get('Prss/' + body.prsId))
+//       .then(userResponse => userResponse.json())
+//       .then(rsp => rsp[0])
+// }
+
+export async function signIn(cred) {
+   let postRsp;
+   try{
+      postRsp = await post('Ssns', cred);
+      let location = postRsp.headers.get('Location').split('/');
+      let sessionId = location[location.length - 1];
+      let session = await get('Ssns/' + sessionId);
+      let body = await session.json();
+      let prs = await get('Prss/' + body.prsId);
+      let prsRsp = await prs.json()
+      return prsRsp[0];
+   
+   }catch(error){
+      console.log('ERROR DIALOG: ', error)
+      throw error;
+   }      
 }
+
+  
+
+
 
 /**
  * @returns {Promise} result of the sign out request
@@ -201,28 +221,60 @@ export async function getCnvById(cnvId){
    return res.json()
 }
 
-export function putCnv(id, body) {
-   return put(`Cnvs/${id}`, body)
-   .then(() => getCnvById(id))
-   .then(rsp => {
-      return rsp})
+// export function putCnv(id, body) {
+//    return put(`Cnvs/${id}`, body)
+//    .then(() => getCnvById(id))
+//    .then(rsp => {
+//       return rsp})
    
+// }
+export async function putCnv(id, body){
+   try{
+      await put(`Cnvs/${id}`, body);
+      let changedCnv = await getCnvById(id);
+      return changedCnv;
+
+   }catch(err){
+      console.log("putCnv Err: ", err);
+   }
 }
 
-export function postCnv(body) {
-   return post('Cnvs', body)
-   .then(rsp => {
+// export function postCnv(body) {
+//    return post('Cnvs', body)
+//    .then(rsp => {
+//       let location = rsp.headers.get('Location').split('/');
+//       console.log("location: ", location)
+//       return getCnvById(location[location.length - 1]);
+//    })
+// }
+
+export async function postCnv(body){
+   try{
+      let rsp = await post('Cnvs', body);
       let location = rsp.headers.get('Location').split('/');
       console.log("location: ", location)
       return getCnvById(location[location.length - 1]);
-   })
+   }catch(err){
+      console.log('Error in postCnv ', err);
+   }
 }
 
-export function deleteCnv(id){
-   return del(`Cnvs/${id}`)
-   .then(rsp => get('Cnvs/'))
-   .then(cnvs => cnvs.json())
+// export function deleteCnv(id){
+//    return del(`Cnvs/${id}`)
+//    .then(rsp => get('Cnvs/'))
+//    .then(cnvs => cnvs.json())
 
+// }
+
+export async function deleteCnv(id){
+   try{  
+      await del(`Cnvs/${id}`);
+      let cnvs = await get('Cnvs/');
+
+      return cnvs.json();
+   }catch(err){
+      console.log('Error in deleteCnv: ', err);
+   };
 }
 
 const errMap = {
@@ -292,3 +344,4 @@ const errMap = {
 export function errorTranslate(errTag, lang = 'en') {
    return errMap[errTag] || 'Unknown Error!';
 }
+
