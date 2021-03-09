@@ -32,63 +32,102 @@ const reqConf = {
 
 // Helper functions for the common request types, automatically
 // adding verb, headers, and error management.
-export async function safeFetch(endpoint, body){
+
+export async function safeFetch(endpoint, method, body){
+   var isUserError = false;
+   var response;
+   
    try{
-
-      const response = await fetch(baseURL + endpoint, {
-         method: 'POST',
-         body: JSON.stringify(body),
-         ...reqConf,
-      });
-
-      const rspBody  = await response.json()
-      return response.ok ? response : rspBody[0] //return rejected promise instead
-      
+      response = await doFetch(endpoint, method, body);
+      console.log('response: ', response)
+   
+      if(response.ok)
+         return response
+      else{
+         const errorBody = await response.json();
+         isUserError = true;
+         throw errorBody;
+      }      
    }catch (err){ 
    //network err, the abscence of 200 will not automatically fail
    // per https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
       
-      //if absent or fails to response (timeout?) 
-      console.log('Error!', err.toString()); 
-      const error = ["Server Connect Error"]
-      return error                  
+      if(isUserError){ //400's (badValue, dupTitle etc)
+         throw err;
+      }else{ // 500 server error
+         const error = ["Server Connect Error"]
+         throw error;                 
+      }
    }
 };
 
-export async function safePost(endpoint, body){
-   const rsp = await safeFetch(endpoint, body);
-   console.log('safePost rsp: ', rsp)
-   return rsp;
-};
+async function doFetch(endpoint, method, body){
+   let rsp;
+
+   if(body){
+      rsp = await fetch(baseURL + endpoint, {
+        method: method,
+        body: JSON.stringify(body),
+        ...reqConf,
+     });
+     return rsp
+     }else{
+     rsp = await fetch(baseURL + endpoint, {
+        method: method,
+        ...reqConf,
+     });
+     return rsp;
+   }
+  }
+
+
+// export async function safePost(endpoint, body){
+//    var isUserError = false;
+
+//    try{
+
+//       const response = await fetch(baseURL + endpoint, {
+//          method: 'POST',
+//          body: JSON.stringify(body),
+//          ...reqConf,
+//       });
+
+//       console.log('response: ', response)
+   
+//       if(response.ok)
+//          return response
+//       else{
+//          const errorBody = await response.json();
+//          isUserError = true;
+//          throw errorBody;
+//       }      
+//    }catch (err){ 
+//    //network err, the abscence of 200 will not automatically fail
+//    // per https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+      
+//       if(isUserError){ //400's (badValue, dupTitle etc)
+//          throw err;
+//       }else{ // 500 server error
+//          const error = ["Server Connect Error"]
+//          throw error;                 
+//       }
+//    }
+// };
 
 export function post(endpoint, body) {
-   return fetch(baseURL + endpoint, {
-      method: 'POST',
-      body: JSON.stringify(body),
-      ...reqConf,
-   });
+   return safeFetch(endpoint, 'POST', body)
 }
 
 export function put(endpoint, body) {
-   return fetch(baseURL + endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(body),
-      ...reqConf,
-   });
+   return safeFetch(endpoint, 'PUT', body)
 }
 
 export function get(endpoint) {
-   return fetch(baseURL + endpoint, {
-      method: 'GET',
-      ...reqConf,
-   });
+   return safeFetch(endpoint, 'GET', null)
 }
 
 export function del(endpoint) {
-   return fetch(baseURL + endpoint, {
-      method: 'DELETE',
-      ...reqConf,
-   });
+   return safeFetch(endpoint, 'DELETE', null)
 }
 
 // Functions for performing the api requests
@@ -99,9 +138,15 @@ export function del(endpoint) {
  * @param {{email: string, password: string}} cred
  */
 export function signIn(cred) {
-   return safePost('Ssns', cred)
+   return post('Ssns', cred)
+      .catch(err => {
+         console.log('ERROR DIALOG: ', err)
+         return Promise.reject(err);
+      })
       .then(response => {
-         let location = response.headers.get('Location').split('/');
+         console.log('Response in chain ', response)
+         let location = 
+          response.headers.get('Location').split('/');
          sessionId = location[location.length - 1];
          return get('Ssns/' + sessionId);
          // return get("Ssns/0");
@@ -109,7 +154,7 @@ export function signIn(cred) {
       .then(response => response.json()) // ..json() returns a Promise!
       .then(body => get('Prss/' + body.prsId))
       .then(userResponse => userResponse.json())
-      .then(rsp => rsp[0]);
+      .then(rsp => rsp[0])
 }
 
 /**

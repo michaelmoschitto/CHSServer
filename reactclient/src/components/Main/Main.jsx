@@ -67,10 +67,12 @@ class Main extends Component {
             <Switch>
               
                <Route exact path='/'
-                  component={() => this.props.Prs ? <Redirect to="/allCnvs" />
+                  component={() => this.props.Prs ? 
+                   <Redirect to="/allCnvs" />
                    : <Redirect to="/signin" />} />
                <Route path='/signin' 
-                render={() => <SignIn signIn={this.props.signIn} />} />
+                render={() => 
+                 <SignIn signIn={this.props.signIn} />} />
                <Route path='/register'
                 render={() => <Register {...this.props}/>} />
                <ProtectedRoute path='/allCnvs' component={CnvOverview}
