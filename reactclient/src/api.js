@@ -283,6 +283,25 @@ export async function deleteCnv(id){
 }
 
 const errMap = {
+   "en-US": {
+      noAuth: 'Not Logged in',
+      noPerm: 'Not permitted',
+      notFound: 'Entity not present in DB',
+      unknown: 'Unknown error',
+      serverError: 'Server not reachable',
+      missingField: 'Field missing from request: ',
+      badValue: 'Field has bad value: ',
+      badLogin: 'Email/password combination invalid',
+      dupEmail: 'Email duplicates an existing email',
+      noTerms: 'Acceptance of terms is required',
+      forbiddenRole: 'Role specified is not permitted.',
+      noOldPwd: 'Change of password requires an old password',
+      oldPwdMismatch: 'Old password that was provided is incorrect.',
+      dupTitle: 'Conversation title duplicates an existing one',
+      dupEnrollment: 'Duplicate enrollment',
+      forbiddenField: 'Field in body not allowed.',
+      queryFailed: 'Query failed (server problem).',
+   },
    en: {
       noAuth: 'Not Logged in',
       noPerm: 'Not permitted',
@@ -347,6 +366,6 @@ const errMap = {
  * @param {string} lang
  */
 export function errorTranslate(errTag, lang = 'en') {
-   return errMap[errTag] || 'Unknown Error!';
+   return errMap[lang][errTag] || 'Unknown Error!';
 }
 

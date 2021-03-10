@@ -83,3 +83,8 @@ export function clearErrors(cb){
       return dispatch({type: 'CLEAR_ERRS'});
    };
 }
+
+export function translateError(tag, lang='en', params, cb){
+   console.log('lang in actionC: ', lang)
+   return () => api.errorTranslate(tag, lang)
+}

@@ -93,7 +93,7 @@ class Main extends Component {
             
             {/*Error popup dialog*/}
             <ErrorModal show={this.props.Errors.length} 
-             c={console.log(this.props.Errors)}
+             translator={this.props.translateError}
              errors={this.props.Errors}
              onClear={() => this.props.clearErrors()} />
 
