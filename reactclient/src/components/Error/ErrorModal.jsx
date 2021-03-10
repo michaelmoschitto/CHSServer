@@ -43,7 +43,7 @@ const ErrorModal = props => {
           <Modal.Title>Error Notice</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {props.errors[0].tag}
+          {props.errors[0]? props.errors[0].tag : ''}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={props.onClear}>

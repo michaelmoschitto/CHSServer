@@ -24,7 +24,6 @@ const CnvOverView = props => {
       // console.log('props in CnvOverview: ', props)
       // console.log('props in CnvOverview: ')
 
-      // !cnvs.length || (!showCnvModal && props.updateCnvs());
       cnvs.length || (!showCnvModal && props.updateCnvs());
    });
    
