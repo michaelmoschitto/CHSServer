@@ -190,9 +190,14 @@ export function signOut() {
  * @returns {Promise resolving to new user as specified in post}
  */
 export async function postPrs(user) {
-   let rsp = await post('Prss', user);
-   user.id = parseInt(rsp.headers.get('Location').split('/').pop());
-   return user;
+   try{
+      let rsp = await post('Prss', user);
+      user.id = parseInt(rsp.headers.get('Location').split('/').pop());
+      return user;
+   }catch(err){
+      console.log('Induced Error in PostPrs: ', err)
+      throw err;
+   }
    /*
       return post("Prss", user)
       .then(rsp => {

@@ -9,7 +9,8 @@ import { propTypes } from 'react-bootstrap/esm/Image';
 function mapStateToProps(state) {
    return {
       Prs: state.Prs,
-      Cnvs: state.Cnvs
+      Cnvs: state.Cnvs,
+      Errors: state.Errors
    };
 }
 

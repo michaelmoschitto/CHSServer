@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Register, SignIn, CnvOverview, CnvDetail, ConfDialog} from '../components'
+import {Register, SignIn, CnvOverview, CnvDetail, ConfDialog, ErrorModal} from '../components'
 import {Route, Redirect, Switch } from 'react-router-dom';
 import {Navbar, Nav, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
@@ -14,6 +14,8 @@ var ProtectedRoute = ({component: Cmp, path, ...rest }) => {
       return Object.keys(rest.Prs).length !== 0 ?
       <Cmp {...rest}/> : <Redirect to='/signin'/>;}}/>);
    };
+
+
    
 class Main extends Component {
    
@@ -88,8 +90,13 @@ class Main extends Component {
                 
                {/* More routes */}
             </Switch>
-
+            
             {/*Error popup dialog*/}
+            <ErrorModal show={this.props.Errors.length} 
+             c={console.log(this.props.Errors)}
+             errors={this.props.Errors}
+             onClear={() => this.props.clearErrors()} />
+
          </div>
       )
    }

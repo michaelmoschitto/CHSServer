@@ -27,6 +27,9 @@ export function register(data, cb) {
             if (cb) cb();
          })
          .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
+         // .catch(error => dispatch({type: 'REGISTER_ERR',
+         //  details: {tag: 'FakeError', params: 'Is This working???'}}));
+
    };
 }
 
@@ -72,5 +75,11 @@ export function delCnv(cnvId, cb){
       .then(() => {
          if (cb) cb();
       });
+   };
+}
+
+export function clearErrors(cb){
+   return (dispatch, prevState) => {
+      return dispatch({type: 'CLEAR_ERRS'});
    };
 }
