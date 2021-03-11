@@ -1,9 +1,6 @@
-1) How should I handle the useEffect and updating Cnvs in CnvOverView.
-    Updating it every time it renders really messes things up, specifically 
-    now I can't close sign in modal in registration window, is this right?
-    The problem is that it is fetching a new cnv and the object is changing 
-    so I am getting screwed by shallow comp
-2) 
+1) Need help debugging why 2 Cnvs get added if newCnv made when 
+there are no others. Not 2 in DB, ,but somehow the redux store gets updated twice
+2) C
 3) 
 
 

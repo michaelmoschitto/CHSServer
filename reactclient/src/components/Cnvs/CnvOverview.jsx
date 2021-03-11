@@ -37,8 +37,11 @@ const CnvOverView = props => {
       if (result.status === "Ok") {
          if (trgCnv)
             props.modCnv(trgCnv.id, result.title);
-         else
+         else{
+            console.log(props)
             props.addCnv({title: result.title});
+            console.log("adding CNV in closeCnvModal")
+         }
             
       }
       setShowCnvModal(false);
@@ -61,23 +64,26 @@ const CnvOverView = props => {
 
    let cnvItems = [];
    
+   console.log('CNVS: ', cnvs);
    cnvs.forEach(cnv => {
 
       //also check for admin
 
-      if (!props.userOnly || props.Prs.id === cnv.ownerId)
+      if (!props.userOnly || props.Prs.id === cnv.ownerId){
+
          cnvItems.push(<CnvItem
+            c={console.log('KEY: ', cnv.id)}
             key={cnv.id} {...cnv}
             showControls={cnv.ownerId === prs.id || props.Prs.role === 1}
             onDelete={() => openDelConfirm(cnv)}
             onEdit={() => openCnvModal(cnv)} />);
-      else{
+         }else{
          console.log("not my Cnvs")
       }
    });
 
    return (
-      <section className="container" console={console.log("rendering overivew")}>
+      <section className="container" >
          <h1>Cnv Overview</h1>
          <ListGroup>
             {cnvItems}
@@ -106,16 +112,16 @@ const CnvItem = props => {
     return (
        <ListGroup.Item>
           <Row>
-             <Col sm={4}><Link to={"/CnvDetail" + props.id}>
+             <Col sm={4}><Link to={"/CnvDetail/" + props.id}>
                 {props.title}</Link></Col>
-             <Col sm={4}>{props.lastMessage ? new Intl.DateTimeFormat('us',
+             <Col sm={5}>{props.lastMessage ? new Intl.DateTimeFormat('us',
                 {
                    year: "numeric", month: "short", day: "numeric",
                    hour: "2-digit", minute: "2-digit", second: "2-digit"
                 })
                 .format(props.lastMessage) : "N/A"}</Col>
              {props.showControls ?
-                <Col sm={4} className="d-flex justify-content-md-end">
+                <Col sm={3} className="d-flex justify-content-md-end">
                    <Button size="sm" className="ml-auto" 
                     onClick={props.onDelete}>
                      <FontAwesomeIcon icon={faTrash} />                     

@@ -10,7 +10,8 @@ function mapStateToProps(state) {
    return {
       Prs: state.Prs,
       Cnvs: state.Cnvs,
-      Errors: state.Errors
+      Errors: state.Errors,
+      // Msgs: state.Msgs
    };
 }
 

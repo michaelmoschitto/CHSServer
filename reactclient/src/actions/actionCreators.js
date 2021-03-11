@@ -6,7 +6,8 @@ export function signIn(credentials, cb) {
          .then(userInfo => dispatch({type: 'SIGN_IN', user: userInfo}))
          .then(() => {
             if (cb) cb();
-         });
+         })
+         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
    };
 }
 
@@ -49,7 +50,8 @@ export function addCnv(newCnv, cb) {
          .then(cnvRsp => dispatch({type: 'ADD_CNV', cnv: newCnv}))
          .then(() => {
             if (cb) cb();
-         });
+         })
+         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
    };
 }
 
@@ -87,4 +89,15 @@ export function clearErrors(cb){
 export function translateError(tag, lang='en', params, cb){
    console.log('lang in actionC: ', lang)
    return () => api.errorTranslate(tag, lang)
+};
+
+export function getMsgsByCnv(cnvId, cb){
+   return (dispatch, prevState) => {
+      api.getMsgsByCnv(cnvId)
+      .then(msgs => dispatch({type: 'UPDATE_MSGS', msgs: msgs}))
+      .then(() => {
+         if (cb) cb();
+      })
+   }
+
 }

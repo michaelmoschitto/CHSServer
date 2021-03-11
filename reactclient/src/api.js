@@ -167,9 +167,8 @@ export async function signIn(cred) {
       let prsRsp = await prs.json()
       return prsRsp[0];
    
-   }catch(error){
-      console.log('ERROR DIALOG: ', error)
-      throw error;
+   }catch(err){
+      throw err;
    }      
 }
 
@@ -240,7 +239,7 @@ export async function putCnv(id, body){
       return changedCnv;
 
    }catch(err){
-      console.log("putCnv Err: ", err);
+      throw err;
    }
 }
 
@@ -257,10 +256,9 @@ export async function postCnv(body){
    try{
       let rsp = await post('Cnvs', body);
       let location = rsp.headers.get('Location').split('/');
-      console.log("location: ", location)
       return getCnvById(location[location.length - 1]);
    }catch(err){
-      console.log('Error in postCnv ', err);
+      throw err;
    }
 }
 
@@ -279,7 +277,20 @@ export async function deleteCnv(id){
       return cnvs.json();
    }catch(err){
       console.log('Error in deleteCnv: ', err);
+      throw err;
    };
+}
+
+export async function getMsgsByCnv(cnvId, dateTime = undefined, num = undefined){
+   try{
+      let msgs = await get(`Cnvs/${cnvId}/Msgs` + 
+       (dateTime ? 'dateTime=' + dateTime.toString() : '') + 
+       (num ? 'num=' + num.toString() : ''));
+       
+      return msgs.json();
+   }catch(err){
+      throw err;
+   }
 }
 
 const errMap = {

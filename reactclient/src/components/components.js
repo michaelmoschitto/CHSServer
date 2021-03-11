@@ -4,3 +4,4 @@ export {default as CnvOverview} from './Cnvs/CnvOverview';
 export {default as CnvDetail} from './Cnvs/CnvDetail';
 export {default as ConfDialog} from './ConfDialog/ConfDialog';
 export {default as ErrorModal} from './Error/ErrorModal'
+export {default as LikedBy} from './Likes/Likes'

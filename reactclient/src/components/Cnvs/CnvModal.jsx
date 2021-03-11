@@ -30,6 +30,7 @@ export default class CnvModal extends Component {
    }
 
    handleChange = (e) => {
+      console.log("handling change")
       this.setState({cnvTitle: e.target.value});
    }
 

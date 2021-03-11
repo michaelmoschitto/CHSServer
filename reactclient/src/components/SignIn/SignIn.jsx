@@ -34,7 +34,6 @@ class SignIn extends Component {
    }
 
    render() {
-      ("Rendering Signin");
       return (
          <section className="container">
             <Col sm={{offset: 2}}>
