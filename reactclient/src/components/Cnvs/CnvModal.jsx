@@ -12,7 +12,6 @@ export default class CnvModal extends Component {
    }
 
    close = (result) => {
-      console.log("props: ", this.props)
       this.props.onDismiss && this.props.onDismiss({
          status: result,
          title: this.state.cnvTitle
@@ -30,7 +29,6 @@ export default class CnvModal extends Component {
    }
 
    handleChange = (e) => {
-      console.log("handling change")
       this.setState({cnvTitle: e.target.value});
    }
 

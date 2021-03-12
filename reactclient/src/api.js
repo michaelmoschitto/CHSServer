@@ -39,7 +39,6 @@ export async function safeFetch(endpoint, method, body){
    
    try{
       response = await doFetch(endpoint, method, body);
-      console.log('response: ', response)
    
       if(response.ok)
          return response
@@ -53,7 +52,7 @@ export async function safeFetch(endpoint, method, body){
       if(isUserError){ //400's (badValue, dupTitle etc)
          throw err;
       }else{ // 500 server error
-         const error = ["Server Connect Error"]
+         const error = [{tag: "serverError"}]
          throw error;                 
       }
    }
@@ -194,7 +193,6 @@ export async function postPrs(user) {
       user.id = parseInt(rsp.headers.get('Location').split('/').pop());
       return user;
    }catch(err){
-      console.log('Induced Error in PostPrs: ', err)
       throw err;
    }
    /*
@@ -210,6 +208,7 @@ export async function postPrs(user) {
  * @returns {Promise} json parsed data
  */
 export async function getCnvs(userId) {
+   console.log('getting cnvs in api.js')
    let res = await get('Cnvs' + (userId ? '?owner=' + userId : ''));
 
    return res.json();
@@ -253,6 +252,7 @@ export async function putCnv(id, body){
 // }
 
 export async function postCnv(body){
+   console.log('posting Cnv in api.js')
    try{
       let rsp = await post('Cnvs', body);
       let location = rsp.headers.get('Location').split('/');
@@ -276,7 +276,6 @@ export async function deleteCnv(id){
 
       return cnvs.json();
    }catch(err){
-      console.log('Error in deleteCnv: ', err);
       throw err;
    };
 }
@@ -286,8 +285,17 @@ export async function getMsgsByCnv(cnvId, dateTime = undefined, num = undefined)
       let msgs = await get(`Cnvs/${cnvId}/Msgs` + 
        (dateTime ? 'dateTime=' + dateTime.toString() : '') + 
        (num ? 'num=' + num.toString() : ''));
-       
+
       return msgs.json();
+   }catch(err){
+      throw err;
+   }
+}
+
+export async function getMsgsLikes(msgId){
+   try{
+      let likes = await get(`Msgs/${msgId}/Likes`);
+      return likes.json();
    }catch(err){
       throw err;
    }

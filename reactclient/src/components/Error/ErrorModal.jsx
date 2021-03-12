@@ -1,8 +1,6 @@
 import React, {Component, useState} from 'react';
 import {Modal, Button, Form, FormControl, FormGroup} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
-import {errorTranslate} from '../../api'
-// import {errorTranslate} from './api'
 
 const ErrorModal = props => {
    const [show, setShow] = useState(true);
@@ -13,7 +11,6 @@ const ErrorModal = props => {
       // dispatch somethign to remove errors from store
    };
 
-   console.log("errors from Selector", errors)
 
    return (
       //   <Modal show={this.props.showModal} onHide={() => this.close('Cancel')}>

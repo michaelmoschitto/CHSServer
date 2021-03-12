@@ -37,7 +37,7 @@ export function register(data, cb) {
 export function updateCnvs(userId, cb) {
    return (dispatch, prevState) => {
       api.getCnvs(userId)
-         .then(cnvs => dispatch({type: 'UPDATE_CNVS', cnvs}))
+         .then(cnvs => {dispatch({type: 'UPDATE_CNVS', cnvs})})
          .then(() => {
             if (cb) cb();
          });
@@ -47,7 +47,9 @@ export function updateCnvs(userId, cb) {
 export function addCnv(newCnv, cb) {
    return (dispatch, prevState) => {
       api.postCnv(newCnv)
-         .then(cnvRsp => dispatch({type: 'ADD_CNV', cnv: newCnv}))
+         .then(cnvRsp => { 
+            dispatch({type: 'ADD_CNV', cnv: cnvRsp})
+         })
          .then(() => {
             if (cb) cb();
          })
@@ -87,7 +89,6 @@ export function clearErrors(cb){
 }
 
 export function translateError(tag, lang='en', params, cb){
-   console.log('lang in actionC: ', lang)
    return () => api.errorTranslate(tag, lang)
 };
 
@@ -99,5 +100,14 @@ export function getMsgsByCnv(cnvId, cb){
          if (cb) cb();
       })
    }
+}
 
+export function getMsgsLikes(msgId, cb){
+   return (dispatch, prevState) => {
+      api.getMsgsLikes(msgId)
+      .then((likes) => {
+         return dispatch({type: 'UPDATE_LIKES', likes: likes, msgId: msgId})
+      })
+      .then(() => {if(cb) cb()});
+   }
 }

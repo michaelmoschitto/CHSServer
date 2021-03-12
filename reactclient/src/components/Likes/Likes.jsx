@@ -1,14 +1,28 @@
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
+import {useSelector} from 'react-redux';
 
 
-const LikedBy = (props) => (
-<Popup trigger={<div>{props.numLikes + ' Likes'}</div>}open={props.show} 
- on="hover" position="right" arrow={true}>
-    <div>user 1</div>
-    <div>user 2</div>
-    <div>user 3</div>
-</Popup>
-  );
+const LikedBy = (props) => {
+    // const msgId = props.msgId;
+
+    const likes = useSelector(store => store.Likes);
+    
+    let divs = [];
+    (function(){
+    
+        likes && likes[props.msgId] && likes[props.msgId].forEach((l) => 
+         divs.push(<div>{`${l.firstName} ${l.lastName}`}</div>))
+    })();
+
+    return (
+        <Popup trigger={<div>{props.numLikes + ' Likes'}</div>} 
+         open={props.show} on="hover" position="right" arrow={true} 
+         onOpen={()=>{props.getLikes()}}>
+    
+            {divs.length ? divs : ''}
+        </Popup>
+    );
+};
 
 export default LikedBy;

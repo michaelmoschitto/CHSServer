@@ -21,9 +21,6 @@ const CnvOverView = props => {
  
 
    useEffect(() => {
-      // console.log('props in CnvOverview: ', props)
-      // console.log('props in CnvOverview: ')
-
       cnvs.length || (!showCnvModal && props.updateCnvs());
    });
    
@@ -34,16 +31,17 @@ const CnvOverView = props => {
    };
    
    let closeCnvModal = (result) => {
+      
       if (result.status === "Ok") {
-         if (trgCnv)
+         if (trgCnv){
             props.modCnv(trgCnv.id, result.title);
-         else{
-            console.log(props)
-            props.addCnv({title: result.title});
-            console.log("adding CNV in closeCnvModal")
          }
-            
+         else{
+            props.addCnv({title: result.title});
+         }
+         
       }
+      
       setShowCnvModal(false);
    }
 
@@ -55,7 +53,6 @@ const CnvOverView = props => {
 
    //closure, since passed to onHide: func
    let closeDelConfirm = (res) => () => {
-      console.log("props in CloseDel ", props)
       if (res === 'Yes') 
          props.delCnv(trgCnv.id);
 
@@ -64,15 +61,13 @@ const CnvOverView = props => {
 
    let cnvItems = [];
    
-   console.log('CNVS: ', cnvs);
    cnvs.forEach(cnv => {
 
       //also check for admin
-
-      if (!props.userOnly || props.Prs.id === cnv.ownerId){
+      console.log('Cnv passed to Cnv Item: ', JSON.stringify(cnv))
+      if (cnv && (!props.userOnly || props.Prs.id === cnv.ownerId)){
 
          cnvItems.push(<CnvItem
-            c={console.log('KEY: ', cnv.id)}
             key={cnv.id} {...cnv}
             showControls={cnv.ownerId === prs.id || props.Prs.role === 1}
             onDelete={() => openDelConfirm(cnv)}

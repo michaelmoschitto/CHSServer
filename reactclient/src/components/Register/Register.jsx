@@ -31,7 +31,6 @@ class Register extends Component {
    }
 
    submit() {
-      console.log('submitting!')
       let { // Make a copy of the relevant values in current state
          firstName,
          lastName,
