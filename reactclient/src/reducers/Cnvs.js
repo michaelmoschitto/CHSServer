@@ -1,11 +1,9 @@
 export default function Cnvs(state = [], action) {
    switch (action.type) {
       case 'UPDATE_CNVS': // Replace previous cnvs
-         // console.log('updating all cnvs in store')
          return action.cnvs;
       case 'UPDATE_CNV':
          return state.map(val => {
-            console.log('Val:', val)
             return val && (val.id !== action.data.id ? 
              val : Object.assign({}, val, {title: action.data.title}))
             }

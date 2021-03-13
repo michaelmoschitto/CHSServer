@@ -1,9 +1,5 @@
 export default function Likes(state = [], action){
-    console.log(`msg: ${action.msgId} 
-     like: ${JSON.stringify(action.like)}`)
-    console.log(`state: ${JSON.stringify(state)}`)
-     
-
+   
     switch(action.type){
         case 'UPDATE_LIKES':
             const id = parseInt(action.msgId);

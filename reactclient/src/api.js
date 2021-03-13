@@ -331,6 +331,7 @@ const errMap = {
       dupEnrollment: 'Duplicate enrollment',
       forbiddenField: 'Field in body not allowed.',
       queryFailed: 'Query failed (server problem).',
+      dupLike: 'Duplicate like not allowed'
    },
    en: {
       noAuth: 'Not Logged in',
@@ -350,6 +351,7 @@ const errMap = {
       dupEnrollment: 'Duplicate enrollment',
       forbiddenField: 'Field in body not allowed.',
       queryFailed: 'Query failed (server problem).',
+      dupLike: 'Duplicate like not allowed'
    },
    es: {
       noAuth: '[ES] Not Logged in',
@@ -369,6 +371,7 @@ const errMap = {
       dupEnrollment: '[ES] Duplicate enrollment',
       forbiddenField: '[ES] Field in body not allowed.',
       queryFailed: '[ES] Query failed (server problem).',
+      dupLike: '[ES] Duplicate like not allowed'
    },
    sv: {
       noAuth: '[SV] Not Logged in',
@@ -388,6 +391,7 @@ const errMap = {
       dupEnrollment: 'Duplicerad inskrivning',
       forbiddenField: 'Förbjudet fält i meddelandekroppen',
       queryFailed: 'Förfrågan misslyckades (server problem).',
+      dupLike: '[SV] Duplicate like not allowed'
    },
 };
 

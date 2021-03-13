@@ -112,21 +112,28 @@ export function getMsgsLikes(msgId, cb){
    }
 }
 
-export function postLike(msgId, Prs, cb){
+export function postLike(msgId, Prs, likeAble, cb){
    return (dispatch, prevState) => {
-      api.postLike(msgId)
-      .then((rsp) => {
-         // {id: 3, prsId: 3, firstName: "FirstM", lastName: "LastM"}
-         let likeObj = {}
-         likeObj['id'] = -1;
-         likeObj['prsId'] = Prs.id;
-         likeObj['firstName'] = Prs.firstName;
-         likeObj['lastName'] = Prs.lastName;
-         dispatch({type: 'ADD_LIKE', msgId: msgId, like: likeObj})
-      })
-      .catch(err => console.log(`Err: ${JSON.stringify(err)}`))
+      if(likeAble){
 
+      
+         api.postLike(msgId)
+         .then((rsp) => {
+            // {id: 3, prsId: 3, firstName: "FirstM", lastName: "LastM"}
+
+            let likeObj = {}
+            likeObj['id'] = -1;
+            likeObj['prsId'] = Prs.id;
+            likeObj['firstName'] = Prs.firstName;
+            likeObj['lastName'] = Prs.lastName;
+            dispatch({type: 'ADD_LIKE', msgId: msgId, like: likeObj})
+         })
+         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
       // .catch()
    
-   }
+      }
+    }
 }
+
+// likeAble={props.Prs.id !== 
+//    props.Cnvs.find(cnv => cnv.id === parseInt(cnvId)).ownerId}

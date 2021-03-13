@@ -64,7 +64,6 @@ const CnvOverView = props => {
    cnvs.forEach(cnv => {
 
       //also check for admin
-      console.log('Cnv passed to Cnv Item: ', JSON.stringify(cnv))
       if (cnv && (!props.userOnly || props.Prs.id === cnv.ownerId)){
 
          cnvItems.push(<CnvItem

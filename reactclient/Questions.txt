@@ -12,3 +12,10 @@ Notes:
     follow the stack trace as described in
 
     NEED A CLOSURE
+
+
+Likes Fiasco:
+    Currently the messages page doesn't get updated until the button is pressed.
+    Before likes got update on each mouseover, but then on click they also get u
+    updated since each click is a mouseover. 
+    If I updated them each time in the useEffect huge rendering issue
