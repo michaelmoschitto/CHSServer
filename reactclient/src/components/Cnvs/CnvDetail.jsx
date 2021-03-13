@@ -61,13 +61,15 @@ const CnvDetail = props => {
             variant="primary"
             className="mt-2"
             onClick={() => openMsgModal()}
-         >
-            
+         > 
             New Message
          </Button>
+
+         {/* spacer */}
          <span>&nbsp;&nbsp;&nbsp;</span>
+
          <Button
-            variant="primary"
+            variant="secondary"
             className="mt-2"
             onClick={() => setRefresh(true)}
          >
@@ -116,7 +118,7 @@ const MsgItem = props => {
                 likeMsg={() => {
                 return props.postLike(props.msgId, props.Prs, 
                 props.poster !== props.Prs.email)}}
-               //  getLikes={() => props.getMsgsLikes(props.msgId)}
+                getLikes={() => props.getMsgsLikes(props.msgId)}
                 />
             </Col>
          </Row>

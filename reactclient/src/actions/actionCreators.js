@@ -134,6 +134,3 @@ export function postLike(msgId, Prs, likeAble, cb){
       }
     }
 }
-
-// likeAble={props.Prs.id !== 
-//    props.Cnvs.find(cnv => cnv.id === parseInt(cnvId)).ownerId}

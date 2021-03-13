@@ -5,7 +5,7 @@ import {useSelector} from 'react-redux';
 
 const LikedBy = (props) => {
     // const msgId = props.msgId;
-    
+
     const likes = useSelector(store => store.Likes);
     
     let divs = [];
@@ -19,7 +19,7 @@ const LikedBy = (props) => {
         <Popup trigger={<div onClick={() => props.likeMsg()}
          >{divs.length + ' Likes'}</div>} 
           on="hover" position="right" arrow={true} 
-        //  onOpen={()=>{props.getLikes()}}
+         onOpen={()=>{props.getLikes()}}
          >
     
             {divs.length ? divs : ''}

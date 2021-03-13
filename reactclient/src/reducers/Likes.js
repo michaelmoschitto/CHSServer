@@ -20,7 +20,9 @@ export default function Likes(state = [], action){
             // else
             //     return state;
             let newState = [];
-            state.forEach((val) => newState[val.id] = val)
+            state.forEach((val, i) => {
+                newState[i] = val
+            })
             newState[id] = likes;
             return newState
 
