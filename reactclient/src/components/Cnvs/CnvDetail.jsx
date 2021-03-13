@@ -9,18 +9,18 @@ const CnvDetail = props => {
    const {cnvId} = useParams();
    console.log('CNVID:', cnvId)
    const msgs = useSelector(store => store.Msgs);
-   let [renderMsgs, setRenderMsgs] = useState(false);
+   // let [renderMsgs, setRenderMsgs] = useState(false);
    console.log('MSGS: ', msgs);
 
    useEffect(() => {
       // props.getMsgsByCnv(cnvId);
       // console.log('msgItems:',msgItems.length)
       // if(msgItems.length)
-      if (!renderMsgs) {
-         props.getMsgsByCnv(cnvId);
-      }
-   });
+   
+      props.getMsgsByCnv(cnvId);
 
+   });
+ 
    let openMsgModal = () => {
       console.log('Opening Message Modal');
    };
