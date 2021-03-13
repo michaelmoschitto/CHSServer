@@ -16,9 +16,11 @@ const LikedBy = (props) => {
     })();
 
     return (
-        <Popup trigger={<div>{props.numLikes + ' Likes'}</div>} 
-         open={props.show} on="hover" position="right" arrow={true} 
-         onOpen={()=>{props.getLikes()}}>
+        <Popup trigger={<div onClick={() => props.likeMsg()}
+         >{divs.length + ' Likes'}</div>} 
+          on="hover" position="right" arrow={true} 
+        //  onOpen={()=>{props.getLikes()}}
+         >
     
             {divs.length ? divs : ''}
         </Popup>

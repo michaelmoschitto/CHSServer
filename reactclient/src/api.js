@@ -301,6 +301,17 @@ export async function getMsgsLikes(msgId){
    }
 }
 
+export async function postLike(msgId){
+   try{
+      let rsp = await post(`Msgs/${msgId}/Likes`)
+      let location = rsp.headers.get('Location').split('/');
+      let likeId = location[location.length - 1];
+      return likeId;
+   }catch(err){
+      throw err;
+   }
+}
+
 const errMap = {
    "en-US": {
       noAuth: 'Not Logged in',

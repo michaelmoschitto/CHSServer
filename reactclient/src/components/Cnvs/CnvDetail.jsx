@@ -7,11 +7,16 @@ import {LikedBy} from '../components';
 
 const CnvDetail = props => {
    const {cnvId} = useParams();
+   console.log('CNVID:', cnvId)
    const msgs = useSelector(store => store.Msgs);
+   let [renderMsgs, setRenderMsgs] = useState(false);
    console.log('MSGS: ', msgs);
 
    useEffect(() => {
-      if (!msgs.length) {
+      // props.getMsgsByCnv(cnvId);
+      // console.log('msgItems:',msgItems.length)
+      // if(msgItems.length)
+      if (!renderMsgs) {
          props.getMsgsByCnv(cnvId);
       }
    });
@@ -23,10 +28,11 @@ const CnvDetail = props => {
    let msgItems = [];
 
    console.log('MSGS: ', msgs);
-   if (msgs.length)
+   if (msgs.length){
       msgs.forEach(msg => {
          msgItems.push(
             <MsgItem
+               Prs={props.Prs}
                msgId={msg.id}
                showContent={false}
                key={msg.id}
@@ -38,6 +44,7 @@ const CnvDetail = props => {
             />
          );
       });
+   }
 
    return (
       <section className="container">
@@ -65,7 +72,8 @@ const MsgItem = props => {
 
    useEffect(() => {
       // console.log('getting likes')
-      // props.getMsgsLikes(props.msgId);
+
+      props.getMsgsLikes(props.msgId);
    });
 
    return (
@@ -91,8 +99,12 @@ const MsgItem = props => {
                   console.log('moused');
                }}
             >
-               <LikedBy numLikes={props.likes} msgId={props.msgId} 
-                getLikes={() => props.getMsgsLikes(props.msgId)}/>
+               {/* addLike={props.} */}
+               <LikedBy
+                msgId={props.msgId} 
+                likeMsg={() => props.postLike(props.msgId, props.Prs)}
+               //  getLikes={() => props.getMsgsLikes(props.msgId)}
+               />
             </Col>
          </Row>
 
