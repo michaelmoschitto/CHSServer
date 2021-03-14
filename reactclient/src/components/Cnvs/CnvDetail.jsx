@@ -1,12 +1,13 @@
 //There is nothing here!!
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {ListGroupItem, Row, Col, Button} from 'react-bootstrap';
+import {ListGroupItem, Row, Col, Button, Container} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
-import {LikedBy} from '../components';
+import {LikedBy, MsgModal} from '../components';
 
 const CnvDetail = props => {
    const {cnvId} = useParams();
+   const [showModal, setModalShow] = useState(false)
    const msgs = useSelector(store => store.Msgs);
    const [refresh, setRefresh] = useState(false)
    // let [renderMsgs, setRenderMsgs] = useState(false);
@@ -14,6 +15,9 @@ const CnvDetail = props => {
    useEffect(() => {
       // props.getMsgsByCnv(cnvId);
       // if(!msgs.length)
+      if(props.msgId)
+         props.getMsgsLikes(props.msgId);
+
       if(refresh)
          props.getMsgsByCnv(cnvId);
       setRefresh(false)
@@ -22,23 +26,30 @@ const CnvDetail = props => {
  
    let openMsgModal = () => {
       console.log('Opening Message Modal');
+      setModalShow(true);
    };
+
+   let closeMsgModal = (res, msg = null) => {
+      
+      if(res === 'Ok'){
+         console.log('posting MSG: ', msg)
+         props.postMsg(cnvId, msg)
+      }
+      else  
+         console.log(res)
+
+      setModalShow(false)
+   }
+
+
 
    let msgItems = [];
 
    if (msgs.length){
       msgs.forEach(msg => {
-         console.log('poster: ', msg.poster)
-         console.log('current email', props.Prs.email)
-         console.log(msg)
+         
          msgItems.push(
             <MsgItem
-               // c={console.log('Prs: ', props.Prs)}
-               // co={console.log('CNVS', props.Cnvs)}
-               // cl={console.log('cnvID', cnvId)}
-               // cw={console.log(props.Prs.email !== msg.poster)}
-               // const found = array1.find(element => element > 10);
-               // likeAble={props.Prs.email !== msg.email}
                Prs={props.Prs}
                msgId={msg.id}
                showContent={false}
@@ -76,23 +87,18 @@ const CnvDetail = props => {
             
             Refresh
          </Button>
+         <MsgModal showModal={showModal}
+          onDismiss={(res, msg) => closeMsgModal(res, msg)}/>
       </section>
    );
 };
 
 const MsgItem = props => {
    const [toggleContent, setToggle] = useState(false);
-   const [toggleLikes, setToggleLikes] = useState(false);
-   // const likes = useSelector(store => store.Likes)
 
    let clicked = () => {
       setToggle(!toggleContent);
    };
-
-   useEffect(() => {
-
-      props.getMsgsLikes(props.msgId);
-   });
 
    return (
       <ListGroupItem>
@@ -122,13 +128,16 @@ const MsgItem = props => {
                 />
             </Col>
          </Row>
-
-         <Row show={false.toString()}>
-            <Col show={false.toString()}>
-               {toggleContent ? props.content : ''}
-            </Col>
-         </Row>
+         
+            
+            <Row show={false.toString()}>
+               <Col as="div" show={false.toString()} 
+                style={{'wordWrap' : 'break-word'}}>
+                  {toggleContent ? props.content : ''}
+               </Col>
+            </Row>
       </ListGroupItem>
+      
    );
 };
 

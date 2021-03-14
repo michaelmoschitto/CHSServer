@@ -297,6 +297,7 @@ export async function getMsgsLikes(msgId){
       let likes = await get(`Msgs/${msgId}/Likes`);
       return likes.json();
    }catch(err){
+      console.log('ERR: ', err)
       throw err;
    }
 }
@@ -309,6 +310,19 @@ export async function postLike(msgId){
       return likeId;
    }catch(err){
       throw err;
+   }
+}
+
+export async function postMsg(cnvId, content){
+   try{
+      let rsp = await post(`Cnvs/${cnvId}/Msgs`, {content: content})
+      let location = rsp.headers.get('Location').split('/');
+      let msgId = location[location.length - 1];
+      let msgs = await getMsgsByCnv(cnvId);
+      return msgs;
+
+   }catch(err){
+      throw err
    }
 }
 

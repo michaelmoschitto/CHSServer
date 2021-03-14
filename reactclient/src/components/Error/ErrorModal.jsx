@@ -31,7 +31,7 @@ const ErrorModal = props => {
       //      </Modal.Footer>
       //   </Modal>
 
-      <>
+      
          <Modal
             show={props.show? true: false}
             // onHide={() => {
@@ -53,7 +53,7 @@ const ErrorModal = props => {
                </Button>
             </Modal.Footer>
          </Modal>
-      </>
+      
    );
 };
 

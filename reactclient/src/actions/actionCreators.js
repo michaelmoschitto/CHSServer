@@ -115,11 +115,8 @@ export function getMsgsLikes(msgId, cb){
 export function postLike(msgId, Prs, likeAble, cb){
    return (dispatch, prevState) => {
       if(likeAble){
-
-      
          api.postLike(msgId)
          .then((rsp) => {
-            // {id: 3, prsId: 3, firstName: "FirstM", lastName: "LastM"}
 
             let likeObj = {}
             likeObj['id'] = -1;
@@ -133,4 +130,12 @@ export function postLike(msgId, Prs, likeAble, cb){
    
       }
     }
+}
+
+export function postMsg(cnvId, content, cb){
+   return (dispatch, prevState) => {
+      api.postMsg(cnvId, content)
+      .then(msgs => dispatch({type: 'UPDATE_MSGS', msgs: msgs}))
+      .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
+   }
 }
