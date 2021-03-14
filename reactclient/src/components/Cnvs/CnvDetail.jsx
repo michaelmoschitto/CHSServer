@@ -129,7 +129,6 @@ const MsgItem = props => {
             </Col>
          </Row>
          
-            
             <Row show={false.toString()}>
                <Col as="div" show={false.toString()} 
                 style={{'wordWrap' : 'break-word'}}>
