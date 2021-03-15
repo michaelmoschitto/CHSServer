@@ -19,3 +19,10 @@ Likes Fiasco:
     Before likes got update on each mouseover, but then on click they also get u
     updated since each click is a mouseover. 
     If I updated them each time in the useEffect huge rendering issue
+
+
+Components that need to be converted
+    * CnvModal
+    * Main
+    * Register
+    * sign in 
