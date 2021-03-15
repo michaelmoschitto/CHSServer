@@ -1,9 +1,11 @@
 //There is nothing here!!
 import React, {useEffect, useState} from 'react';
 import {useParams} from 'react-router-dom';
-import {ListGroupItem, Row, Col, Button, Container} from 'react-bootstrap';
+import {ListGroupItem, Row, Col, Button} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 import {LikedBy, MsgModal} from '../components';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faSync } from "@fortawesome/free-solid-svg-icons";
 
 const CnvDetail = props => {
    const {cnvId} = useParams();
@@ -85,8 +87,9 @@ const CnvDetail = props => {
             onClick={() => setRefresh(true)}
          >
             
-            Refresh
+            <FontAwesomeIcon icon={faSync} />  
          </Button>
+
          <MsgModal showModal={showModal}
           onDismiss={(res, msg) => closeMsgModal(res, msg)}/>
       </section>

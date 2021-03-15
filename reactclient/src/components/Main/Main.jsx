@@ -57,20 +57,20 @@ class Main extends Component {
                            ]
                         }
                      </Nav>
-                  </Navbar.Collapse>
+                     {this.signedIn() ?
+                        [
+                           <Nav.Item style={{'position' : 'fixed', 'right' : '2%'}} onClick={() => this.props.signOut()} key={0}>
+                              Sign out
+                           </Nav.Item>
+                        ]
+                        :
+                        ''
+                     }
                                     
-                  {this.signedIn() ?
-                     [
-                        <Nav.Item onClick={() => this.props.signOut()} key={0}>
-                           Sign out
-                        </Nav.Item>
-                     ]
-                     :
-                     ''
-                  }
+                  </Navbar.Collapse>
                </Navbar>
                {this.signedIn() ?
-                  <span style={{'float' : 'right', 'margin-right' : '10%'}}>
+                  <span style={{'float' : 'right', 'marginRight' : '10%'}}>
                      {`Logged in as: ${this.props.Prs.firstName}
                      ${this.props.Prs.lastName}`}
                   </span> : ''

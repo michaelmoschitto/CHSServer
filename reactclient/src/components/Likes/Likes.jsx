@@ -4,8 +4,7 @@ import {useSelector} from 'react-redux';
 
 
 const LikedBy = (props) => {
-    // const msgId = props.msgId;
-
+    // const msgId = props.msgId
     const likes = useSelector(store => store.Likes);
     
     let divs = [];

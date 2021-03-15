@@ -3,39 +3,13 @@ import {Modal, Button, Form, FormControl, FormGroup} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 
 const ErrorModal = props => {
-   const [show, setShow] = useState(true);
    const errors = useSelector(store => store.Errors)
-   const handleClose = () => setShow(false);
-   const handleShow = () => setShow(true);
-   let removeErrors = () => {
-      // dispatch somethign to remove errors from store
-   };
 
-
-   return (
-      //   <Modal show={this.props.showModal} onHide={() => this.close('Cancel')}>
-      //      <Modal.Header closeButton>
-      //         <Modal.Title>Error Notice</Modal.Title>
-      //      </Modal.Header>
-      //      <Modal.Body>
-
-      //      </Modal.Body>
-      //      <Modal.Footer>
-      //         <Button
-      //            onClick={() => this.close('Ok')}
-      //            disabled={this.buttonDisable()}
-      //         >
-      //            Ok
-      //         </Button>
-      //         <Button onClick={() => this.close('Cancel')}>Cancel</Button>
-      //      </Modal.Footer>
-      //   </Modal>
-
-      
+   // errorDivs = errors.map((e) => (<div>{e}</div>))
+   
+   return (   
          <Modal
             show={props.show? true: false}
-            // onHide={() => {
-            //   return props.onClear}}
             backdrop="static"
             keyboard={false}
          >
@@ -43,9 +17,11 @@ const ErrorModal = props => {
                <Modal.Title>Error Notice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-               {errors[0]? props.translator(errors[0].tag, 
-                (navigator.language)) : ''}
-               {/* {props.errors[0] ? props.errors[0].tag : ''} */}
+               {/* {errors[0]? props.translator(errors[0].tag, 
+                (navigator.language)) : ''} */}
+               {/* {errors[0]? errorDivs : ''} */}
+               {errors.length && 
+                errors.map((e, index) => (<div key={index}>{e}</div>))}
             </Modal.Body>
             <Modal.Footer>
                <Button variant="primary" onClick={props.onClear}>

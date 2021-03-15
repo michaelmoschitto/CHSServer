@@ -36,25 +36,36 @@ const reqConf = {
 export async function safeFetch(endpoint, method, body){
    var isUserError = false;
    var response;
-   
+   let errorBody;
+
    try{
       response = await doFetch(endpoint, method, body);
    
+      
       if(response.ok)
          return response
-      else{
-         const errorBody = await response.json();
+      else if(response.status === 400){
          isUserError = true;
-         throw errorBody;
-      }      
+         errorBody = await response.json();   
+         throw(errorBody.map(
+          err => (errorTranslate(err.tag, navigator.language))));
+      
+      }else if ([401, 403, 404].includes(response.status)){
+         isUserError = true;
+         let tag = response.status === 401 ? "noPerm" : 
+         response.status === 403 ?  "noAuth" : "notFound";
+         
+         throw([errorTranslate(tag,navigator.language)]);
+      }
+      else
+         throw errorBody; 
    }catch (err){ 
       
-      if(isUserError){ //400's (badValue, dupTitle etc)
+      if(isUserError) //400's (badValue, dupTitle etc)
          throw err;
-      }else{ // 500 server error
-         const error = [{tag: "serverError"}]
-         throw error;                 
-      }
+      else // 500 server error
+         throw [errorTranslate('serverError', navigator.language)];                 
+      
    }
 };
 
@@ -69,13 +80,13 @@ async function doFetch(endpoint, method, body){
      });
      return rsp
      }else{
-     rsp = await fetch(baseURL + endpoint, {
-        method: method,
-        ...reqConf,
-     });
-     return rsp;
+      rsp = await fetch(baseURL + endpoint, {
+         method: method,
+         ...reqConf,
+      });
+      return rsp;
    }
-  }
+}
 
 
 // export async function safePost(endpoint, body){
@@ -208,20 +219,25 @@ export async function postPrs(user) {
  * @returns {Promise} json parsed data
  */
 export async function getCnvs(userId) {
-   console.log('getting cnvs in api.js')
-   let res = await get('Cnvs' + (userId ? '?owner=' + userId : ''));
+   try{
+      let res = await get('Cnvs' + (userId ? '?owner=' + userId : ''));
+      return await res.json();
 
-   return res.json();
-   /*
-      return get("Cnvs" + (userId ? "?owner="+userId : ""))
-      .then((res) => res.json())
-   */
+   }catch(err){
+      throw err;
+   }
+
 }
 
 export async function getCnvById(cnvId){
-   let res = await get('Cnvs/' + (cnvId.toString()))
+   try{
+      let res = await get('Cnvs/' + (cnvId.toString()))
+      return res.json()
+   
+   }catch(err){
+      throw err;
+   }
 
-   return res.json()
 }
 
 // export function putCnv(id, body) {
@@ -252,7 +268,6 @@ export async function putCnv(id, body){
 // }
 
 export async function postCnv(body){
-   console.log('posting Cnv in api.js')
    try{
       let rsp = await post('Cnvs', body);
       let location = rsp.headers.get('Location').split('/');
@@ -297,7 +312,6 @@ export async function getMsgsLikes(msgId){
       let likes = await get(`Msgs/${msgId}/Likes`);
       return likes.json();
    }catch(err){
-      console.log('ERR: ', err)
       throw err;
    }
 }
@@ -328,10 +342,6 @@ export async function postMsg(cnvId, content){
 
 export async function getPrsMsgs(prsId, order, num){
    try{
-      console.log("order: ", order)
-      console.log(`Prss/${prsId}/Msgs` +   
-      (order ? 'order=' + order.toString() : '') + 
-      (num ? 'num=' + num.toString() : ''))
 
       let rsp = await get(`Prss/${prsId}/Msgs?` +   
        (order ? 'order=' + order.toString() : '') + 

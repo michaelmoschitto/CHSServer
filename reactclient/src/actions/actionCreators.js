@@ -17,7 +17,9 @@ export function signOut(cb) {
          .then(() => dispatch({type: 'SIGN_OUT'}))
          .then(() => {
             if (cb) cb();
-         });
+         })
+         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
+
    };
 }
 
@@ -28,8 +30,6 @@ export function register(data, cb) {
             if (cb) cb();
          })
          .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
-         // .catch(error => dispatch({type: 'REGISTER_ERR',
-         //  details: {tag: 'FakeError', params: 'Is This working???'}}));
 
    };
 }
@@ -63,7 +63,7 @@ export function modCnv(cnvId, title, cb) {
          .then(cnvs => {
             return dispatch({type: 'UPDATE_CNV', data: cnvs});
          })
-
+         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}))
          .then(() => {
             if (cb) cb();
          });
@@ -76,6 +76,7 @@ export function delCnv(cnvId, cb){
       .then(cnvs => {
          return dispatch({type: 'UPDATE_CNVS', cnvs: cnvs})
       })
+      .catch(error => dispatch({type: 'REGISTER_ERR', details: error}))
       .then(() => {
          if (cb) cb();
       });
@@ -96,6 +97,7 @@ export function getMsgsByCnv(cnvId, cb){
    return (dispatch, prevState) => {
       api.getMsgsByCnv(cnvId)
       .then(msgs => dispatch({type: 'UPDATE_MSGS', msgs: msgs}))
+      .catch(error => dispatch({type: 'REGISTER_ERR', details: error}))
       .then(() => {
          if (cb) cb();
       })
@@ -108,6 +110,7 @@ export function getMsgsLikes(msgId, cb){
       .then((likes) => {
          return dispatch({type: 'UPDATE_LIKES', likes: likes, msgId: msgId})
       })
+      .catch(error => dispatch({type: 'REGISTER_ERR', details: error}))
       .then(() => {if(cb) cb()});
    }
 }
@@ -125,9 +128,7 @@ export function postLike(msgId, Prs, likeAble, cb){
             likeObj['lastName'] = Prs.lastName;
             dispatch({type: 'ADD_LIKE', msgId: msgId, like: likeObj})
          })
-         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
-      // .catch()
-   
+         .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));   
       }
     }
 }
@@ -147,6 +148,8 @@ export function getPrsMsgs(prsId, order="", num="", cb){
       .then(() => {
          if (cb) cb();
       })
+      .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));
+
    }
 }
 
@@ -155,7 +158,5 @@ export function setOrderBy(type){
       console.log('ordering By')
    type === 'Date' ? dispatch({type: 'ORDER_BY_DATE'})
    : dispatch({type: 'ORDER_BY_LIKES'})
-
    }
-   
 }
