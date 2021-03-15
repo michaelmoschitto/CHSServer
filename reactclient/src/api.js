@@ -326,6 +326,23 @@ export async function postMsg(cnvId, content){
    }
 }
 
+export async function getPrsMsgs(prsId, order, num){
+   try{
+      console.log("order: ", order)
+      console.log(`Prss/${prsId}/Msgs` +   
+      (order ? 'order=' + order.toString() : '') + 
+      (num ? 'num=' + num.toString() : ''))
+
+      let rsp = await get(`Prss/${prsId}/Msgs?` +   
+       (order ? 'order=' + order.toString() : '') + 
+       (num ? 'num=' + num.toString() : ''));
+
+      return await rsp.json();
+   }catch(err){
+      throw err;
+   }
+}
+
 const errMap = {
    "en-US": {
       noAuth: 'Not Logged in',

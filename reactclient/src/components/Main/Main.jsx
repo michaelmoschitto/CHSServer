@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import {Register, SignIn, CnvOverview, CnvDetail, ConfDialog, ErrorModal} from '../components'
+import {Register, SignIn, CnvOverview, CnvDetail, ConfDialog, ErrorModal, 
+ MsgOverView} from '../components'
 import {Route, Redirect, Switch } from 'react-router-dom';
 import {Navbar, Nav, ListGroup, ListGroupItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
+import {useState} from 'react'
 import './Main.css';
 
 var ProtectedRoute = ({component: Cmp, path, ...rest }) => {
@@ -15,16 +17,19 @@ var ProtectedRoute = ({component: Cmp, path, ...rest }) => {
 
    
 class Main extends Component {
-   
+
+
    signedIn() {
       return this.props.Prs && Object.keys(this.props.Prs).length !== 0; // Nonempty Prs obj
    }
+
+
 
    render() {
       return (
          <div>
             <div>
-               <Navbar>
+               <Navbar expand='md'>
                   <Navbar.Toggle />
                   <Navbar.Collapse>
                      <Nav variant="pills">
@@ -35,7 +40,11 @@ class Main extends Component {
                               </LinkContainer>,
                               <LinkContainer to='/myCnvs' key={1}>
                                  <Nav.Link>My Conversations</Nav.Link>
-                              </LinkContainer>
+                              </LinkContainer>,
+
+                              <LinkContainer to='/myMessages' key={2}>
+                              <Nav.Link>My Messages</Nav.Link>
+                           </LinkContainer>
                            ]
                            :
                            [
@@ -52,11 +61,7 @@ class Main extends Component {
                                     
                   {this.signedIn() ?
                      [
-                        <Navbar.Text key={0}>
-                           {`Logged in as: ${this.props.Prs.firstName}
-                            ${this.props.Prs.lastName}`}
-                        </Navbar.Text>,
-                        <Nav.Item onClick={() => this.props.signOut()} key={1}>
+                        <Nav.Item onClick={() => this.props.signOut()} key={0}>
                            Sign out
                         </Nav.Item>
                      ]
@@ -64,6 +69,13 @@ class Main extends Component {
                      ''
                   }
                </Navbar>
+               {this.signedIn() ?
+                  <span style={{'float' : 'right', 'margin-right' : '10%'}}>
+                     {`Logged in as: ${this.props.Prs.firstName}
+                     ${this.props.Prs.lastName}`}
+                  </span> : ''
+               }
+               
             </div>
 
             {/*Alternate pages beneath navbar, based on current route*/}
@@ -89,6 +101,10 @@ class Main extends Component {
 
                <ProtectedRoute path='/myCnvs' component={CnvOverview} 
                userOnly={true}
+                {...this.props}/>
+
+               <ProtectedRoute path='/myMessages' component={MsgOverView} 
+                userOnly={true}
                 {...this.props}/>
                 
                {/* More routes */}

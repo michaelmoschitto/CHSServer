@@ -130,7 +130,7 @@ const MsgItem = props => {
          </Row>
          
             <Row show={false.toString()}>
-               <Col as="div" show={false.toString()} 
+               <Col show={false.toString()} 
                 style={{'wordWrap' : 'break-word'}}>
                   {toggleContent ? props.content : ''}
                </Col>
