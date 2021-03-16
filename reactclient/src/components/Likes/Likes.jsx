@@ -9,15 +9,16 @@ const LikedBy = props => {
    let divs = [];
    (function () {
       likes && likes[props.msgId] && 
-       likes[props.msgId].forEach((l, index) =>
-         divs.push(
-            <div key={props.index}>{`${l.firstName} ${l.lastName}`}</div>));
+       likes[props.msgId].forEach((l, index) => {
+          divs.push(
+             <div key={index}>{`${l.firstName} ${l.lastName}`}</div>);
+       })
    })();
 
    return (
       <Popup
          trigger={
-            <div onClick={
+            <div key={10} onClick={
              () => props.likeMsg()}>{props.numLikes + ' Likes'}</div>
          }
          on="hover"

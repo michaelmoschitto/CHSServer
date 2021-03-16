@@ -73,9 +73,7 @@ const CnvOverView = props => {
             showControls={cnv.ownerId === Prs.id || Prs.role === 1}
             onDelete={() => openDelConfirm(cnv)}
             onEdit={() => openCnvModal(cnv)} />);
-         }else{
-         console.log("not my Cnvs")
-      }
+         }
    });
 
    return (

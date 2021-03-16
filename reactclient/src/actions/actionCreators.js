@@ -126,7 +126,6 @@ export function postLike(msgId, Prs, likeAble, cb){
             likeObj['prsId'] = Prs.id;
             likeObj['firstName'] = Prs.firstName;
             likeObj['lastName'] = Prs.lastName;
-            console.log('posting like')
             dispatch({type: 'ADD_LIKE', msgId: msgId, like: likeObj})
          })
          .catch(error => dispatch({type: 'REGISTER_ERR', details: error}));   
@@ -144,10 +143,8 @@ export function postMsg(cnvId, content, cb){
 
 export function getPrsMsgs(prsId, order="", num="", cb){
    return (dispatch, prevState) => {
-      console.log('gettting Prs Messages')
       api.getPrsMsgs(prsId, order, num)
       .then(msgs => {
-         console.log('msgs: ', msgs)
          dispatch({type: 'UPDATE_MSGS', msgs: msgs})})
       .then(() => {
          if (cb) cb();

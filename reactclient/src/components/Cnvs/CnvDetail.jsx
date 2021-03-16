@@ -34,7 +34,7 @@ const CnvDetail = props => {
    let closeMsgModal = (res, msg = null) => {
       if (res === 'Ok') {
          props.postMsg(cnvId, msg);
-      } else console.log(res);
+      }
 
       setModalShow(false);
    };
