@@ -1,15 +1,13 @@
-import React, {Component, useState} from 'react';
-import {Modal, Button, Form, FormControl, FormGroup} from 'react-bootstrap';
+import React from 'react';
+import {Modal, Button} from 'react-bootstrap';
 import {useSelector} from 'react-redux';
 
 const ErrorModal = props => {
-   const errors = useSelector(store => store.Errors)
-
-   // errorDivs = errors.map((e) => (<div>{e}</div>))
+   const Errors = useSelector(store => store.Errors)
    
    return (   
          <Modal
-            show={props.show? true: false}
+            show={Errors.length? true: false}
             backdrop="static"
             keyboard={false}
          >
@@ -17,11 +15,9 @@ const ErrorModal = props => {
                <Modal.Title>Error Notice</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-               {/* {errors[0]? props.translator(errors[0].tag, 
-                (navigator.language)) : ''} */}
-               {/* {errors[0]? errorDivs : ''} */}
-               {errors.length && 
-                errors.map((e, index) => (<div key={index}>{e}</div>))}
+               
+               {Errors.length && 
+                Errors.map((e, index) => (<div key={index}>{e}</div>))}
             </Modal.Body>
             <Modal.Footer>
                <Button variant="primary" onClick={props.onClear}>

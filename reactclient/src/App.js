@@ -21,7 +21,7 @@ function mapDispatchToProps(dispatch) {
 
 const App = (
    withRouter(connect(
-   mapStateToProps,
+   null,
    mapDispatchToProps
 )(Main))
 );

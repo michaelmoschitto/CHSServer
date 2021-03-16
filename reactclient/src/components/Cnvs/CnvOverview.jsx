@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {ListGroup, Col, Row, Button} from 'react-bootstrap';
-import CnvModal from './CnvModal';
-import {ConfDialog} from '../components';
+import {ConfDialog, CnvModal} from '../components';
 import {useSelector} from 'react-redux';
 import './CnvOverview.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,12 +15,12 @@ const CnvOverView = props => {
    const [showDelConfirm, setShowDelConfirm] = useState(false);
    const [trgCnv, setTrgCnv] = useState(null);
 
-   const cnvs = useSelector(store => store.Cnvs);
-   const prs = useSelector(store => store.Prs)
+   const Cnvs = useSelector(store => store.Cnvs);
+   const Prs = useSelector(store => store.Prs)
  
 
    useEffect(() => {
-      cnvs.length || (!showCnvModal && props.updateCnvs());
+      Cnvs.length || (!showCnvModal && props.updateCnvs());
    });
    
    // Open title-setting modal with an optional existing |cnv|
@@ -61,14 +60,14 @@ const CnvOverView = props => {
 
    let cnvItems = [];
    
-   cnvs.forEach(cnv => {
+   Cnvs.forEach(cnv => {
 
       //also check for admin
-      if (cnv && (!props.userOnly || props.Prs.id === cnv.ownerId)){
+      if (cnv && (!props.userOnly || Prs.id === cnv.ownerId)){
 
          cnvItems.push(<CnvItem
             key={cnv.id} {...cnv}
-            showControls={cnv.ownerId === prs.id || props.Prs.role === 1}
+            showControls={cnv.ownerId === Prs.id || Prs.role === 1}
             onDelete={() => openDelConfirm(cnv)}
             onEdit={() => openCnvModal(cnv)} />);
          }else{

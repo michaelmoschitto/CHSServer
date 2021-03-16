@@ -10,7 +10,8 @@ const LikedBy = props => {
    (function () {
       likes && likes[props.msgId] && 
        likes[props.msgId].forEach(l =>
-       divs.push(<div>{`${l.firstName} ${l.lastName}`}</div>));
+         divs.push(
+            <div key={props.msgId}>{`${l.firstName} ${l.lastName}`}</div>));
    })();
 
    return (

@@ -10,7 +10,8 @@ import {faSync } from "@fortawesome/free-solid-svg-icons";
 const CnvDetail = props => {
    const {cnvId} = useParams();
    const [showModal, setModalShow] = useState(false)
-   const msgs = useSelector(store => store.Msgs);
+   const Msgs = useSelector(store => store.Msgs);
+   const Prs = useSelector(store => store.Prs)
    const [refresh, setRefresh] = useState(false)
    // let [renderMsgs, setRenderMsgs] = useState(false);
 
@@ -47,12 +48,11 @@ const CnvDetail = props => {
 
    let msgItems = [];
 
-   if (msgs.length){
-      msgs.forEach(msg => {
+   if (Msgs.length){
+      Msgs.forEach(msg => {
          
          msgItems.push(
             <MsgItem
-               Prs={props.Prs}
                msgId={msg.id}
                showContent={false}
                key={msg.id}
@@ -69,7 +69,9 @@ const CnvDetail = props => {
    return (
       <section className="container">
          <h1>Conversation Title</h1>
+         
          {msgItems}
+         
          <Button
             variant="primary"
             className="mt-2"
@@ -98,6 +100,7 @@ const CnvDetail = props => {
 
 const MsgItem = props => {
    const [toggleContent, setToggle] = useState(false);
+   const Prs = useSelector(store => store.Prs)
 
    let clicked = () => {
       setToggle(!toggleContent);
@@ -125,8 +128,8 @@ const MsgItem = props => {
                <LikedBy
                 msgId={props.msgId} 
                 likeMsg={() => {
-                return props.postLike(props.msgId, props.Prs, 
-                props.poster !== props.Prs.email)}}
+                return props.postLike(props.msgId, Prs, 
+                props.poster !== Prs.email)}}
                 getLikes={() => props.getMsgsLikes(props.msgId)}
                 />
             </Col>

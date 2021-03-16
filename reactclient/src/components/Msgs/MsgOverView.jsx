@@ -1,41 +1,34 @@
-import React, {useState, useEffect} from 'react';
-import {Link, Redirect} from 'react-router-dom';
-import {ListGroup, ListGroupItem, Col, Row, Button, Nav} from 'react-bootstrap';
-import {ConfDialog, LikedBy} from '../components';
-import {useSelector, setState} from 'react-redux';
+import React, {useEffect} from 'react';
+import {Link} from 'react-router-dom';
+import {ListGroup, ListGroupItem, Col, Row} from 'react-bootstrap';
+import {LikedBy} from '../components';
+import {useSelector} from 'react-redux';
 
 import './MsgOverView.css'
 
 
 const MsgOverView = props => {
-   // return <div>Hello World</div>
-   const msgs = useSelector(store => store.Msgs);
+   const Msgs = useSelector(store => store.Msgs);
    const boldedDate = useSelector(store => store.Order)
-
+   const Prs = useSelector(store => store.Prs);
 
    
    useEffect(() => {
-      if(!msgs.length){
+      if(!Msgs.length){
          const orderBy = boldedDate? 'date' : 'likes'
-         props.getPrsMsgs(props.Prs.id, orderBy)
+         props.getPrsMsgs(Prs.id, orderBy)
       }
    });
+
    //create Rows of Messages
    let msgItems = [];
-   if (msgs.length){
-      msgs.forEach(msg => {
+   if (Msgs.length){
+      Msgs.forEach(msg => {
          
          msgItems.push(
             <MsgItem
-               Prs={props.Prs}
-               msgId={msg.id}
-               cnvId={msg.cnvId}
-               showContent={false}
+               Msg={msg}
                key={msg.id}
-               poster={msg.email}
-               whenMade={msg.whenMade}
-               likes={msg.numLikes}
-               content={msg.content}
                {...props}
             />
          );
@@ -55,7 +48,7 @@ const MsgOverView = props => {
                         
                         <Col onClick={() => {
                            props.setOrderBy('Date')
-                           props.getPrsMsgs(props.Prs.id, 'date')
+                           props.getPrsMsgs(Prs.id, 'date')
                         }}
                         className={`header ${(boldedDate)? 'bolded' : '' }`}>
 
@@ -65,7 +58,7 @@ const MsgOverView = props => {
 
                         <Col onClick={() => {
                            props.setOrderBy('Likes')
-                           props.getPrsMsgs(props.Prs.id, 'likes')
+                           props.getPrsMsgs(Prs.id, 'likes')
                      }}
                         className={`header ${(!boldedDate)? 'bolded' : '' }`}>
 
@@ -83,13 +76,14 @@ const MsgOverView = props => {
 
 
 const MsgItem = props => {
-   
+   const Prs = useSelector(store => store.Prs);
+
    return (
       <ListGroupItem>
          <Row>
             <Col sm={4}>
-               <Link to={`CnvDetail/${props.cnvId}`}>
-                {props.content.substring(0,20) + ' ...'}
+               <Link to={`CnvDetail/${props.Msg.cnvId}`}>
+                {props.Msg.content.substring(0,20) + ' ...'}
                </Link>
             </Col>
 
@@ -101,16 +95,15 @@ const MsgItem = props => {
                   hour: '2-digit',
                   minute: '2-digit',
                   second: '2-digit',
-               }).format(props.whenMade)}
+               }).format(props.Msg.whenMade)}
             </Col>
             <Col sm={2}>
-               {/* addLike={props.} */}
                <LikedBy
-                msgId={props.msgId} 
+                msgId={props.Msg.id} 
                 likeMsg={() => {
-                return props.postLike(props.msgId, props.Prs, 
-                props.poster !== props.Prs.email)}}
-                getLikes={() => props.getMsgsLikes(props.msgId)}
+                return props.postLike(props.Msg.id, Prs, 
+                props.Msg.email !== Prs.email)}}
+                getLikes={() => props.getMsgsLikes(props.Msg.id)}
                 />
             </Col>
          </Row>
