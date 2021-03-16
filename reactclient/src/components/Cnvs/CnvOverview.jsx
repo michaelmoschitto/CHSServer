@@ -105,17 +105,23 @@ const CnvOverView = props => {
 }
 
 const CnvItem = props => {
+   const Cnvs = useSelector(store => store.Cnvs);
+   let lastMessage;
+   lastMessage = (Cnvs.find((cnv) => 
+    parseInt(cnv.id) === props.id)).lastMessage;
+   
     return (
        <ListGroup.Item>
           <Row>
              <Col sm={4}><Link to={"/CnvDetail/" + props.id}>
                 {props.title}</Link></Col>
-             <Col sm={5}>{props.lastMessage ? new Intl.DateTimeFormat('us',
+
+             <Col sm={5}>{lastMessage ? new Intl.DateTimeFormat('us',
                 {
                    year: "numeric", month: "short", day: "numeric",
                    hour: "2-digit", minute: "2-digit", second: "2-digit"
                 })
-                .format(props.lastMessage) : "N/A"}</Col>
+                .format(lastMessage) : "N/A"}</Col>
              {props.showControls ?
                 <Col sm={3} style={{'paddingRight' : 0}} 
                  className="d-flex justify-content-md-end">

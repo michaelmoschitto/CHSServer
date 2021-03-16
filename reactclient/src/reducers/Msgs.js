@@ -3,7 +3,6 @@ export default function Msgs(state = {}, action) {
       case 'UPDATE_MSGS':
          return action.msgs;
 
-
       case 'ADD_MSG':
          // return state.concat([action.msg])
          return state;

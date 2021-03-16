@@ -1,6 +1,4 @@
-export default function Likes(state = [], action) {
-   console.log('state: ', state)
-   
+export default function Likes(state = [], action) {   
    switch (action.type) {
       case 'UPDATE_LIKES':
          const id = parseInt(action.msgId);

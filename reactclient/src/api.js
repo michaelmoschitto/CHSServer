@@ -349,9 +349,9 @@ export async function getPrsMsgs(prsId, order, num){
        (order ? 'order=' + order.toString() : '') + 
        (num ? 'num=' + num.toString() : ''));
 
-      let body = await rsp.json();
-      body.mapEach((msg) => Object.assign(msg, {prsId : prsId}))
-      console.log("body__________:", body)
+      let body =  await rsp.json();
+      body.forEach((msg) => msg['prsId'] = prsId)
+
       return body
    }catch(err){
       throw err;

@@ -19,8 +19,7 @@ const CnvDetail = props => {
    // let [renderMsgs, setRenderMsgs] = useState(false);
    
    useEffect(() => {
-      if (!Likes.length)
-         Msgs && Msgs.length && Msgs.forEach(msg => props.getMsgsLikes(msg.id));
+      
       if (refresh || !Msgs.length) {
          props.getMsgsByCnv(cnvId);
          Msgs && Msgs.length && Msgs.forEach(msg => props.getMsgsLikes(msg.id));
@@ -29,7 +28,6 @@ const CnvDetail = props => {
    });
 
    let openMsgModal = () => {
-      console.log('Opening Message Modal');
       setModalShow(true);
    };
 
@@ -130,7 +128,8 @@ const MsgItem = props => {
                         props.Msg.email !== Prs.email
                      );
                   }}
-                  numLikes={Likes[props.Msg.id] ? Likes[props.Msg.id].length : 0}
+                  numLikes={Likes[props.Msg.id] ? 
+                   Likes[props.Msg.id].length : 0}
                />
             </Col>
          </Row>

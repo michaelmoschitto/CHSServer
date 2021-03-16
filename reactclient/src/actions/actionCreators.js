@@ -144,8 +144,11 @@ export function postMsg(cnvId, content, cb){
 
 export function getPrsMsgs(prsId, order="", num="", cb){
    return (dispatch, prevState) => {
+      console.log('gettting Prs Messages')
       api.getPrsMsgs(prsId, order, num)
-      .then(msgs => {dispatch({type: 'UPDATE_MSGS', msgs: msgs})})
+      .then(msgs => {
+         console.log('msgs: ', msgs)
+         dispatch({type: 'UPDATE_MSGS', msgs: msgs})})
       .then(() => {
          if (cb) cb();
       })
@@ -156,7 +159,6 @@ export function getPrsMsgs(prsId, order="", num="", cb){
 
 export function setOrderBy(type){
    return (dispatch, prevState) => {
-      console.log('ordering By')
    type === 'Date' ? dispatch({type: 'ORDER_BY_DATE'})
    : dispatch({type: 'ORDER_BY_LIKES'})
    }

@@ -15,20 +15,17 @@ const MsgOverView = props => {
    console.log('rendering MsgOverView')
    useEffect(() => {
 
-      // Msgs && Msgs.length && 
-
-      if (!Msgs.length || ( Msgs.length && Msgs.find(msg => msg.prsId !== Prs.id))) {
+      if (!Msgs.length || ( Msgs.length && 
+       Msgs.find(msg => msg.prsId !== Prs.id))) {
          const orderBy = boldedDate ? 'date' : 'likes';
          props.getPrsMsgs(Prs.id, orderBy);
       }
 
-      if (!Likes.length)
-         Msgs && Msgs.length && Msgs.forEach(msg => props.getMsgsLikes(msg.id));
+     
    });
 
    //create Rows of Messages
    let msgItems = [];
-   console.log('MSGS:', Msgs)
    if (Msgs.length) {
       Msgs.forEach(msg => {
          msgItems.push(<MsgItem numLikes=
@@ -81,8 +78,6 @@ const MsgItem = props => {
       <ListGroupItem>
          <Row>
             <Col sm={4}>
-               {console.log("MSG In MSG ITEM: ", props.Msg)}
-               {console.log("CNVS: ", Cnvs)}
                <Link to={`CnvDetail/${props.Msg.cnvId}`}>
                   {props.Msg.content.substring(0, 20) + ' ...'}
                </Link>
