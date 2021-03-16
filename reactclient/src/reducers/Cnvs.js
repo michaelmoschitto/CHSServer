@@ -21,7 +21,13 @@ export default function Cnvs(state = [], action) {
             return state.concat([action.cnv])
          else  
             return state;
+         
+         case 'DELETE_CNV':
+            return state.filter(cnv => cnv.id === action.cnvId);
+
       default:
          return state;
+
+
    }
 }

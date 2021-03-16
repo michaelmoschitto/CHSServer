@@ -74,7 +74,7 @@ export function delCnv(cnvId, cb){
    return (dispatch, prevState) => {
       api.deleteCnv(cnvId)
       .then(cnvs => {
-         return dispatch({type: 'UPDATE_CNVS', cnvs: cnvs})
+         return dispatch({type: 'DELETE_CNV', cnvId: cnvId})
       })
       .catch(error => dispatch({type: 'REGISTER_ERR', details: error}))
       .then(() => {

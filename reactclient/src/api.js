@@ -286,10 +286,11 @@ export async function postCnv(body){
 
 export async function deleteCnv(id){
    try{  
-      await del(`Cnvs/${id}`);
-      let cnvs = await get('Cnvs/');
+      let rsp = await del(`Cnvs/${id}`);
+      // let cnvs = await get('Cnvs/');
 
-      return cnvs.json();
+      // return cnvs.json();
+      return rsp;
    }catch(err){
       throw err;
    };
