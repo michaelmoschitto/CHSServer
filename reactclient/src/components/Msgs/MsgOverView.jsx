@@ -5,6 +5,7 @@ import {LikedBy} from '../components';
 import {useSelector} from 'react-redux';
 
 import './MsgOverView.css';
+import { useState } from 'react';
 
 const MsgOverView = props => {
    const Msgs = useSelector(store => store.Msgs);
@@ -12,25 +13,40 @@ const MsgOverView = props => {
    const Prs = useSelector(store => store.Prs);
    const Likes = useSelector(store => store.Likes);
 
-   console.log('rendering MsgOverView')
-   useEffect(() => {
+   const arrowCode = 8595;
 
-      if (!Msgs.length || ( Msgs.length && 
-       Msgs.find(msg => msg.prsId !== Prs.id))) {
+   const [render, setRender] = useState(true)
+
+   console.log('rendering MsgOverView');
+   useEffect(() => {
+      
+      console.log('Order: ', boldedDate)
+      if(render){
+         console.log('Rendering!!!!')
+         const orderBy = boldedDate ? 'date' : 'likes';
+         props.getPrsMsgs(Prs.id, orderBy);
+         setRender(false)
+      }
+
+      if (!Msgs.length ||
+         (Msgs.length && Msgs.find(msg => msg.prsId !== Prs.id))) {
          const orderBy = boldedDate ? 'date' : 'likes';
          props.getPrsMsgs(Prs.id, orderBy);
       }
-
-     
    });
 
    //create Rows of Messages
    let msgItems = [];
    if (Msgs.length) {
       Msgs.forEach(msg => {
-         msgItems.push(<MsgItem numLikes=
-          {Likes[msg.id] ? Likes[msg.id].length : 0}
-          Msg={msg} key={msg.id} {...props} />);
+         msgItems.push(
+            <MsgItem
+               numLikes={Likes[msg.id] ? Likes[msg.id].length : 0}
+               Msg={msg}
+               key={msg.id}
+               {...props}
+            />
+         );
       });
    }
 
@@ -50,7 +66,8 @@ const MsgOverView = props => {
                      }}
                      className={`header ${boldedDate ? 'bolded' : ''}`}
                   >
-                     {`Date ${boldedDate ? String.fromCharCode(8595) : ''}`}
+                     {`Date ${boldedDate ? String.fromCharCode(arrowCode) 
+                      : ''}`}
                   </Col>
 
                   <Col
@@ -60,7 +77,8 @@ const MsgOverView = props => {
                      }}
                      className={`header ${!boldedDate ? 'bolded' : ''}`}
                   >
-                     {`Likes ${!boldedDate ? String.fromCharCode(8595) : ''}`}
+                     {`Likes ${!boldedDate ? String.fromCharCode(arrowCode) 
+                      : ''}`}
                   </Col>
                </Row>
             </ListGroupItem>
@@ -103,8 +121,8 @@ const MsgItem = props => {
                         props.Msg.email !== Prs.email
                      );
                   }}
-                  numLikes={props.numLikes}            
-            />
+                  numLikes={props.numLikes}
+               />
             </Col>
          </Row>
       </ListGroupItem>

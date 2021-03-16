@@ -71,13 +71,13 @@ const CnvDetail = props => {
          {/* spacer */}
          <span>&nbsp;&nbsp;&nbsp;</span>
 
-         <Button
+         {/* <Button
             variant="secondary"
             className="mt-2"
             onClick={() => setRefresh(true)}
          >
             <FontAwesomeIcon icon={faSync} />
-         </Button>
+         </Button> */}
 
          <MsgModal
             showModal={showModal}

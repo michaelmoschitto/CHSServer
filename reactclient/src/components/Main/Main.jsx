@@ -39,7 +39,7 @@ const Main = props => {
    return (
       <div>
          <div>
-            <Navbar expand="md">
+            <Navbar expand="md" className='ml-auto'>
                <Navbar.Toggle />
                <Navbar.Collapse>
                   <Nav variant="pills">
@@ -68,8 +68,12 @@ const Main = props => {
                   {signedIn()
                      ? [
                           <Nav.Item
-                             style={{position: 'fixed', right: '2%' , 
-                              color: '#808080'}}
+                           //   style={(document.documentElement.clientWidth < 767) 
+                           //    ? { color: '#808080'} 
+                           //    : {position: 'fixed', right: '2%' , 
+                           //    color: '#808080'} }
+                           style={{position: 'fixed', right: '2%' , 
+                              color: '#808080', paddingBottom : '0px'} }
                              onClick={() => props.signOut()}
                              key={0}
                           >
@@ -79,8 +83,11 @@ const Main = props => {
                      : ''}
                </Navbar.Collapse>
             </Navbar>
+           
             {signedIn() ? (
-               <span style={{float: 'right', marginRight: '10%'}}>
+               
+               <span style={{float: 'right', 
+                paddingTop : '6px', paddingRight : '10%'}} >
                   {`Logged in as: ${Prs.firstName}
                     ${Prs.lastName}`}
                </span>
