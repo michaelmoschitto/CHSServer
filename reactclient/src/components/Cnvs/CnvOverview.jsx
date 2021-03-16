@@ -94,7 +94,7 @@ const CnvOverView = props => {
             title="Delete Conversation"
             body={`Are you sure you want to delete the Conversation
                '${trgCnv ? trgCnv.title : ''}'`}
-            buttons={['Yes', 'No']}
+            buttons={['Yes', 'Abort']}
             onClose={closeDelConfirm} />
       </section>
    
@@ -114,7 +114,8 @@ const CnvItem = props => {
                 })
                 .format(props.lastMessage) : "N/A"}</Col>
              {props.showControls ?
-                <Col sm={3} className="d-flex justify-content-md-end">
+                <Col sm={3} style={{'paddingRight' : 0}} 
+                 className="d-flex justify-content-md-end">
                    <Button size="sm" className="ml-auto" 
                     onClick={props.onDelete}>
                      <FontAwesomeIcon icon={faTrash} />                     

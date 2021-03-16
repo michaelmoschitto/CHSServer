@@ -9,22 +9,19 @@ const LikedBy = props => {
    let divs = [];
    (function () {
       likes && likes[props.msgId] && 
-       likes[props.msgId].forEach(l =>
+       likes[props.msgId].forEach((l, index) =>
          divs.push(
-            <div key={props.msgId}>{`${l.firstName} ${l.lastName}`}</div>));
+            <div key={props.index}>{`${l.firstName} ${l.lastName}`}</div>));
    })();
 
    return (
       <Popup
          trigger={
-            <div onClick={() => props.likeMsg()}>{divs.length + ' Likes'}</div>
+            <div onClick={() => props.likeMsg()}>{props.numLikes + ' Likes'}</div>
          }
          on="hover"
          position="right"
          arrow={true}
-         onOpen={() => {
-            props.getLikes();
-         }}
       >
          {divs.length ? divs.slice(0, 5) : ''}
       </Popup>

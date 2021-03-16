@@ -9,7 +9,8 @@ import { Modal, Button } from 'react-bootstrap';
  * onClose: function to call upon close
  */
 const ConfDialog  = props => 
-<Modal keyboard={false} show={props.show} onHide={() => props.onClose("Dismissed")}> 
+<Modal keyboard={false} show={props.show} onHide={ 
+ () => props.onClose("Dismissed")}> 
       <Modal.Header closeButton>
          <Modal.Title>{props.title}</Modal.Title>
       </Modal.Header>

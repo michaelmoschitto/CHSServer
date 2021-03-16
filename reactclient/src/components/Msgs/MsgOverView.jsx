@@ -4,76 +4,63 @@ import {ListGroup, ListGroupItem, Col, Row} from 'react-bootstrap';
 import {LikedBy} from '../components';
 import {useSelector} from 'react-redux';
 
-import './MsgOverView.css'
-
+import './MsgOverView.css';
 
 const MsgOverView = props => {
    const Msgs = useSelector(store => store.Msgs);
-   const boldedDate = useSelector(store => store.Order)
+   const boldedDate = useSelector(store => store.Order);
    const Prs = useSelector(store => store.Prs);
 
-   
    useEffect(() => {
-      if(!Msgs.length){
-         const orderBy = boldedDate? 'date' : 'likes'
-         props.getPrsMsgs(Prs.id, orderBy)
+      if (!Msgs.length) {
+         const orderBy = boldedDate ? 'date' : 'likes';
+         props.getPrsMsgs(Prs.id, orderBy);
       }
    });
 
    //create Rows of Messages
    let msgItems = [];
-   if (Msgs.length){
+   if (Msgs.length) {
       Msgs.forEach(msg => {
-         
-         msgItems.push(
-            <MsgItem
-               Msg={msg}
-               key={msg.id}
-               {...props}
-            />
-         );
+         msgItems.push(<MsgItem Msg={msg} key={msg.id} {...props} />);
       });
    }
 
+   return (
+      <section className="container">
+         <h1>Messages Overview</h1>
 
-   return( 
-   <section className="container">
-      <h1>Messages Overview</h1>
+         <ListGroup>
+            <ListGroupItem>
+               <Row>
+                  <Col className="header">Content</Col>
 
-      <ListGroup>
-         <ListGroupItem>
-            <Row>
-               
-                        <Col className='header'>Content</Col>
-                        
-                        <Col onClick={() => {
-                           props.setOrderBy('Date')
-                           props.getPrsMsgs(Prs.id, 'date')
-                        }}
-                        className={`header ${(boldedDate)? 'bolded' : '' }`}>
-
-                           {`Date ${boldedDate? String.fromCharCode(8595) : ''}`}
-                        
-                        </Col>
-
-                        <Col onClick={() => {
-                           props.setOrderBy('Likes')
-                           props.getPrsMsgs(Prs.id, 'likes')
+                  <Col
+                     onClick={() => {
+                        props.setOrderBy('Date');
+                        props.getPrsMsgs(Prs.id, 'date');
                      }}
-                        className={`header ${(!boldedDate)? 'bolded' : '' }`}>
+                     className={`header ${boldedDate ? 'bolded' : ''}`}
+                  >
+                     {`Date ${boldedDate ? String.fromCharCode(8595) : ''}`}
+                  </Col>
 
-                           {`Likes ${!boldedDate? String.fromCharCode(8595) : ''}`}
-                        
-                        </Col>
-                     
-            </Row>
-         </ListGroupItem>
-         {msgItems}
-      </ListGroup>
-   </section>);
+                  <Col
+                     onClick={() => {
+                        props.setOrderBy('Likes');
+                        props.getPrsMsgs(Prs.id, 'likes');
+                     }}
+                     className={`header ${!boldedDate ? 'bolded' : ''}`}
+                  >
+                     {`Likes ${!boldedDate ? String.fromCharCode(8595) : ''}`}
+                  </Col>
+               </Row>
+            </ListGroupItem>
+            {msgItems}
+         </ListGroup>
+      </section>
+   );
 };
-
-
 
 const MsgItem = props => {
    const Prs = useSelector(store => store.Prs);
@@ -83,7 +70,7 @@ const MsgItem = props => {
          <Row>
             <Col sm={4}>
                <Link to={`CnvDetail/${props.Msg.cnvId}`}>
-                {props.Msg.content.substring(0,20) + ' ...'}
+                  {props.Msg.content.substring(0, 20) + ' ...'}
                </Link>
             </Col>
 
@@ -99,16 +86,19 @@ const MsgItem = props => {
             </Col>
             <Col sm={2}>
                <LikedBy
-                msgId={props.Msg.id} 
-                likeMsg={() => {
-                return props.postLike(props.Msg.id, Prs, 
-                props.Msg.email !== Prs.email)}}
-                getLikes={() => props.getMsgsLikes(props.Msg.id)}
-                />
+                  msgId={props.Msg.id}
+                  likeMsg={() => {
+                     return props.postLike(
+                        props.Msg.id,
+                        Prs,
+                        props.Msg.email !== Prs.email
+                     );
+                  }}
+                  getLikes={() => props.getMsgsLikes(props.Msg.id)}
+               />
             </Col>
          </Row>
       </ListGroupItem>
-      
    );
 };
 

@@ -68,7 +68,8 @@ const Main = props => {
                   {signedIn()
                      ? [
                           <Nav.Item
-                             style={{position: 'fixed', right: '2%'}}
+                             style={{position: 'fixed', right: '2%' , 
+                              color: '#808080'}}
                              onClick={() => props.signOut()}
                              key={0}
                           >
