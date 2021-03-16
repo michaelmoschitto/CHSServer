@@ -13,11 +13,11 @@ export default function Cnvs(state = [], action) {
          //this sucked what a hack :/
          let dup = false; 
          state.forEach((cnv) => {
-            if(parseInt(cnv.id) === parseInt(action.cnv.id))
+            if (parseInt(cnv.id) === parseInt(action.cnv.id))
                dup = true;
          })
 
-         if(!dup)
+         if (!dup)
             return state.concat([action.cnv])
          else  
             return state;

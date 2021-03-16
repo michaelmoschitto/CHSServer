@@ -16,7 +16,7 @@ const CnvModal = props => {
    let getValidationState = () => {
       if (cnvTitle && cnvTitle.length < 80)
          return "Ok";
-      else if(!cnvTitle)
+      else if (!cnvTitle)
          return "Title is required";
       else
          return "Too long"

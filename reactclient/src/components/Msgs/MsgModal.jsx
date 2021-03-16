@@ -6,9 +6,7 @@ import { useState } from 'react';
 
 const MsgModal = props => {
    const [content, setContent] = useState("");
-
-
-
+   
     let handleChange = (e) => {
         setContent(e.target.value);
     }
@@ -34,21 +32,8 @@ const MsgModal = props => {
                         value={content}
                         placeholder="Enter message"
                         onChange={handleChange}
-                        // isValid={(this.getValidationState() === 
-                        //  "Ok")}
-                        // isInvalid={(this.getValidationState() === 
-                        //  "Too long" || ( this.getValidationState() === 
-                        //  "Title is required"))}
                      />
-                     {/* <FormControl.Feedback type="valid"> 
-                           Great!
-                     </FormControl.Feedback>
-                     <FormControl.Feedback type="invalid"> 
-                           {this.getValidationState()}
-                     </FormControl.Feedback> */}
-                     {/* <Form.Text className="text-muted">
-                        Title is required
-                     </Form.Text> */}
+                    
                   </FormGroup>
                </Form>
             </Modal.Body>

@@ -15,6 +15,8 @@ function FieldGroup({id, label, help, ...props}) {
 }
 
 const Register = props => {
+   console.log("Rendering Register")
+
    const [regFields, setRegFields] = useState({
       firstName: '',
       lastName: '',

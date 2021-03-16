@@ -8,21 +8,20 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faSync} from '@fortawesome/free-solid-svg-icons';
 
 const CnvDetail = props => {
+   console.log("Rendering CnvDetail")
+
    const {cnvId} = useParams();
    const [showModal, setModalShow] = useState(false);
    const Msgs = useSelector(store => store.Msgs);
    const [refresh, setRefresh] = useState(true);
    const Likes = useSelector(store => store.Likes);
-
+   const Cnv = useSelector(store => store.Cnvs)
    // let [renderMsgs, setRenderMsgs] = useState(false);
-
+   
    useEffect(() => {
-      // props.getMsgsByCnv(cnvId);
-      // if(!msgs.length)
-      // if(props.msgId)
-      //    props.getMsgsLikes(props.msgId);
-
-      if (refresh) {
+      if (!Likes.length)
+         Msgs && Msgs.length && Msgs.forEach(msg => props.getMsgsLikes(msg.id));
+      if (refresh || !Msgs.length) {
          props.getMsgsByCnv(cnvId);
          Msgs && Msgs.length && Msgs.forEach(msg => props.getMsgsLikes(msg.id));
       }
@@ -36,7 +35,6 @@ const CnvDetail = props => {
 
    let closeMsgModal = (res, msg = null) => {
       if (res === 'Ok') {
-         console.log('posting MSG: ', msg);
          props.postMsg(cnvId, msg);
       } else console.log(res);
 
@@ -60,7 +58,7 @@ const CnvDetail = props => {
 
    return (
       <section className="container">
-         <h1>Conversation Title</h1>
+         <h1>{Cnv.find(e => parseInt(e.id) === parseInt(cnvId)).title}</h1>
 
          {msgItems}
 
@@ -94,10 +92,16 @@ const CnvDetail = props => {
 const MsgItem = props => {
    const [toggleContent, setToggle] = useState(false);
    const Prs = useSelector(store => store.Prs);
+   const Likes = useSelector(store => store.Likes);
 
    let clicked = () => {
       setToggle(!toggleContent);
    };
+
+   useEffect(() => {
+      if (!Likes[props.Msg.id])
+         props.getMsgsLikes(props.Msg.id)
+   })
 
    return (
       <ListGroupItem>
@@ -126,7 +130,7 @@ const MsgItem = props => {
                         props.Msg.email !== Prs.email
                      );
                   }}
-                  numLikes={props.numLikes}
+                  numLikes={Likes[props.Msg.id] ? Likes[props.Msg.id].length : 0}
                />
             </Col>
          </Row>

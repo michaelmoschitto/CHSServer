@@ -11,6 +11,8 @@ import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 
 
 const CnvOverView = props => {
+   console.log("Rendering CnvOverview")
+
    const [showCnvModal, setShowCnvModal] = useState(false);
    const [showDelConfirm, setShowDelConfirm] = useState(false);
    const [trgCnv, setTrgCnv] = useState(null);
@@ -20,6 +22,7 @@ const CnvOverView = props => {
  
 
    useEffect(() => {
+      
       Cnvs.length || (!showCnvModal && props.updateCnvs());
    });
    

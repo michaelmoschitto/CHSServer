@@ -42,9 +42,9 @@ export async function safeFetch(endpoint, method, body){
       response = await doFetch(endpoint, method, body);
    
       
-      if(response.ok)
+      if (response.ok)
          return response
-      else if(response.status === 400){
+      else if (response.status === 400){
          isUserError = true;
          errorBody = await response.json();   
          throw(errorBody.map(
@@ -61,7 +61,7 @@ export async function safeFetch(endpoint, method, body){
          throw errorBody; 
    }catch (err){ 
       
-      if(isUserError) //400's (badValue, dupTitle etc)
+      if (isUserError) //400's (badValue, dupTitle etc)
          throw err;
       else // 500 server error
          throw [errorTranslate('serverError', navigator.language)];                 
@@ -72,7 +72,7 @@ export async function safeFetch(endpoint, method, body){
 async function doFetch(endpoint, method, body){
    let rsp;
 
-   if(body){
+   if (body){
       rsp = await fetch(baseURL + endpoint, {
         method: method,
         body: JSON.stringify(body),
@@ -300,6 +300,8 @@ export async function getMsgsByCnv(cnvId, dateTime = undefined, num = undefined)
       let msgs = await get(`Cnvs/${cnvId}/Msgs` + 
        (dateTime ? 'dateTime=' + dateTime.toString() : '') + 
        (num ? 'num=' + num.toString() : ''));
+       
+       
 
       return msgs.json();
    }catch(err){
@@ -347,7 +349,10 @@ export async function getPrsMsgs(prsId, order, num){
        (order ? 'order=' + order.toString() : '') + 
        (num ? 'num=' + num.toString() : ''));
 
-      return await rsp.json();
+      let body = await rsp.json();
+      body.mapEach((msg) => Object.assign(msg, {prsId : prsId}))
+      console.log("body__________:", body)
+      return body
    }catch(err){
       throw err;
    }

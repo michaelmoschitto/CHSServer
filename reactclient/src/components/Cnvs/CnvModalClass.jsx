@@ -21,7 +21,7 @@ export default class CnvModal extends Component {
    getValidationState = () => {
       if (this.state.cnvTitle && this.state.cnvTitle.length < 80)
          return "Ok";
-      else if(!this.state.cnvTitle)
+      else if (!this.state.cnvTitle)
          return "Title is required";
       else
          return "Too long"
