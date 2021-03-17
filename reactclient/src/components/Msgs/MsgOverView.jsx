@@ -17,12 +17,10 @@ const MsgOverView = props => {
 
    const [render, setRender] = useState(true)
 
-   console.log('rendering MsgOverView');
    useEffect(() => {
       
-      console.log('Order: ', boldedDate)
       if(render){
-         console.log('Rendering!!!!')
+         console.log('special case render')
          const orderBy = boldedDate ? 'date' : 'likes';
          props.getPrsMsgs(Prs.id, orderBy);
          setRender(false)
@@ -91,7 +89,14 @@ const MsgOverView = props => {
 const MsgItem = props => {
    const Prs = useSelector(store => store.Prs);
    const Cnvs = useSelector(store => store.Cnvs);
+   const Likes = useSelector(store => store.Likes);
 
+
+   useEffect(() => {
+      if (!Likes[props.Msg.id])
+         props.getMsgsLikes(props.Msg.id)
+   })
+   
    return (
       <ListGroupItem>
          <Row>

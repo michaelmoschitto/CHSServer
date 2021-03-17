@@ -39,55 +39,56 @@ const Main = props => {
    return (
       <div>
          <div>
-            <Navbar expand="md" className='ml-auto'>
+            <Navbar expand="md" className="ml-auto">
                <Navbar.Toggle />
                <Navbar.Collapse>
                   <Nav variant="pills">
                      {signedIn()
                         ? [
                              <LinkContainer to="/allCnvs" key={0}>
-                                <Nav.Link> All Conversations</Nav.Link>
+                                 <Nav.Link> All Conversations</Nav.Link>
                              </LinkContainer>,
                              <LinkContainer to="/myCnvs" key={1}>
-                                <Nav.Link>My Conversations</Nav.Link>
+                                 <Nav.Link>My Conversations</Nav.Link>
                              </LinkContainer>,
 
                              <LinkContainer to="/myMessages" key={2}>
-                                <Nav.Link>My Messages</Nav.Link>
+                                 <Nav.Link>My Messages</Nav.Link>
                              </LinkContainer>,
                           ]
                         : [
                              <LinkContainer to="/signin" key={0}>
-                                <Nav.Link>Sign In</Nav.Link>
+                                 <Nav.Link>Sign In</Nav.Link>
                              </LinkContainer>,
                              <LinkContainer to="/register" key={1}>
-                                <Nav.Link>Register</Nav.Link>
+                                 <Nav.Link>Register</Nav.Link>
                              </LinkContainer>,
                           ]}
                   </Nav>
                   {signedIn()
                      ? [
-                          <Nav.Item
-                           //   style={(document.documentElement.clientWidth < 767) 
-                           //    ? { color: '#808080'} 
-                           //    : {position: 'fixed', right: '2%' , 
-                           //    color: '#808080'} }
-                           style={{position: 'fixed', right: '2%' , 
-                              color: '#808080', paddingBottom : '0px'} }
-                             onClick={() => props.signOut()}
-                             key={0}
+                          <Navbar.Collapse
+                              style={{'color' : '#808080'}}
+                              key={0}
+                              className="justify-content-end"
                           >
-                             Sign out
-                          </Nav.Item>,
+                              <Nav.Item onClick={() => props.signOut()} key={1}>
+                                 Sign out
+                              </Nav.Item>
+                          </Navbar.Collapse>,
                        ]
                      : ''}
                </Navbar.Collapse>
             </Navbar>
-           
+
             {signedIn() ? (
-               
-               <span style={{float: 'right', 
-                paddingTop : '6px', paddingRight : '10%'}} >
+               <span
+                  style={{
+                     float: 'right',
+                     paddingTop: '6px',
+                     paddingRight: '10%',
+                  }}
+               >
                   {`Logged in as: ${Prs.firstName}
                     ${Prs.lastName}`}
                </span>
@@ -102,11 +103,7 @@ const Main = props => {
                exact
                path="/"
                component={() =>
-                  Prs ? (
-                     <Redirect to="/allCnvs" />
-                  ) : (
-                     <Redirect to="/signin" />
-                  )
+                  Prs ? <Redirect to="/allCnvs" /> : <Redirect to="/signin" />
                }
             />
 
@@ -145,9 +142,7 @@ const Main = props => {
          </Switch>
 
          {/*Error popup dialog*/}
-         <ErrorModal
-            onClear={() => props.clearErrors()}
-         />
+         <ErrorModal onClear={() => props.clearErrors()} />
       </div>
    );
 };
