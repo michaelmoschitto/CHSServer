@@ -81,3 +81,14 @@
 
     It was also helpful to use a SQL client application SequelPro to inspect 
      what was actually in the DB. 
+
+### Postman 
+
+    Also included in the project is a complete Postman test suite 
+    CHS_Test_Suite.json
+
+    Running the test suite: 
+        1) start REST server 
+        2) Open either the Postman desktop or browser app
+        3) Import the test suite as JSON and run
+
