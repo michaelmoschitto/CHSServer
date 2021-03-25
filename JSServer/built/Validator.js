@@ -53,8 +53,8 @@ class Validator {
             if (typeof prsId === 'string')
                 prsId = parseInt(prsId);
             // AU must be person {prsId} or admin
-            return this.check(this.session &&
-                (this.session.isAdmin() || this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
+            return this.check(this.session && (this.session.isAdmin() ||
+                this.session.prsId === prsId), Validator.Tags.noPermission, null, cb);
         };
         // Check presence of truthy property in |obj| for all fields in fieldList
         this.hasFields = (obj, fieldList, cb) => {
@@ -68,18 +68,14 @@ class Validator {
         this.hasOnlyFields = (body, fieldList, cb) => {
             var self = this;
             Object.keys(body).forEach(function (field) {
-                self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, [
-                    field,
-                ]);
+                self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, [field]);
             });
             return this.check(true, null, null, cb);
         };
         this.hasOnlyFieldsChained = (body, fieldList, cb) => {
             var self = this;
             Object.keys(body).forEach(function (field) {
-                self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, [
-                    field,
-                ]);
+                self.chain(fieldList.includes(field), Validator.Tags.forbiddenField, [field]);
             });
             return this.chain(true, null, null);
         };
@@ -87,10 +83,8 @@ class Validator {
             var self = this;
             Object.keys(lengths).forEach(function (field) {
                 if (Object.keys(body).includes(field))
-                    self.chain(body[field] &&
-                        body[field].length <= lengths[field] &&
-                        body[field] !== null &&
-                        body[field] !== '', Validator.Tags.badValue, [field]);
+                    self.chain(body[field] && body[field].length <= lengths[field] &&
+                        body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
             });
             return this.check(true, null, null, cb);
         };
@@ -98,10 +92,8 @@ class Validator {
             var self = this;
             Object.keys(lengths).forEach(function (field) {
                 if (Object.keys(body).includes(field))
-                    self.chain(body[field] &&
-                        body[field].length <= lengths[field] &&
-                        body[field] !== null &&
-                        body[field] !== '', Validator.Tags.badValue, [field]);
+                    self.chain(body[field] && body[field].length <= lengths[field] &&
+                        body[field] !== null && body[field] !== '', Validator.Tags.badValue, [field]);
             });
             return this.chain(true, null, null);
         };
