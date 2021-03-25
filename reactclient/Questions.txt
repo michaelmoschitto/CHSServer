@@ -1,0 +1,26 @@
+1) Need help debugging why 2 Cnvs get added if newCnv made when 
+there are no others. Not 2 in DB, ,but somehow the redux store gets updated twice
+2) C
+3) 
+
+
+
+Notes:
+    if index.js:1 Warning: Cannot update a component (`CnvOverView`) 
+    while rendering a different component (`ConfDialog`). 
+    To locate the bad setState() call inside `ConfDialog`, 
+    follow the stack trace as described in
+
+    NEED A CLOSURE
+
+
+Likes Fiasco:
+    Currently the messages page doesn't get updated until the button is pressed.
+    Before likes got update on each mouseover, but then on click they also get u
+    updated since each click is a mouseover. 
+    If I updated them each time in the useEffect huge rendering issue
+
+
+Components that need to be converted
+    * CnvModal
+    

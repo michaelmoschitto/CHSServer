@@ -1,68 +1,83 @@
 import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import {ListGroup, Col, Row, Button} from 'react-bootstrap';
-import CnvModal from './CnvModal';
-import {ConfDialog} from '../components';
+import {ConfDialog, CnvModal} from '../components';
 import {useSelector} from 'react-redux';
 import './CnvOverview.css';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 
-//functional react component
-export default props => {
-   const [showCnvModal, setShowCnvModal] = useState(false); //initial value of false that is only passed the first time
-   const [showDelConfirm, setShowDelConfirm] = useState(false); //these will get run hundreds of times, react component has to know the order
-   const [trgCnv, setTrgCnv] = useState(null); // HAVE TO CALL THESE useState calls in this same order
+// A Cnv list item
 
-   const cnvs = useSelector(store => store.Cnvs); //another type of hook, how interact with Redux Library
-   const prs = useSelector(store => store.Prs) //call useSelector and provide function that extracts information you want
-                                             // can run function later, if result is different not only selecting information, but communicating what will 
-                                             // be needed for redraw. Registers cnvs with React and sensitizes it to redraw if the output of this function ever changes
 
-   useEffect(() => { //housekeeping done when component is setup. run everytime it redraws which is why cnvs.length protector is used
-      cnvs.length || props.updateCnvs(); //if there are no current cnvs, call updateCnvs() to load current Cnvs into the react store
-   });               // can't just call function becuase updateCnvs is async, don't want to show user blank page
+const CnvOverView = props => {
+   console.log("Rendering CnvOverview")
 
+   const [showCnvModal, setShowCnvModal] = useState(false);
+   const [showDelConfirm, setShowDelConfirm] = useState(false);
+   const [trgCnv, setTrgCnv] = useState(null);
+
+   const Cnvs = useSelector(store => store.Cnvs);
+   const Prs = useSelector(store => store.Prs)
+ 
+
+   useEffect(() => {
+      
+      Cnvs.length || (!showCnvModal && props.updateCnvs());
+   });
+   
    // Open title-setting modal with an optional existing |cnv|
    let openCnvModal = (cnv) => {
-      setTrgCnv(cnv); //setState call
-      setShowCnvModal(true); //setStateCall
+      setTrgCnv(cnv);
+      setShowCnvModal(true);
    };
-
-   let closeCnvModal = (result) => { //shuts the cnvsModal window down 
-      if (result.status === "OK") {
-         if (trgCnv)
-            props.modCnv(trgCnv.id, result.cnvTitle); //either modify existing cnv
-         else
-            props.addCnv({title: result.cnvTitle}); // or create new cnv
+   
+   let closeCnvModal = (result) => {
+      
+      if (result.status === "Ok") {
+         if (trgCnv){
+            props.modCnv(trgCnv.id, result.title);
+         }
+         else{
+            props.addCnv({title: result.title});
+         }
+         
       }
-      setShowCnvModal(false); // sets showCnvModal to false and will cause redraw closing window
+      
+      setShowCnvModal(false);
    }
 
+   //no closure, since passed to show: boolean
    let openDelConfirm = (cnv) => {
       setTrgCnv(cnv);
       setShowDelConfirm(true);
    }
 
-   let closeDelConfirm = (res) => {
-      if (res === 'yes') 
+   //closure, since passed to onHide: func
+   let closeDelConfirm = (res) => () => {
+      if (res === 'Yes') 
          props.delCnv(trgCnv.id);
 
       setShowDelConfirm(false);
    }
 
    let cnvItems = [];
+   
+   Cnvs.forEach(cnv => {
 
-   cnvs.forEach(cnv => {
-      //! Bug here something wrong with if
-      if (!props.userOnly || prs.id === cnv.id) // either only show user
-         cnvItems.push(<CnvItem //subcomponent acts as 1 row of cnvs table
+      //also check for admin
+      if (cnv && (!props.userOnly || Prs.id === cnv.ownerId)){
+
+         cnvItems.push(<CnvItem
             key={cnv.id} {...cnv}
-            showControls={cnv.ownerId === prs.id}
+            showControls={cnv.ownerId === Prs.id || Prs.role === 1}
             onDelete={() => openDelConfirm(cnv)}
             onEdit={() => openCnvModal(cnv)} />);
+         }
    });
 
    return (
-      <section className="container">
+      <section className="container" >
          <h1>Cnv Overview</h1>
          <ListGroup>
             {cnvItems}
@@ -70,47 +85,57 @@ export default props => {
          <Button variant="primary" className="mt-2" onClick=
             {() => openCnvModal()}>New Conversation</Button>
          {/* Modal for creating and change cnv */}
-         <CnvModal
-            show={showCnvModal} //edit cnvs modal
+          <CnvModal
+            showModal={showCnvModal}
             title={trgCnv ? "Edit title" : "New Conversation"}
             cnv={trgCnv}
             onDismiss={closeCnvModal} />
          <ConfDialog
-            show={showDelConfirm} //delete cnvs modal
+            show={showDelConfirm}
             title="Delete Conversation"
             body={`Are you sure you want to delete the Conversation
                '${trgCnv ? trgCnv.title : ''}'`}
-            buttons={['Yes', 'No']}
-            onClose={closeDelConfirm}/>
+            buttons={['Yes', 'Abort']}
+            onClose={closeDelConfirm} />
       </section>
+   
    )
 }
 
-// A Cnv list item
 const CnvItem = props => {
-   return (
-      <ListGroup.Item>
-         <Row> {/* row for each cnvs */} 
-            <Col sm={4}><Link to={"/CnvDetail" + props.id}> {/*sm means that for any window size small or smaller than small,
-                                                            takes 1/3 of space. since 12 column layout and passed 4*/}
-               {props.title}</Link></Col>
-            <Col sm={4}>{props.lastMessage ? new Intl.DateTimeFormat('us',
-               {
-                  year: "numeric", month: "short", day: "numeric",
-                  hour: "2-digit", minute: "2-digit", second: "2-digit" //object describing date/time format
-               })
-               .format(props.lastMessage) : "N/A"}</Col> {/* call .format on DateTimeFormat to format message */}
-            {props.showControls ? //showControls shows edit and delete controls
-               <Col sm={4} className="d-flex justify-content-md-end">
-                  <Button size="sm" className="ml-auto" onClick={props.onDelete}> { /* ml-auto forces right justification*/}
-                     <span className="fa fa-trash-alt"/> {/* fav icons library call. Create button as span with background image*/}
-                  </Button>                              {/* fa-trash-alt is the trash icon*/}
-                  <Button size="sm" onClick={props.onEdit} className="ml-1">
-                     <span className="fa fa-edit"/>
-                  </Button>
-               </Col>
-               : ''} {/*  or don't show controls*/}
-         </Row>
-      </ListGroup.Item>
-   )
-}
+   const Cnvs = useSelector(store => store.Cnvs);
+   let lastMessage;
+   lastMessage = (Cnvs.find((cnv) => 
+    parseInt(cnv.id) === props.id)).lastMessage;
+   
+    return (
+       <ListGroup.Item>
+          <Row>
+             <Col sm={4}><Link to={"/CnvDetail/" + props.id}>
+                {props.title}</Link></Col>
+
+             <Col sm={5}>{lastMessage ? new Intl.DateTimeFormat('us',
+                {
+                   year: "numeric", month: "short", day: "numeric",
+                   hour: "2-digit", minute: "2-digit", second: "2-digit"
+                })
+                .format(lastMessage) : "N/A"}</Col>
+             {props.showControls ?
+                <Col sm={3} style={{'paddingRight' : 0}} 
+                 className="d-flex justify-content-md-end">
+                   <Button size="sm" className="ml-auto" 
+                    onClick={props.onDelete}>
+                     <FontAwesomeIcon icon={faTrash} />                     
+                   </Button>
+                   <Button size="sm" onClick={props.onEdit} className="ml-1">
+                      <FontAwesomeIcon icon={faEdit} />  
+                   </Button>
+                </Col>
+                : ''}
+          </Row>
+       </ListGroup.Item>
+    )
+ }
+
+
+export default CnvOverView;

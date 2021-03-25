@@ -1,0 +1,16 @@
+.underline {
+    border-bottom-width: 2px;
+   
+}
+
+.list-group-item {
+    line-height: 30px;
+}
+
+.header{
+    font-size: 120%;
+}
+
+.bolded{
+    font-weight: bold;
+}

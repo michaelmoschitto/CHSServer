@@ -9,4 +9,4 @@ function Prs(state = {}, action) {
    }
 }
 
-export default Prss;
+export default Prs;

@@ -1,36 +1,35 @@
-import React, { Component } from 'react';
+import React, {Component, useState} from 'react';
 import {ConfDialog} from '../components';
 import {Form, FormGroup, FormControl, Button, Alert} from 'react-bootstrap';
-
+import {withRouter} from 'react-router-dom';
 import './Register.css';
 
-// Functional component label plus control w/optional help message
-function FieldGroup({id, label, help, ...props }) {
+function FieldGroup({id, label, help, ...props}) {
    return (
-       <FormGroup controlId={id}>
-          <Form.Label>{label}</Form.Label>
-          <Form.Control {...props} />
-          {help && <Form.Text className="text-muted">{help}</Form.Text>}
-       </FormGroup>
+      <FormGroup controlId={id}>
+         <Form.Label>{label}</Form.Label>
+         <Form.Control {...props} />
+         {help && <Form.Text className="text-muted">{help}</Form.Text>}
+      </FormGroup>
    );
 }
 
-class Register extends Component {
-   constructor(props) {
-      super(props);
-      this.state = {
-         firstName: '',
-         lastName: '',
-         email: '',
-         password: '',
-         passwordTwo: '',
-         termsAccepted: false,
-         role: 0
-      }
-      this.handleChange = this.handleChange.bind(this);
-   }
+const Register = props => {
+   console.log("Rendering Register")
 
-   submit() {
+   const [regFields, setRegFields] = useState({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      passwordTwo: '',
+      termsAccepted: false,
+      role: 0,
+   });
+
+   const [offerSignIn, setOfferSignIn] = useState(false)
+
+   let submit = () => {
       let { // Make a copy of the relevant values in current state
          firstName,
          lastName,
@@ -38,7 +37,7 @@ class Register extends Component {
          password,
          termsAccepted,
          role
-      } = this.state;
+      } = regFields;
 
       const user = {
          firstName,
@@ -49,91 +48,91 @@ class Register extends Component {
          role
       };
 
-      this.props.register(user, () => {this.setState({offerSignIn: true})});
-   }
+      props.register(user, () => setOfferSignIn(true));
+   };
 
-   handleChange(ev) {
-      let newState = {};
+   let handleChange = event => {
+      let newState = {...regFields};
 
-      switch (ev.target.type) {
-      case 'checkbox':
-         newState[ev.target.id] = ev.target.checked;
-         break;
-      default:
-         newState[ev.target.id] = ev.target.value;
+      switch (event.target.type) {
+         case 'checkbox':
+            newState[event.target.id] = event.target.checked;
+
+            break;
+         default:
+            newState[event.target.id] = event.target.value;
       }
-      this.setState(newState);
-   }
 
-   formValid() {
-      let s = this.state;
+      setRegFields(newState);
+   };
 
-      return s.email && s.lastName && s.password && s.password === s.passwordTwo
-       && s.termsAccepted;
-   }
+   let formValid = () => {
+      let r = regFields;
 
-   render() {
-     return (
-        <div className="container">
-           <form>
-              <FieldGroup id="email" type="email" label="Email Address"
-               placeholder="Enter email" value={this.state.email}
-               onChange={this.handleChange} required={true}
-               />
+      return r.email && r.lastName && r.password && r.password === r.passwordTwo
+       && r.termsAccepted;
+   };
 
-              <FieldGroup id="firstName" type="text" label="First Name"
-               placeholder="Enter first name" value={this.state.firstName}
-               onChange={this.handleChange}
-               />
+   return (
+      <div className="container">
+         <form>
+            <FieldGroup id="email" type="email" label="Email Address"
+             placeholder="Enter email" value={regFields.email}
+             onChange={handleChange} required={true}
+             />
 
-              <FieldGroup id="lastName" type="text" label="Last Name"
-               placeholder="Enter last name" value={this.state.lastName}
-               onChange={this.handleChange} required={true}
-               />
+            <FieldGroup id="firstName" type="text" label="First Name"
+             placeholder="Enter first name" value={regFields.firstName}
+             onChange={handleChange}
+             />
 
-              <FieldGroup id="password" type="password" label="Password"
-               value={this.state.password}
-               onChange={this.handleChange} required={true}
-               />
+            <FieldGroup id="lastName" type="text" label="Last Name"
+             placeholder="Enter last name" value={regFields.lastName}
+             onChange={handleChange} required={true}
+             />
 
-              <FieldGroup id="passwordTwo" type="password" label="Repeat Password"
-               value={this.state.passwordTwo}
-               onChange={this.handleChange} required={true}
-               help="Repeat your password"
-              />
+            <FieldGroup id="password" type="password" label="Password"
+             value={regFields.password}
+             onChange={handleChange} required={true}
+             />
 
-              <Form.Check  id="termsAccepted"
-               value={this.state.termsAccepted} onChange={this.handleChange}
-               label="Do you accept the terms and conditions?"/>
-           </form>
+            <FieldGroup id="passwordTwo" type="password" label="Repeat Password"
+             value={regFields.passwordTwo}
+             onChange={handleChange} required={true}
+             help="Repeat your password"
+            />
 
-           {this.state.password !== this.state.passwordTwo ?
-            <Alert variant="warning">
-               Passwords don't match
-            </Alert> : ''}
+            <Form.Check  id="termsAccepted"
+             value={regFields.termsAccepted} onChange={handleChange}
+             label="Do you accept the terms and conditions?"/>
+         </form>
 
-           <Button variant="primary" onClick={() => this.submit()}
-            disabled={!this.formValid()}>
-              Submit
-           </Button>
+         {regFields.password !== regFields.passwordTwo ?
+          <Alert variant="warning">
+             Passwords don't match
+          </Alert> : ''}
 
-           <ConfDialog
-              show={this.state.offerSignIn}
-              title="Registration Success"
-              body={`Would you like to log in as ${this.state.email}?`}
-              buttons={['YES', 'NO']}
-              onClose={answer => {
-                 this.setState({offerSignIn: false});
-                 if (answer === 'YES') {
-                    this.props.signIn(
-                     {email: this.state.email, password: this.state.password},
-                     () => this.props.history.push("/"));
-                 }
-              }}
-           />
-        </div>
-      )
-   }
-}
+         <Button variant="primary" onClick={() => submit()}
+          disabled={!formValid()}>
+            Submit
+         </Button>
 
-export default Register;
+         <ConfDialog
+            show={offerSignIn}
+            title="Registration Success"
+            body={`Would you like to log in as ${regFields.email}?`}
+            buttons={['YES', 'NO']}
+            onClose={answer => () => {
+               setOfferSignIn(false);
+               if (answer === 'YES')
+                  props.signIn(
+                   {email: regFields.email, password: regFields.password},
+                   () => props.history.push("/"));
+                }}   
+          />
+      </div>
+    )
+
+};
+
+export default withRouter(Register);

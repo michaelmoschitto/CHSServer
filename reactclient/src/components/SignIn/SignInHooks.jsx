@@ -16,7 +16,7 @@ export default props => {
    let signIn = event => {
       props.signIn(creds, () => {
          props.updateCnvs();
-         props.history.push("/allCnv");
+         props.history.push("/allCnvs");
       });
       event.preventDefault();
    }

@@ -1,19 +1,33 @@
 export default function Cnvs(state = [], action) {
    switch (action.type) {
       case 'UPDATE_CNVS': // Replace previous cnvs
-         return action.cnvs; //updates cnvs 
+         return action.cnvs;
       case 'UPDATE_CNV':
-         /* Example of wrongness
-         state.forEach(cnv => {
-            if (cnv.id === action.data.cnvId)
-               cnv.title = action.data.title;
-         });
-         return state;*/
-         return state.map(val => val.id !== action.data.cnvId ?
-            val : Object.assign({}, val, { title: action.data.title }));
+         return state.map(val => {
+            return val && (val.id !== action.data.id ? 
+             val : Object.assign({}, val, {title: action.data.title}))
+            }
+         );
+         
       case 'ADD_CNV':
-         return state.concat([action.cnv]);
+         //this sucked what a hack :/
+         let dup = false; 
+         state.forEach((cnv) => {
+            if (parseInt(cnv.id) === parseInt(action.cnv.id))
+               dup = true;
+         })
+
+         if (!dup)
+            return state.concat([action.cnv])
+         else  
+            return state;
+         
+         case 'DELETE_CNV':
+            return state.filter(cnv => cnv.id !== action.cnvId);
+
       default:
          return state;
+
+
    }
 }
